@@ -1,0 +1,46 @@
+name: live2d_flutter
+description: >-
+  A Flutter plugin that renders Live2D Cubism models inside Android, iOS,
+  macOS, Web, and Windows apps.
+version: 1.0.3
+publish_to: none
+homepage: https://github.com/hunmer/flutter_live2d
+repository: https://github.com/hunmer/flutter_live2d
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  web: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/web/flutter_live2d_web.js
+    - assets/web/shaders/
+  plugin:
+    platforms:
+      android:
+        package: com.linh18nd.flutter_live2d
+        pluginClass: FlutterLive2dPlugin
+      ios:
+        pluginClass: FlutterLive2dPlugin
+      macos:
+        pluginClass: FlutterLive2dPlugin
+      web:
+        pluginClass: FlutterLive2dWeb
+        fileName: flutter_live2d_web.dart
+      windows:
+        pluginClass: FlutterLive2dPluginCApi

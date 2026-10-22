@@ -1,0 +1,12 @@
+# Proprietary Cubism Core is prepared locally, never committed with this patch.
+/android/libs/
+/android/src/main/cpp/CubismCore/
+/ios/Libs/
+/ios/CubismCore/
+/windows/libs/
+
+**/node_modules/
+**/.dart_tool/
+**/build/
+**/.cxx/
+

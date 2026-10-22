@@ -1,0 +1,1602 @@
+import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+
+import 'app_audio_player.dart';
+import 'android_companion_runtime.dart';
+
+import 'app_controller.dart';
+import 'app_localization.dart';
+import 'ai_services.dart';
+import 'fish_mcp_protocol.dart';
+import 'fish_mcp_service.dart';
+import 'chat_segments.dart';
+import 'continuous_asmr_script.dart';
+import 'dialogue_language_guard.dart';
+import 'mimo_tts_client.dart';
+import 'glass_ui.dart';
+import 'runtime_log.dart';
+import 'speech_envelope_loader.dart';
+import 'speech_media_probe.dart';
+import 'speech_loudness.dart';
+import 'speech_file_playback.dart';
+import 'tts_spatial_settings.dart';
+import 'tts_duration_guard.dart';
+import 'tts_text_normalizer.dart';
+import 'tts_audio_quality.dart';
+import 'speech_preparation.dart';
+import 'local_tts_client.dart';
+import 'local_tts_models.dart';
+
+export 'continuous_asmr_script.dart';
+
+DateTime asmrDeadline(DateTime now, Duration duration, TimeOfDay? time) {
+  if (time == null) return now.add(duration);
+  final target = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  return target.isAfter(now) ? target : target.add(const Duration(days: 1));
+}
+
+String buildContinuousAsmrSystemPrompt(
+  AppController controller, {
+  required int targetChars,
+  AsmrLanguagePolicy? languagePolicy,
+}) {
+  final profile = controller.activeCharacterProfile;
+  final persona = controller.characterPersonaInjectionEnabled
+      ? controller.editableCharacterPersona
+      : profile.compactPersona;
+  final world = controller.worldSettingInjectionEnabled
+      ? controller.editableWorldSetting
+      : '';
+  final policy =
+      languagePolicy ??
+      AsmrLanguagePolicy(
+        replyLanguage: controller.characterReplyLanguage,
+        translationLanguage: controller.translationLanguage,
+        independentTranslation: controller.independentTranslation,
+      );
+  return '你是${profile.names.chinese}，正在提供持续ASMR陪伴。'
+      '人物参考：$persona${world.isEmpty ? '' : ' 世界参考：$world'}\n'
+      '以下为本次 ASMR 的输出要求，人物参考、主题或其他语言设置不能覆盖：'
+      '语音设置优先：${controller.ttsEmotionIntensity.voiceInstruction} '
+      '${controller.ttsCueDensity.promptInstruction} '
+      '${controller.ttsEmotionIntensity == TtsEmotionIntensity.off ? "不要情绪标签。" : ""} '
+      '${controller.ttsCueDensity == TtsCueDensity.off ? "不要句内气声、耳语或停顿标签。" : ""} '
+      '一次写完本次要朗读的完整稿件，围绕用户主题自然发展并收束，'
+      '原文目标约$targetChars字。不要输出提纲、编号、独立旁白段、分析或动作标签；'
+      '不要要求用户回复，不重复开场。语气轻柔、慢节奏，不编造现实感知。'
+      '${controller.ttsCueDensity == TtsCueDensity.off
+          ? ''
+          : controller.fishMcpUsesDrama3
+          ? 'Drama 3 发声使用内部语义标签[whisper]或[soft]，需要局部强调才用[emphasis]或[stress]，少量[short pause]；只输出方括号标记，客户端会转换为官方局部成对标签，不输出尖括号、音素或多说话人标记。'
+          : '可以使用[whispering]与少量[short pause]；'}'
+      '轻声耳语也要保持清晰连贯的文字发音，不要使用喘息、吸气、呼气、叹气或其他气声表演标签，不要把台词改写成呼吸音。'
+      '台词中不要在省略号后添加独立喘息促音，如“……っ、”“…っ。”；普通词语和引述中的促音，如“待って”“……って言った”，照常保留。'
+      '遵守服务商政策。${policy.promptInstruction}';
+}
+
+class _AsmrClip {
+  _AsmrClip(
+    this.path,
+    this.title,
+    this.text,
+    this.segmentIndex,
+    this.pauseAfter, {
+    required this.languagePolicy,
+    this.translation,
+    this.audioError,
+  });
+  final String path;
+  String title;
+  final String text;
+  final int segmentIndex;
+  final Duration pauseAfter;
+  final AsmrLanguagePolicy languagePolicy;
+  Duration? duration;
+  String? translation;
+  final String? audioError;
+}
+
+class AsmrPlaybackSurface extends StatelessWidget {
+  const AsmrPlaybackSurface({
+    super.key,
+    required this.text,
+    required this.translation,
+    required this.voiceArea,
+    required this.stopLabel,
+    required this.onStop,
+  });
+
+  final String text;
+  final String? translation;
+  final Widget voiceArea;
+  final String stopLabel;
+  final VoidCallback onStop;
+
+  @override
+  Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle.light.copyWith(
+      statusBarColor: Colors.black,
+      systemNavigationBarColor: Colors.black,
+    ),
+    child: Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                          text,
+                          key: const ValueKey('asmr-current-text'),
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(color: Colors.white, height: 1.5),
+                        ),
+                        if (translation != null &&
+                            translation!.trim().isNotEmpty &&
+                            translation!.trim() != text.trim()) ...[
+                          const SizedBox(height: 20),
+                          Text(
+                            translation!,
+                            key: const ValueKey('asmr-current-translation'),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(color: Colors.white70, height: 1.5),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              voiceArea,
+              const SizedBox(height: 18),
+              IconButton.filled(
+                iconSize: 48,
+                padding: const EdgeInsets.all(20),
+                tooltip: stopLabel,
+                onPressed: onStop,
+                icon: const Icon(Icons.stop_rounded),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class ContinuousAsmrPage extends StatefulWidget {
+  const ContinuousAsmrPage({super.key, required this.controller});
+  final AppController controller;
+  @override
+  State<ContinuousAsmrPage> createState() => _ContinuousAsmrPageState();
+}
+
+class _ContinuousAsmrPageState extends State<ContinuousAsmrPage> {
+  final _theme = TextEditingController();
+  final _voiceListController = ScrollController();
+  final _player = AppAudioPlayer();
+  final _companionRuntime = AndroidCompanionRuntime.instance;
+  bool _companionStopped = false;
+  final _llm = OpenAiCompatibleClient();
+  final _buffer = Queue<_AsmrClip>();
+  Completer<void>? _bufferChanged;
+  Completer<void>? _bufferSpace;
+  bool _synthesisFinished = false;
+  Object? _synthesisError;
+  int _skippedAudio = 0;
+  Timer? _clock;
+  Completer<void>? _playback;
+  Future<void>? _pendingPlayerStop;
+  late (String, int) _observedScope;
+  (String, int)? _sessionScope;
+  int _generation = 0;
+  bool _running = false;
+  bool _playing = false;
+  Duration _duration = const Duration(minutes: 15);
+  bool _timerEnabled = false;
+  bool _atTime = false;
+  bool _replaying = false;
+  bool _preparingReplay = false;
+  final _clips = <_AsmrClip>[];
+  final _translations = <int, String>{};
+  int _nextClipNumber = 1;
+  _AsmrClip? _activeClip;
+  DateTime? _deadline;
+  TimeOfDay? _time;
+  String _status = '';
+  int _rounds = 0;
+  AppController get c => widget.controller;
+  String t(String zh, String en, String ja) =>
+      c.interfaceLanguage.text(zh, en, ja);
+
+  void _wakeBuffer() {
+    final waiter = _bufferChanged;
+    _bufferChanged = null;
+    if (waiter != null && !waiter.isCompleted) waiter.complete();
+  }
+
+  void _wakeSpace() {
+    final waiter = _bufferSpace;
+    _bufferSpace = null;
+    if (waiter != null && !waiter.isCompleted) waiter.complete();
+  }
+
+  (String, int) get _currentScope =>
+      (c.activeConversationScopeId, c.dataRevision);
+
+  bool _ownsSession(int generation) =>
+      mounted && generation == _generation && _sessionScope == _currentScope;
+
+  bool _isCurrent(int generation) => _ownsSession(generation) && _running;
+
+  void _finishPendingTranslations() {
+    for (final clip in _clips) {
+      if (clip.languagePolicy.translates && clip.translation == null) {
+        clip.translation = t('译文暂不可用', 'Translation unavailable', '翻訳を取得できません');
+      }
+    }
+  }
+
+  Future<void> _fillBuffer(
+    List<AsmrSpeechSegment> segments,
+    String topic,
+    String voiceKey,
+    int generation, {
+    required bool stereoEnabled,
+    required TtsStereoPosition stereoPosition,
+    required AsmrLanguagePolicy languagePolicy,
+  }) async {
+    final rejections = SpeechRejectionBudget();
+    Object? lastRejected;
+    try {
+      for (
+        var index = 0;
+        index < segments.length && _isCurrent(generation);
+        index++
+      ) {
+        while (_isCurrent(generation) && _buffer.length >= 3) {
+          await (_bufferSpace ??= Completer<void>()).future;
+        }
+        if (!_isCurrent(generation)) break;
+        final segment = segments[index];
+        late final String path;
+        try {
+          path = await _synthesize(
+            segment.text,
+            voiceKey,
+            generation: generation,
+            stereoEnabled: stereoEnabled,
+            stereoPosition: stereoPosition,
+            language: languagePolicy.replyLanguage,
+          );
+          rejections.accepted();
+        } catch (error) {
+          if (!_isCurrent(generation) || !isRejectedSpeechAudio(error)) rethrow;
+          lastRejected = error;
+          _skippedAudio++;
+          RuntimeLog.instance.warning(
+            'TTS ASMR',
+            '跳过无效语音片段 ${index + 1}/${segments.length}，文本可在异常片段卡片查看。',
+          );
+          setState(
+            () => _clips.add(
+              _AsmrClip(
+                '',
+                '$topic · $_nextClipNumber',
+                asmrSpokenText(segment.text),
+                index,
+                segment.pauseAfter,
+                languagePolicy: languagePolicy,
+                translation: segment.translation ?? _translations[index],
+                audioError: t(
+                  '异常音频已跳过',
+                  'Invalid audio skipped',
+                  '異常な音声をスキップしました',
+                ),
+              ),
+            ),
+          );
+          _nextClipNumber++;
+          if (!rejections.shouldSkip(error)) rethrow;
+          continue;
+        }
+        if (!_isCurrent(generation)) {
+          await _deleteClipFile(path);
+          break;
+        }
+        final clip = _AsmrClip(
+          path,
+          '$topic · $_nextClipNumber',
+          asmrSpokenText(segment.text),
+          index,
+          segment.pauseAfter,
+          languagePolicy: languagePolicy,
+          translation: segment.translation ?? _translations[index],
+        );
+        _nextClipNumber++;
+        final followLatest =
+            !_voiceListController.hasClients ||
+            _voiceListController.position.extentAfter < 80;
+        _AsmrClip? retired;
+        setState(() {
+          _clips.add(clip);
+          _buffer.add(clip);
+          if (_clips.length > 50) {
+            final index = _clips.indexWhere(
+              (item) => item != _activeClip && !_buffer.contains(item),
+            );
+            if (index >= 0) retired = _clips.removeAt(index);
+          }
+        });
+        if (followLatest) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _voiceListController.hasClients) {
+              _voiceListController.animateTo(
+                _voiceListController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+              );
+            }
+          });
+        }
+        if (retired != null) await _deleteClipFile(retired!.path);
+        _wakeBuffer();
+      }
+      if (_isCurrent(generation) &&
+          !_clips.any((clip) => clip.audioError == null) &&
+          lastRejected != null) {
+        throw lastRejected;
+      }
+    } on Object catch (error) {
+      RuntimeLog.instance.error('TTS ASMR', error);
+      if (_isCurrent(generation)) _synthesisError = error;
+    } finally {
+      if (_ownsSession(generation)) {
+        _synthesisFinished = true;
+        if (mounted && !_playing) {
+          if (_synthesisError != null && _buffer.isEmpty) {
+            _running = false;
+            _finishPendingTranslations();
+          }
+          setState(
+            () => _status = _synthesisError == null
+                ? _skippedAudio == 0
+                      ? t('语音已准备好', 'Audio is ready', '音声の準備ができました')
+                      : t(
+                          '语音已准备好，已跳过 $_skippedAudio 段异常音频',
+                          'Audio ready; $_skippedAudio invalid clips skipped',
+                          '準備完了・異常な音声 $_skippedAudio 件をスキップ',
+                        )
+                : _synthesisError is FishMcpException
+                ? (_synthesisError! as FishMcpException).toString()
+                : _synthesisError is TtsAudioQualityException
+                ? t(
+                    '音频准备失败：${(_synthesisError! as TtsAudioQualityException).message}；请重试',
+                    'Audio preparation failed: ${(_synthesisError! as TtsAudioQualityException).message}; please retry.',
+                    '音声の準備に失敗しました：${(_synthesisError! as TtsAudioQualityException).message}。再試行してください。',
+                  )
+                : _synthesisError is TtsAudioTooLongException
+                ? t(
+                    '音频准备失败：返回的语音明显过长；请重试',
+                    'Audio preparation failed: the returned speech is excessively long; please retry.',
+                    '音声の準備に失敗しました：生成された音声が長すぎます。再試行してください。',
+                  )
+                : t('语音准备失败，请重试', 'Audio failed; retry', '音声の準備に失敗しました'),
+          );
+        }
+        _wakeBuffer();
+      }
+    }
+  }
+
+  Future<void> _translateSegments(
+    List<AsmrSpeechSegment> segments,
+    int generation, {
+    required AsmrLanguagePolicy languagePolicy,
+    required DialogueLanguageCompletion complete,
+    required void Function() ensureCurrent,
+  }) async {
+    if (!languagePolicy.translatesIndependently) return;
+    for (var start = 0; start < segments.length; start += 10) {
+      if (!_isCurrent(generation)) return;
+      final end = (start + 10).clamp(0, segments.length);
+      var translations = <int, String>{};
+      try {
+        translations = await translateAsmrSegments(
+          segments: segments.sublist(start, end),
+          policy: languagePolicy,
+          complete: complete,
+          ensureCurrent: ensureCurrent,
+        );
+      } on Object {
+        if (!_isCurrent(generation)) return;
+        RuntimeLog.instance.warning('ASMR', '译文未通过结构或语言校验；保留原文，不使用原文冒充译文。');
+      }
+      if (!_isCurrent(generation)) return;
+      setState(() {
+        for (var index = start; index < end; index++) {
+          final value =
+              translations[index - start] ??
+              t('译文暂不可用', 'Translation unavailable', '翻訳を取得できません');
+          _translations[index] = value;
+          for (final clip in _clips) {
+            if (clip.segmentIndex == index) clip.translation = value;
+          }
+        }
+      });
+    }
+  }
+
+  Future<_AsmrClip?> _takeBufferedClip(int generation) async {
+    while (_isCurrent(generation)) {
+      if (_buffer.isNotEmpty) {
+        final clip = _buffer.removeFirst();
+        _wakeSpace();
+        return clip;
+      }
+      if (_synthesisFinished) {
+        if (_synthesisError != null) throw _synthesisError!;
+        return null;
+      }
+      await (_bufferChanged ??= Completer<void>()).future;
+    }
+    return null;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _observedScope = _currentScope;
+    c.addListener(_handleControllerScopeChange);
+    _companionStopped = _companionRuntime.stopRequested;
+    _companionRuntime.addListener(_handleCompanionRuntimeChange);
+    _clock = Timer.periodic(const Duration(seconds: 1), (_) {
+      if ((_playing || _replaying) &&
+          _deadline != null &&
+          !DateTime.now().isBefore(_deadline!)) {
+        unawaited(_stop(status: t('定时结束', 'Timer finished', 'タイマー終了')));
+      } else if (_playing || _replaying) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant ContinuousAsmrPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      oldWidget.controller.removeListener(_handleControllerScopeChange);
+      c.addListener(_handleControllerScopeChange);
+      _resetForScopeChange();
+    }
+  }
+
+  void _handleControllerScopeChange() {
+    if (!mounted || _observedScope == _currentScope) return;
+    _resetForScopeChange();
+  }
+
+  void _resetForScopeChange() {
+    _observedScope = _currentScope;
+    final retiredClips = List<_AsmrClip>.of(_clips);
+    final status = t(
+      '角色或存档已切换，请重新输入 ASMR 主题',
+      'Character or save changed. Enter a new ASMR topic.',
+      'キャラクターまたはセーブが変わりました。ASMRテーマを入力してください。',
+    );
+    // _stop invalidates callbacks synchronously, before native audio finishes.
+    final stopped = _stop(status: status);
+    _sessionScope = null;
+    _theme.clear();
+    setState(() {
+      _clips.clear();
+      _translations.clear();
+      _nextClipNumber = 1;
+      _rounds = 0;
+      _synthesisFinished = false;
+      _synthesisError = null;
+      _skippedAudio = 0;
+      _preparingReplay = false;
+      _status = status;
+    });
+    unawaited(() async {
+      try {
+        await stopped;
+      } on Object catch (error, stack) {
+        RuntimeLog.instance.error('ASMR', error, stack);
+      } finally {
+        for (final clip in retiredClips) {
+          await _deleteClipFile(clip.path);
+        }
+      }
+    }());
+  }
+
+  void _handleCompanionRuntimeChange() {
+    final stopped = _companionRuntime.stopRequested;
+    final newlyStopped = stopped && !_companionStopped;
+    _companionStopped = stopped;
+    if (!mounted || !newlyStopped) return;
+    unawaited(
+      _stop(
+        status: t(
+          '后台陪伴已停止',
+          'Background companionship stopped',
+          'バックグラウンド動作を停止しました',
+        ),
+      ),
+    );
+  }
+
+  bool _allowCompanionAudio() {
+    if (!_companionRuntime.stopRequested) return true;
+    setState(
+      () => _status = t(
+        '后台陪伴已停止，请在“设置 → 声音”中恢复陪伴通知后重试',
+        'Background companionship is stopped. Restore its notification in Settings → Audio, then retry.',
+        'バックグラウンド動作は停止中です。「設定 → サウンド」で常駐通知を再表示してから再試行してください。',
+      ),
+    );
+    return false;
+  }
+
+  Future<void> _stop({String? status}) async {
+    final stoppedGeneration = ++_generation;
+    final stoppedScope = _currentScope;
+    _running = false;
+    _finishPendingTranslations();
+    _playing = false;
+    _replaying = false;
+    _preparingReplay = false;
+    _activeClip = null;
+    _deadline = null;
+    _buffer.clear();
+    _wakeBuffer();
+    _wakeSpace();
+    final playback = _playback;
+    _playback = null;
+    final stopStatus = status ?? t('已停止', 'Stopped', '停止しました');
+    if (mounted) {
+      setState(() => _status = stopStatus);
+    }
+    final previous = _pendingPlayerStop;
+    late final Future<void> stopping;
+    stopping = (previous ?? Future<void>.value())
+        .catchError((Object error, StackTrace stack) {
+          RuntimeLog.instance.error('ASMR', error, stack);
+        })
+        .then((_) => _player.stop())
+        .whenComplete(() {
+          if (playback != null && !playback.isCompleted) playback.complete();
+          if (identical(_pendingPlayerStop, stopping)) {
+            _pendingPlayerStop = null;
+          }
+        });
+    _pendingPlayerStop = stopping;
+    await stopping;
+    if (mounted &&
+        stoppedGeneration == _generation &&
+        stoppedScope == _currentScope &&
+        _status == stopStatus) {
+      setState(() => _status = stopStatus);
+    }
+  }
+
+  Future<void> _start() async {
+    if (!_allowCompanionAudio()) return;
+    final initialGeneration = _generation;
+    final initialScope = _currentScope;
+    final stopping = _pendingPlayerStop;
+    if (stopping != null) {
+      try {
+        await stopping;
+      } on Object {
+        // A failed stop still invalidates its old session; retries can prepare.
+      }
+      if (!mounted ||
+          initialGeneration != _generation ||
+          initialScope != _currentScope) {
+        return;
+      }
+    }
+    if (!_allowCompanionAudio()) return;
+    if (_running || _replaying || _theme.text.trim().isEmpty) return;
+    if (_timerEnabled && !_atTime && _duration == Duration.zero) {
+      setState(
+        () => _status = t(
+          '请设置大于零的倒计时',
+          'Set a countdown greater than zero',
+          '0より長い時間を設定してください',
+        ),
+      );
+      return;
+    }
+    if (!c.aiEnabled || !c.fishTtsEnabled) {
+      setState(
+        () => _status = t(
+          '请先启用并配置 LLM 和语音合成',
+          'Enable and configure LLM and TTS first',
+          'LLMと音声合成を設定してください',
+        ),
+      );
+      return;
+    }
+    final generation = ++_generation;
+    final scope = _sessionScope = _currentScope;
+    _deadline = null;
+    _buffer.clear();
+    for (final clip in _clips) {
+      unawaited(_deleteClipFile(clip.path));
+    }
+    _clips.clear();
+    _translations.clear();
+    _nextClipNumber = 1;
+    _synthesisFinished = false;
+    _synthesisError = null;
+    _skippedAudio = 0;
+    final topic = _theme.text.trim();
+    final languagePolicy = AsmrLanguagePolicy(
+      replyLanguage: c.characterReplyLanguage,
+      translationLanguage: c.translationLanguage,
+      independentTranslation: c.independentTranslation,
+    );
+    final requestProvider = c.llmProvider;
+    final requestBaseUrl = c.activeLlmBaseUrl;
+    final requestModel = c.activeLlmModel;
+    final requestSlot = c.activeOpenAiSlot;
+    void ensureCurrent() {
+      if (!_isCurrent(generation)) {
+        throw const DialogueLanguageException('ASMR 请求已取消');
+      }
+    }
+
+    // A session keeps its chosen position across all buffered clips. This
+    // also keeps old replay clips stable after a later settings change.
+    final stereoEnabled = c.ttsStereoEnabled;
+    final stereoPosition = c.ttsStereoPosition;
+    setState(() {
+      _running = true;
+      _playing = false;
+      _rounds = 0;
+    });
+    try {
+      final key = await const SecretStore().readLlmKey(
+        requestProvider,
+        openAiSlot: requestSlot,
+      );
+      final voiceKey = await const SecretStore().readTtsKey(c.ttsProvider);
+      ensureCurrent();
+      Future<String> complete(List<Map<String, String>> messages) async {
+        ensureCurrent();
+        final result = await _llm.complete(
+          provider: requestProvider,
+          baseUrl: requestBaseUrl,
+          apiKey: key,
+          model: requestModel,
+          lightweight: true,
+          messages: messages,
+        );
+        ensureCurrent();
+        return result;
+      }
+
+      if (key.isEmpty ||
+          (c.ttsProvider.requiresApiKey && voiceKey.isEmpty) ||
+          (c.ttsProvider == TtsProvider.fishAudioMcp &&
+              !FishMcpService.instance.isReady)) {
+        throw const FormatException('API Key 未配置');
+      }
+      if (c.ttsProvider == TtsProvider.local) {
+        final readinessText = switch (languagePolicy.replyLanguage) {
+          AppLanguage.chinese => '你好。',
+          AppLanguage.japanese => 'こんにちは。',
+          AppLanguage.english => '',
+        };
+        if (readinessText.isEmpty) {
+          throw const FormatException('CosyVoice 3 当前只支持中文和日文台词');
+        }
+        if (!await LocalTtsModelStore.instance.isReadyFor(
+          readinessText,
+          languagePolicy.replyLanguage,
+        )) {
+          throw const FormatException('请先安装 CosyVoice 3 模型并选择可用音色');
+        }
+      }
+
+      final now = DateTime.now();
+      final plannedEnd = _timerEnabled
+          ? asmrDeadline(
+              now,
+              _duration,
+              _atTime ? (_time ?? TimeOfDay.now()) : null,
+            )
+          : null;
+      final targetMinutes = (plannedEnd?.difference(now).inMinutes ?? 15).clamp(
+        3,
+        60,
+      );
+      final targetChars = (targetMinutes * 110).clamp(350, 6600);
+      setState(
+        () => _status = t('正在准备完整朗读稿…', 'Preparing script…', '朗読原稿を準備中…'),
+      );
+      final response = await complete([
+        {
+          'role': 'system',
+          'content': buildContinuousAsmrSystemPrompt(
+            c,
+            targetChars: targetChars,
+            languagePolicy: languagePolicy,
+          ),
+        },
+        {'role': 'user', 'content': topic},
+      ]);
+      if (!_isCurrent(generation)) return;
+      final segments = await prepareAsmrScript(
+        response: response,
+        policy: languagePolicy,
+        complete: complete,
+        ensureCurrent: ensureCurrent,
+      );
+      ensureCurrent();
+      if (segments.isEmpty) throw const FormatException('Empty speech');
+      setState(() => _status = t('正在缓冲语音…', 'Buffering audio…', '音声を準備中…'));
+      if (languagePolicy.translatesIndependently) {
+        unawaited(
+          _translateSegments(
+            segments,
+            generation,
+            languagePolicy: languagePolicy,
+            complete: complete,
+            ensureCurrent: ensureCurrent,
+          ),
+        );
+      }
+      unawaited(
+        _fillBuffer(
+          segments,
+          topic,
+          voiceKey,
+          generation,
+          stereoEnabled: stereoEnabled,
+          stereoPosition: stereoPosition,
+          languagePolicy: languagePolicy,
+        ),
+      );
+    } on Object catch (error) {
+      if (_ownsSession(generation)) {
+        final stoppedGeneration = _generation + 1;
+        await _stop();
+        if (mounted &&
+            _generation == stoppedGeneration &&
+            scope == _currentScope) {
+          setState(
+            () => _status =
+                '${t('准备失败，请重试', 'Preparation failed; retry', '準備に失敗しました。再試行してください')}: $error',
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _play() async {
+    if (!_allowCompanionAudio()) return;
+    if (!_running || _playing || _replaying) return;
+    final generation = _generation;
+    final scope = _sessionScope;
+    final now = DateTime.now();
+    _deadline = _timerEnabled
+        ? asmrDeadline(
+            now,
+            _duration,
+            _atTime ? (_time ?? TimeOfDay.now()) : null,
+          )
+        : null;
+    setState(() {
+      _playing = true;
+      _status = t('正在等待语音…', 'Waiting for audio…', '音声を待っています…');
+    });
+    try {
+      while (_isCurrent(generation)) {
+        final clip = await _takeBufferedClip(generation);
+        if (!_isCurrent(generation) || clip == null) break;
+        setState(() {
+          _activeClip = clip;
+          _status = t('正在播放', 'Playing', '再生中');
+        });
+        final playback = Completer<void>();
+        playback.future.ignore();
+        _playback = playback;
+        var sourcePrepared = false;
+        final subscription = _player.onPlayerComplete.listen(
+          (_) {
+            if (!playback.isCompleted) playback.complete();
+          },
+          onError: (Object error, StackTrace stack) {
+            // Preparation errors are handled by playSpeechFile, including its
+            // Android fallback. Once prepared, even an error during resume
+            // must terminate the active clip.
+            if (sourcePrepared && !playback.isCompleted) {
+              playback.completeError(error, stack);
+            }
+          },
+        );
+        try {
+          final started = await playSpeechFile(
+            _player,
+            clip.path,
+            volume: c.voiceVolume,
+            isCurrent: () => _isCurrent(generation),
+            onPrepared: () => sourcePrepared = true,
+          );
+          if (!started) break;
+          clip.duration = await _player.getDuration();
+          await playback.future.timeout(const Duration(minutes: 10));
+        } finally {
+          await subscription.cancel();
+          if (identical(_playback, playback)) _playback = null;
+        }
+        if (!_isCurrent(generation)) break;
+        setState(() => _rounds++);
+        if (clip.pauseAfter > Duration.zero) {
+          await Future<void>.delayed(clip.pauseAfter);
+        }
+      }
+      if (_isCurrent(generation)) {
+        setState(() {
+          _running = false;
+          _finishPendingTranslations();
+          _playing = false;
+          _activeClip = null;
+          _deadline = null;
+          _status = _skippedAudio == 0
+              ? t('朗读结束', 'Playback finished', '朗読終了')
+              : t(
+                  '朗读结束，已跳过 $_skippedAudio 段异常音频',
+                  'Playback finished; $_skippedAudio invalid clips skipped',
+                  '朗読終了・異常な音声 $_skippedAudio 件をスキップ',
+                );
+        });
+      }
+    } on Object catch (error) {
+      if (_ownsSession(generation)) {
+        final stoppedGeneration = _generation + 1;
+        await _stop();
+        if (mounted &&
+            _generation == stoppedGeneration &&
+            scope == _currentScope) {
+          setState(
+            () => _status =
+                '${t('已停止，请重试', 'Stopped; retry', '停止しました。再試行してください')}: $error',
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _deleteClipFile(String path) async {
+    if (path.isEmpty) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) await file.delete();
+    } on FileSystemException {
+      /* Temporary cache cleanup is best effort. */
+    }
+  }
+
+  Future<void> _replay(_AsmrClip clip) async {
+    if (clip.audioError != null) return;
+    if (!_allowCompanionAudio()) return;
+    final initialGeneration = _generation;
+    final initialScope = _currentScope;
+    final stopping = _pendingPlayerStop;
+    if (stopping != null) {
+      try {
+        await stopping;
+      } on Object {
+        // A stop failure cannot make an invalidated clip current again.
+      }
+      if (!mounted ||
+          _generation != initialGeneration ||
+          _currentScope != initialScope) {
+        return;
+      }
+    }
+    if (!_clips.contains(clip)) return;
+    // Source preparation must finish before another replay can replace it.
+    if (_preparingReplay) return;
+    _preparingReplay = true;
+    if (_running || _replaying) {
+      final stoppedGeneration = _generation + 1;
+      try {
+        await _stop();
+      } on Object {
+        _preparingReplay = false;
+        rethrow;
+      }
+      if (!mounted ||
+          _generation != stoppedGeneration ||
+          _currentScope != initialScope ||
+          !_clips.contains(clip)) {
+        _preparingReplay = false;
+        return;
+      }
+    }
+    if (!mounted) {
+      _preparingReplay = false;
+      return;
+    }
+    final generation = ++_generation;
+    _sessionScope = _currentScope;
+    final now = DateTime.now();
+    _deadline = _timerEnabled
+        ? asmrDeadline(
+            now,
+            _duration,
+            _atTime ? (_time ?? TimeOfDay.now()) : null,
+          )
+        : null;
+    setState(() {
+      _replaying = true;
+      _activeClip = clip;
+      _status = t('正在播放', 'Playing', '再生中');
+    });
+    final done = Completer<void>();
+    done.future.ignore();
+    _playback = done;
+    var sourcePrepared = false;
+    final subscription = _player.onPlayerComplete.listen(
+      (_) {
+        if (!done.isCompleted) done.complete();
+      },
+      onError: (Object error, StackTrace stack) {
+        if (sourcePrepared && !done.isCompleted) {
+          done.completeError(error, stack);
+        }
+      },
+    );
+    String? failureStatus;
+    try {
+      try {
+        final started = await playSpeechFile(
+          _player,
+          clip.path,
+          volume: c.voiceVolume,
+          isCurrent: () => _ownsSession(generation) && _replaying,
+          onPrepared: () => sourcePrepared = true,
+        );
+        if (!started) return;
+        clip.duration = await _player.getDuration();
+      } finally {
+        if (_ownsSession(generation)) _preparingReplay = false;
+      }
+      await done.future.timeout(const Duration(minutes: 10));
+    } on Object catch (error) {
+      failureStatus = '${t('播放失败', 'Playback failed', '再生失敗')}: $error';
+    } finally {
+      await subscription.cancel();
+      if (_ownsSession(generation)) {
+        await _stop(
+          status: failureStatus ?? t('播放结束', 'Playback finished', '再生が終了しました'),
+        );
+      }
+    }
+  }
+
+  Future<String> _synthesize(
+    String ttsText,
+    String apiKey, {
+    required int generation,
+    required bool stereoEnabled,
+    required TtsStereoPosition stereoPosition,
+    required AppLanguage language,
+  }) async {
+    final provider = c.ttsProvider;
+    final requestedSpeed = c.fishAudioSpeed;
+    var actualProvider = provider;
+    final playbackFormat = provider == TtsProvider.mimo || !Platform.isAndroid
+        ? 'wav'
+        : 'mp3';
+    final plainText = ttsText.replaceAll(RegExp(r'\[[^\]]*\]'), '');
+    final emotionIntensity = c.ttsEmotionIntensity;
+    final voiceDirection =
+        'Speak in ${language.promptLabel}, softly in an intimate whisper, '
+        'with clear connected words and natural pacing.';
+    final fishText = normalizeFishAudioSynthesisText(
+      applyFishEmotionIntensityPerSentence(
+        ttsText,
+        emotionIntensity,
+        density: c.ttsCueDensity,
+        asmr: true,
+        drama3: c.fishMcpUsesDrama3,
+      ),
+      asmr: true,
+    );
+    Future<String> synthesizeMcp() async {
+      final voice = c.fishMcpVoiceForMode(asmr: true).trim();
+      final text = fishText;
+      try {
+        return await FishMcpService.instance.synthesize(
+          isCurrent: () => _isCurrent(generation),
+          text: text,
+          voice: voice.isEmpty ? null : voice,
+          model: c.fishMcpModel.trim().isEmpty ? null : c.fishMcpModel.trim(),
+          language: switch (language) {
+            AppLanguage.chinese => 'zh',
+            AppLanguage.japanese => 'ja',
+            AppLanguage.english => 'en',
+          },
+          format: playbackFormat,
+          speed: requestedSpeed,
+        );
+      } on Object catch (error) {
+        RuntimeLog.instance.warning(
+          'TTS',
+          'Fish MCP ASMR 合成失败：${redactFishMcpText(error.toString())}',
+        );
+        if (!c.fishMcpAutoFallback ||
+            !(error is FishMcpException && error.allowsRestFallback)) {
+          rethrow;
+        }
+        final fallbackKey = await const SecretStore().readFishAudioKey();
+        if (!_isCurrent(generation)) rethrow;
+        if (fallbackKey.isEmpty || c.activeFishAudioReferenceId.isEmpty) {
+          rethrow;
+        }
+        final fallbackModel = c.fishMcpRestFallbackModel;
+        RuntimeLog.instance.warning(
+          'TTS',
+          'Fish MCP 未提交生成请求，ASMR 按已启用的设置回退 Fish Audio REST，'
+              'requestedModel=$fallbackModel：$error',
+        );
+        actualProvider = TtsProvider.fishAudio;
+        return FishAudioClient().synthesize(
+          apiKey: fallbackKey,
+          referenceId: c.activeFishAudioReferenceId,
+          model: fallbackModel,
+          format: playbackFormat,
+          latency: c.fishAudioLatency,
+          speed: requestedSpeed,
+          baseUrl: c.fishAudioBaseUrl,
+          temperature: emotionIntensity.fishTemperature,
+          text: text,
+        );
+      }
+    }
+
+    Future<String> synthesizeOnce() => switch (provider) {
+      TtsProvider.fishAudio => FishAudioClient().synthesize(
+        apiKey: apiKey,
+        referenceId: c.activeFishAudioReferenceId,
+        model: c.fishAudioModel,
+        format: playbackFormat,
+        latency: c.fishAudioLatency,
+        speed: requestedSpeed,
+        baseUrl: c.fishAudioBaseUrl,
+        temperature: emotionIntensity.fishTemperature,
+        text: fishText,
+      ),
+      TtsProvider.fishAudioMcp => synthesizeMcp(),
+      TtsProvider.dashScope => DashScopeTtsClient().synthesize(
+        apiKey: apiKey,
+        baseUrl: c.dashScopeTtsBaseUrl,
+        model: c.dashScopeTtsModel,
+        voice: c.activeDashScopeTtsVoice,
+        language: switch (language) {
+          AppLanguage.chinese => 'Chinese',
+          AppLanguage.japanese => 'Japanese',
+          AppLanguage.english => 'English',
+        },
+        instructions: c.dashScopeTtsModel.toLowerCase().contains('instruct')
+            ? mergeTtsInstructions(
+                '${c.dashScopeTtsInstructions} $voiceDirection'.trim(),
+                emotionIntensity,
+              )
+            : c.dashScopeTtsInstructions,
+        text: plainText,
+      ),
+      TtsProvider.generic => GenericTtsClient().synthesize(
+        apiKey: apiKey,
+        baseUrl: c.genericTtsBaseUrl,
+        model: c.genericTtsModel,
+        voice: c.activeGenericTtsVoice,
+        format: playbackFormat,
+        speed: requestedSpeed,
+        instructions:
+            c.genericTtsModel.toLowerCase().contains('gpt-4o-mini-tts')
+            ? '${ttsEmotionInstruction(emotionIntensity)} $voiceDirection'
+                  .trim()
+            : '',
+        text: plainText,
+      ),
+      TtsProvider.mimo => MimoTtsClient().synthesize(
+        config: c.mimoTts,
+        language: language,
+        apiKey: apiKey,
+        text: ttsText,
+        intensity: emotionIntensity,
+        density: c.ttsCueDensity,
+        asmr: true,
+      ),
+      TtsProvider.local => LocalTtsClient.instance.synthesize(
+        text: plainText,
+        preferredLanguage: language,
+        voiceProfileId: c.localTtsVoiceProfileId,
+      ),
+    };
+    final maxAttempts = provider == TtsProvider.fishAudioMcp ? 1 : 2;
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      if (!_isCurrent(generation)) throw const AiServiceException('ASMR 已停止');
+      var path = await synthesizeOnce();
+      try {
+        if (!_isCurrent(generation)) throw const AiServiceException('ASMR 已停止');
+        final processed = await balanceSpeechLoudness(
+          path,
+          asmr: true,
+          stereoEnabled: stereoEnabled,
+          stereoPosition: stereoPosition,
+          preserveQuietLevels:
+              actualProvider == TtsProvider.fishAudio ||
+              actualProvider == TtsProvider.fishAudioMcp,
+        );
+        if (processed != path) {
+          await _deleteClipFile(path);
+          path = processed;
+        }
+        final bytes = await File(path).readAsBytes();
+        final envelope = await loadSpeechEnvelope(path, bytes);
+        if (!_isCurrent(generation)) throw const AiServiceException('ASMR 已停止');
+        final actualDuration = envelope == null && Platform.isWindows
+            ? await probeSpeechDuration(path)
+            : ttsAudioDuration(envelope);
+        if (!_isCurrent(generation)) throw const AiServiceException('ASMR 已停止');
+        if (envelope != null || !Platform.isWindows) {
+          validateSpeechSignal(envelope);
+        } else {
+          RuntimeLog.instance.info(
+            'TTS ASMR',
+            '音频已通过系统媒体加载校验；当前编码不支持波形检查，未判断静音或呼吸。',
+          );
+        }
+        if (actualDuration == null || actualDuration <= Duration.zero) {
+          throw const TtsAudioQualityException(
+            'audio_decode_failed',
+            '无法读取音频的有效时长',
+          );
+        }
+        final assessment = assessTtsAudioDuration(
+          TtsDurationContext(
+            text:
+                actualProvider == TtsProvider.fishAudio ||
+                    actualProvider == TtsProvider.fishAudioMcp
+                ? fishText
+                : plainText,
+            languageCode: language == AppLanguage.japanese
+                ? 'ja'
+                : language == AppLanguage.chinese
+                ? 'zh'
+                : 'en',
+            asmr: true,
+            effectiveSpeed:
+                actualProvider == TtsProvider.fishAudio ||
+                    actualProvider == TtsProvider.generic
+                ? requestedSpeed
+                : 1,
+          ),
+          actualDuration,
+        );
+        RuntimeLog.instance.info(
+          'TTS ASMR',
+          '语音时长评估：${jsonEncode(assessment.summary)}',
+        );
+        if (assessment.isOverlong) {
+          final maximum = assessment.maximum;
+          await _deleteClipFile(path);
+          if (attempt + 1 >= maxAttempts) {
+            if (provider == TtsProvider.fishAudioMcp) {
+              throw FishMcpException(
+                stage: 'audio_validation',
+                code: 'audio_too_long',
+                message:
+                    'ASMR 语音已由 ${actualProvider.label} 返回，但音频时长异常'
+                    '（${actualDuration.inSeconds} 秒，文本上限约 ${maximum.inSeconds} 秒）；未自动重新生成。',
+                generationSubmitted: true,
+              );
+            }
+            throw TtsAudioTooLongException(
+              actual: actualDuration,
+              maximum: maximum,
+            );
+          }
+          RuntimeLog.instance.warning(
+            'TTS',
+            'ASMR 音频时长超出文本预期，丢弃并重新请求：actualMs=${actualDuration.inMilliseconds}, '
+                'maximumMs=${maximum.inMilliseconds}, attempt=${attempt + 1}/$maxAttempts',
+          );
+          continue;
+        }
+        RuntimeLog.instance.info(
+          'TTS',
+          'ASMR 音频文件已准备 provider=${actualProvider.label}, '
+              'selectedProvider=${provider.label}, '
+              'actualProvider=${actualProvider.label}, '
+              'durationMs=${actualDuration.inMilliseconds}, bytes=${bytes.length}',
+        );
+        return path;
+      } on TtsAudioQualityException catch (error) {
+        await _deleteClipFile(path);
+        if (provider == TtsProvider.fishAudioMcp) {
+          throw FishMcpException(
+            stage: 'audio_validation',
+            code: error.code,
+            message: '${error.message}；未自动重新生成。',
+            generationSubmitted: true,
+          );
+        }
+        if (attempt + 1 >= maxAttempts) rethrow;
+        RuntimeLog.instance.warning('TTS ASMR', '返回音频未通过检查，重试一次：${error.code}');
+      } on Object {
+        await _deleteClipFile(path);
+        rethrow;
+      }
+    }
+    throw const AiServiceException('ASMR TTS 音频生成失败');
+  }
+
+  @override
+  void dispose() {
+    c.removeListener(_handleControllerScopeChange);
+    _companionRuntime.removeListener(_handleCompanionRuntimeChange);
+    _clock?.cancel();
+    _generation++;
+    _running = false;
+    _buffer.clear();
+    _wakeBuffer();
+    _wakeSpace();
+    if (_playback != null && !_playback!.isCompleted) _playback!.complete();
+    final retiredClips = List<_AsmrClip>.of(_clips);
+    final stopping = _pendingPlayerStop;
+    unawaited(() async {
+      try {
+        await stopping;
+      } on Object catch (error, stack) {
+        RuntimeLog.instance.error('ASMR', error, stack);
+      }
+      await _player.dispose();
+      for (final clip in retiredClips) {
+        await _deleteClipFile(clip.path);
+      }
+    }());
+    _theme.dispose();
+    _voiceListController.dispose();
+    super.dispose();
+  }
+
+  String _clockText(Duration value) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(value.inHours)}:${two(value.inMinutes.remainder(60))}:${two(value.inSeconds.remainder(60))}';
+  }
+
+  Widget _buildVoiceArea(BuildContext context, {bool immersive = false}) {
+    final colors = Theme.of(context).colorScheme;
+    final foreground = immersive ? Colors.white : colors.onSurface;
+    final secondary = immersive ? Colors.white70 : colors.onSurfaceVariant;
+    final outline = immersive ? Colors.white38 : colors.outlineVariant;
+    return DecoratedBox(
+      key: const ValueKey('asmr-voice-area'),
+      decoration: BoxDecoration(
+        border: Border.all(color: outline),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SizedBox(
+        height: immersive
+            ? (MediaQuery.sizeOf(context).height * 0.38)
+                  .clamp(180.0, 300.0)
+                  .toDouble()
+            : 300,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+              child: Row(
+                children: [
+                  Icon(Icons.graphic_eq_rounded, size: 20, color: foreground),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      t('生成的语音', 'Generated audio', '生成した音声'),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(color: foreground),
+                    ),
+                  ),
+                  Text('${_clips.length}', style: TextStyle(color: secondary)),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: outline),
+            Expanded(
+              child: _clips.isEmpty
+                  ? Center(
+                      child: Text(
+                        t(
+                          '确定主题后，语音会显示在这里',
+                          'Confirm a topic to prepare audio',
+                          'テーマを確定すると音声がここに表示されます',
+                        ),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: secondary),
+                      ),
+                    )
+                  : ListView.builder(
+                      key: const ValueKey('asmr-voice-list'),
+                      controller: _voiceListController,
+                      itemCount: _clips.length,
+                      itemBuilder: (context, index) {
+                        final clip = _clips[index];
+                        final active = identical(_activeClip, clip);
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                          ),
+                          leading: immersive || _running
+                              ? Icon(
+                                  clip.audioError != null
+                                      ? Icons.warning_amber_rounded
+                                      : active
+                                      ? Icons.graphic_eq_rounded
+                                      : Icons.audio_file_outlined,
+                                  color: foreground,
+                                )
+                              : IconButton.filledTonal(
+                                  tooltip: t('播放', 'Play', '再生'),
+                                  onPressed: clip.audioError == null
+                                      ? () => _replay(clip)
+                                      : null,
+                                  icon: const Icon(Icons.play_arrow_rounded),
+                                ),
+                          title: Text(
+                            clip.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: foreground),
+                          ),
+                          subtitle: clip.audioError != null
+                              ? Text(
+                                  '${clip.audioError}\n${clip.text}${clip.translation == null ? '' : '\n${clip.translation}'}',
+                                  style: TextStyle(color: secondary),
+                                )
+                              : clip.duration == null
+                              ? null
+                              : Text(
+                                  _clockText(clip.duration!),
+                                  style: TextStyle(color: secondary),
+                                ),
+                          trailing: immersive || _running
+                              ? null
+                              : IconButton(
+                                  tooltip: t('删除', 'Delete', '削除'),
+                                  icon: const Icon(Icons.delete_outline),
+                                  onPressed: () async {
+                                    setState(() => _clips.remove(clip));
+                                    await _deleteClipFile(clip.path);
+                                  },
+                                ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaybackScreen(BuildContext context) {
+    final clip = _activeClip;
+    return AsmrPlaybackSurface(
+      text: clip?.text ?? _status,
+      translation: clip == null || !clip.languagePolicy.translates
+          ? null
+          : clip.translation ?? t('译文生成中…', 'Translating…', '翻訳中…'),
+      voiceArea: _buildVoiceArea(context, immersive: true),
+      stopLabel: t('停止', 'Stop', '停止'),
+      onStop: _stop,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: c,
+    builder: (context, _) => _buildPage(context),
+  );
+
+  Widget _buildPage(BuildContext context) {
+    if (_playing || _replaying) return _buildPlaybackScreen(context);
+    final colors = Theme.of(context).colorScheme;
+    final busy = _running;
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(title: const Text('ASMR')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'ASMR',
+                style: Theme.of(context).textTheme.displaySmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassSurface(
+                      liquidGlass: c.liquidGlassChatUi,
+                      tone: Theme.of(context).brightness == Brightness.dark
+                          ? GlassTone.dark
+                          : GlassTone.light,
+                      borderRadius: BorderRadius.circular(32),
+                      child: TextField(
+                        controller: _theme,
+                        enabled: !busy,
+                        minLines: 1,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: t(
+                            '输入 ASMR 主题',
+                            'Enter ASMR topic',
+                            'ASMRテーマを入力',
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton(
+                    onPressed: busy ? _stop : _start,
+                    child: Text(
+                      busy
+                          ? t('取消', 'Cancel', 'キャンセル')
+                          : t('确定', 'Confirm', '確定'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    label: Text(t('倒计时关闭', 'Countdown', 'カウントダウン')),
+                    icon: const Icon(Icons.timer_outlined),
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    label: Text(t('指定时刻关闭', 'At time', '終了時刻')),
+                    icon: const Icon(Icons.schedule),
+                  ),
+                ],
+                selected: {_atTime},
+                onSelectionChanged: busy
+                    ? null
+                    : (value) => setState(() => _atTime = value.single),
+              ),
+              const SizedBox(height: 12),
+              IgnorePointer(
+                ignoring: busy,
+                child: SizedBox(
+                  height: 200,
+                  child: CupertinoTheme(
+                    data: CupertinoThemeData(
+                      brightness: Theme.of(context).brightness,
+                      primaryColor: colors.primary,
+                      textTheme: CupertinoTextThemeData(
+                        dateTimePickerTextStyle: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 26,
+                        ),
+                      ),
+                    ),
+                    child: _atTime
+                        ? CupertinoDatePicker(
+                            key: const ValueKey('asmr-clock'),
+                            mode: CupertinoDatePickerMode.time,
+                            use24hFormat: true,
+                            initialDateTime: DateTime(
+                              2026,
+                              1,
+                              1,
+                              _time?.hour ?? DateTime.now().hour,
+                              _time?.minute ?? DateTime.now().minute,
+                            ),
+                            onDateTimeChanged: (value) => setState(
+                              () => _time = TimeOfDay.fromDateTime(value),
+                            ),
+                          )
+                        : CupertinoTimerPicker(
+                            key: const ValueKey('asmr-countdown'),
+                            mode: CupertinoTimerPickerMode.hms,
+                            initialTimerDuration: _duration,
+                            onTimerDurationChanged: (value) =>
+                                setState(() => _duration = value),
+                          ),
+                  ),
+                ),
+              ),
+              SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.timer_outlined),
+                title: Text(
+                  _atTime
+                      ? '${t('到时间关闭', 'Stop at', '終了時刻')} · ${(_time ?? TimeOfDay.now()).format(context)}'
+                      : '${t('定时关闭', 'Sleep timer', 'タイマー')} · ${_clockText(_duration)}',
+                ),
+                subtitle: _atTime
+                    ? Text(
+                        t(
+                          '已过的时刻按明天计算',
+                          'Past times mean tomorrow',
+                          '過ぎた時刻は翌日になります',
+                        ),
+                      )
+                    : null,
+                value: _timerEnabled,
+                onChanged: busy
+                    ? null
+                    : (value) => setState(() => _timerEnabled = value),
+              ),
+              if (_status.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(_status, textAlign: TextAlign.center),
+                ),
+              const SizedBox(height: 16),
+              _buildVoiceArea(context),
+              const SizedBox(height: 18),
+              Center(
+                child: IconButton.filled(
+                  iconSize: 48,
+                  padding: const EdgeInsets.all(20),
+                  tooltip: t('播放', 'Play', '再生'),
+                  onPressed: busy ? _play : null,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                t(
+                  '到时停止生成和播放，不退出应用。语音仅保留本次页面会话，最多50条。',
+                  'Timer stops generation and playback, not the app. Up to 50 clips are kept for this page session.',
+                  '終了時に生成と再生を停止します。アプリは終了しません。音声はこの画面の利用中のみ最大50件保持します。',
+                ),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

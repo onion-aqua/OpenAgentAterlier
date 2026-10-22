@@ -1,0 +1,268 @@
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:ryza_chat_mvp/src/app_controller.dart';
+import 'package:ryza_chat_mvp/src/independent_performance_tools.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+  final capabilities = CharacterPerformancePromptContext(
+    appearanceId: 'test',
+    posture: 'sitting_normal',
+    revision: 1,
+    resourcesReady: true,
+    playableActionDescriptions: const {},
+    playableMotionGroupDescriptions: {
+      for (var i = 0; i < 100; i++) 'grp_fg_$i': '动作$i',
+    },
+    availablePostures: const {'sitting_normal': '自然坐姿', 'sitting_agura': '盘腿'},
+  );
+
+  test('Live2D planning uses only its own motion catalogue and renderer guide', () async {
+    final result = await ActionPlannerTool().plan(
+      userInput: '挥手',
+      source: '莱莎：你好。',
+      ids: [0],
+      capabilities: CharacterPerformancePromptContext(
+        appearanceId: 'imported_live2d',
+        posture: 'live2d',
+        revision: 1,
+        resourcesReady: true,
+        playableActionDescriptions: const {},
+        playableMotionGroupDescriptions: const {'grp_live2d_0_1': '挥手问候'},
+      ),
+      recentActions: [],
+      complete: (messages) async {
+        expect(messages.first['content'], contains('当前渲染器为Live2D'));
+        expect(
+          messages.first['content'],
+          isNot(contains(ActionPlannerTool.groupGuide)),
+        );
+        final input = jsonDecode(messages.last['content']!);
+        expect(input['available_postures'], isEmpty);
+        expect(input['candidates'], {
+          'none': '保持现有动作，不发起新动作',
+          'grp_live2d_0_1': '挥手问候',
+        });
+        return '{"segments":[{"id":0,"action":"grp_live2d_0_1","match":"exact","reason":"模型明确支持挥手"}]}';
+      },
+    );
+    expect(result[0], '[action:grp_live2d_0_1]');
+  });
+
+  test('generic Spine planning uses only validated mapping capabilities', () async {
+    final result = await ActionPlannerTool().plan(
+      userInput: '挥手',
+      source: '莱莎：你好。',
+      ids: [0],
+      capabilities: CharacterPerformancePromptContext(
+        appearanceId: 'imported_generic',
+        posture: 'mapped',
+        revision: 1,
+        resourcesReady: true,
+        playableActionDescriptions: const {},
+        playableMotionGroupDescriptions: const {'grp_mapped_wave': '挥手问候'},
+      ),
+      recentActions: [],
+      complete: (messages) async {
+        expect(messages.first['content'], contains('当前为通用映射模型'));
+        expect(
+          messages.first['content'],
+          isNot(contains(ActionPlannerTool.groupGuide)),
+        );
+        final input = jsonDecode(messages.last['content']!);
+        expect(input['available_postures'], isEmpty);
+        expect(input['candidates'], {
+          'none': '保持现有动作，不发起新动作',
+          'grp_mapped_wave': '挥手问候',
+        });
+        return '{"segments":[{"id":0,"action":"grp_mapped_wave","match":"exact","reason":"已验证映射"}]}';
+      },
+    );
+    expect(result[0], '[action:grp_mapped_wave]');
+  });
+
+  test('independent requests keep catalogue expansion bounded and preserve narration order', () async {
+    var calls = 0;
+    var actionCalls = 0;
+    final output = await IndependentPerformanceTools().plan(
+      userInput: '挥手',
+      source: '旁白：她走近。\n莱莎：你好。\n译文：Hello.\n旁白：她笑了。',
+      capabilities: capabilities,
+      currentFace: 'neutral',
+      recentActions: [],
+      complete: (messages) async {
+        calls++;
+        final input = jsonDecode(messages.last['content']!);
+        if (input.containsKey('candidates')) {
+          actionCalls++;
+          if (actionCalls == 1) {
+            expect(input['candidates'].length, 17);
+            return '{"request_catalog":true}';
+          }
+          // A retry may expand the retrieval window, but it must not put all
+          // generated groups into the prompt. `none` + 48 motion candidates
+          // is the current upper bound.
+          expect(input['candidates'].length, 49);
+          expect(input['candidates']['grp_fg_0'], '动作0');
+          expect(input.containsKey('expression_intensities'), isFalse);
+          return '{"segments":[{"id":1,"match":"exact","action":"grp_fg_0"}]}';
+        }
+        expect(input.containsKey('candidates'), isFalse);
+        return '{"segments":[{"id":1,"face":"happy"}]}';
+      },
+    );
+    expect(calls, 3);
+    expect(
+      output,
+      '旁白：她走近。\n主角：[face:happy][action:grp_fg_0]你好。\n译文：Hello.\n旁白：她笑了。',
+    );
+  });
+
+  for (final failExpression in [true, false]) {
+    test('failure isolation expression=$failExpression', () async {
+      var proposals = 0;
+      final output = await IndependentPerformanceTools().plan(
+        userInput: '你好',
+        source: '莱莎：你好。',
+        capabilities: capabilities,
+        currentFace: 'neutral',
+        recentActions: [],
+        onStateProposal: (_) => proposals++,
+        complete: (messages) async {
+          final input = jsonDecode(messages.last['content']!);
+          if (input.containsKey('candidates')) {
+            return failExpression
+                ? '{"segments":[{"id":0,"match":"exact","action":"grp_fg_1"}]}'
+                : '{"segments":[{"id":0,"match":"exact","action":"unavailable"}]}';
+          }
+          return jsonEncode({
+            'segments': [
+              {'id': 0, 'face': failExpression ? 'invalid' : 'happy'},
+            ],
+            'state_delta': {'mood': 1},
+          });
+        },
+      );
+      expect(proposals, 1);
+      expect(
+        output,
+        failExpression
+            ? '主角：[action:grp_fg_1]你好。'
+            : '主角：[face:happy][action:none]你好。',
+      );
+    });
+  }
+
+  test('a malformed expression row does not discard other faces', () async {
+    final result = await ExpressionPlannerTool().plan(
+      userInput: '你好',
+      source: '莱莎：你好。\n莱莎：太好了。\n莱莎：再见。',
+      ids: [0, 1, 2],
+      currentFace: 'neutral',
+      currentIntensity: 'normal',
+      intensities: const {
+        'happy': ['normal', 'strong'],
+      },
+      complete: (_) async => jsonEncode({
+        'segments': [
+          {'id': 0, 'face': 'happy', 'intensity': 'strong'},
+          {'id': 1, 'face': 'invalid'},
+          {'id': 2, 'face': 'shy', 'intensity': 'strong'},
+        ],
+      }),
+    );
+    expect(result, {0: '[face:happy/strong]', 2: '[face:shy]'});
+  });
+
+  test('posture switch suppresses actions from previous snapshot', () async {
+    final result = await ActionPlannerTool().plan(
+      userInput: '盘腿坐',
+      source: '莱莎：好呀。\n莱莎：这样很舒服。',
+      ids: [0, 1],
+      capabilities: capabilities,
+      recentActions: [],
+      complete: (_) async => '{"segments":[{"id":0,"match":"exact","action":"grp_fg_1","posture":"sitting_agura"},{"id":1,"match":"exact","action":"grp_fg_2"}]}',
+    );
+    expect(result[0], '[action:none][posture:sitting_agura]');
+    expect(result[1], '[action:none]');
+  });
+
+  test('narration-only reply still proposes a story time skip', () async {
+    Map<String, dynamic>? proposal;
+    var calls = 0;
+    final output = await IndependentPerformanceTools().plan(
+      userInput: '旁白：六小时后，天已经黑了。',
+      source: '旁白：夜色降临，莱莎点亮了灯。',
+      capabilities: capabilities,
+      currentFace: 'neutral',
+      recentActions: [],
+      storyClockEnabled: true,
+      characterState: const {
+        'story_clock': {'totalMinutes': 540, 'satiety': 80},
+      },
+      onStateProposal: (value) => proposal = value,
+      complete: (messages) async {
+        calls++;
+        final input = jsonDecode(messages.last['content']!);
+        expect(input['line_ids'], isEmpty);
+        expect(messages.first['content'], contains('time_skip'));
+        return '{"segments":[],"time_advance":{"kind":"time_skip","minutes":360}}';
+      },
+    );
+    expect(calls, 1);
+    expect(output, '旁白：夜色降临，莱莎点亮了灯。');
+    expect(proposal?['time_advance'], {'kind': 'time_skip', 'minutes': 360});
+  });
+
+  test('narration-only sleep proposes recovery with clock disabled', () async {
+    Map<String, dynamic>? proposal;
+    var calls = 0;
+    await IndependentPerformanceTools().plan(
+      userInput: '旁白：莱莎睡了一觉。',
+      source: '旁白：莱莎一觉醒来。',
+      capabilities: capabilities,
+      currentFace: 'neutral',
+      recentActions: [],
+      onStateProposal: (value) => proposal = value,
+      complete: (messages) async {
+        calls++;
+        expect(jsonDecode(messages.last['content']!)['line_ids'], isEmpty);
+        expect(messages.first['content'], contains('剧情时钟虽关闭'));
+        expect(messages.first['content'], contains('否定、回忆往事'));
+        return '{"segments":[],"time_advance":{"kind":"sleep","minutes":480}}';
+      },
+    );
+    expect(calls, 1);
+    expect(proposal?['time_advance'], {'kind': 'sleep', 'minutes': 480});
+  });
+
+  test('spoken request can propose an immediate story time skip', () async {
+    Map<String, dynamic>? proposal;
+    final output = await IndependentPerformanceTools().plan(
+      userInput: '发言：现在快进到下午三点。',
+      source: '莱莎：好，我们下午再见。',
+      capabilities: capabilities,
+      currentFace: 'neutral',
+      recentActions: [],
+      storyClockEnabled: true,
+      characterState: const {
+        'story_clock': {'totalMinutes': 540, 'satiety': 80},
+      },
+      onStateProposal: (value) => proposal = value,
+      complete: (messages) async {
+        final input = jsonDecode(messages.last['content']!);
+        expect(input['user'], '发言：现在快进到下午三点。');
+        if (input.containsKey('candidates')) {
+          return '{"segments":[{"id":0,"action":"none","match":"none"}]}';
+        }
+        return '{"segments":[{"id":0,"face":"happy"}],"time_advance":{"kind":"time_skip","minutes":360}}';
+      },
+    );
+    expect(output, '主角：[face:happy][action:none]好，我们下午再见。');
+    expect(proposal?['time_advance'], {'kind': 'time_skip', 'minutes': 360});
+  });
+}

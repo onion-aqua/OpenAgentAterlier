@@ -1,0 +1,112 @@
+{
+  "archive_url": "https://pub.dev/api/archives/live2d_flutter-1.0.3.tar.gz",
+  "archive_sha256": "b16d5d861661427609a692e311f469941526d33a32912616191b8ca5efc84332",
+  "core": {
+    "android/libs/arm64-v8a/libLive2DCubismCore.a": {
+      "bytes": 1305648,
+      "sha256": "b301d59702f7ac341f6314368d406267d877da6f66458c6eb5b8337580c2742f"
+    },
+    "android/libs/armeabi-v7a/libLive2DCubismCore.a": {
+      "bytes": 802518,
+      "sha256": "ae8c4526c1625893efaccb8a88e7828c480c9d499f6405a202a6a77227c7c7f1"
+    },
+    "android/libs/x86_64/libLive2DCubismCore.a": {
+      "bytes": 1215394,
+      "sha256": "501d28b56be1e28744d7bf697e60096e571da5d68ed867cda1bffa5f9944f707"
+    },
+    "android/src/main/cpp/CubismCore/include/Live2DCubismCore.h": {
+      "bytes": 20966,
+      "sha256": "6f1802780d1eb36ff39705e0764f9eeed9b41c313a13ac155270c6f4ad51d53f"
+    },
+    "ios/Libs/Live2DCubismCore.xcframework/Info.plist": {
+      "bytes": 1292,
+      "sha256": "89ed153094bf81ee9534fb9f147f10aff668e83a679611bbb1a2fb43e74fedf9"
+    },
+    "ios/Libs/Live2DCubismCore.xcframework/ios-arm64/libLive2DCubismCore.a": {
+      "bytes": 109240,
+      "sha256": "544ef4945c19d43919b861567328da6bfd95b99c2474114db403d24ed8292fcc"
+    },
+    "ios/Libs/Live2DCubismCore.xcframework/ios-arm64/Headers/Live2DCubismCore.h": {
+      "bytes": 20966,
+      "sha256": "6f1802780d1eb36ff39705e0764f9eeed9b41c313a13ac155270c6f4ad51d53f"
+    },
+    "ios/Libs/Live2DCubismCore.xcframework/ios-arm64_x86_64-simulator/libLive2DCubismCore.a": {
+      "bytes": 238920,
+      "sha256": "b4b82b2909500ec13038fb24e806ef92230e19fbf0cb05e4b2ad41d872be42ff"
+    },
+    "ios/Libs/Live2DCubismCore.xcframework/ios-arm64_x86_64-simulator/Headers/Live2DCubismCore.h": {
+      "bytes": 20966,
+      "sha256": "6f1802780d1eb36ff39705e0764f9eeed9b41c313a13ac155270c6f4ad51d53f"
+    },
+    "ios/CubismCore/include/Live2DCubismCore.h": {
+      "bytes": 20966,
+      "sha256": "6f1802780d1eb36ff39705e0764f9eeed9b41c313a13ac155270c6f4ad51d53f"
+    },
+    "windows/libs/x86_64/143/Live2DCubismCore_MD.lib": {
+      "bytes": 336242,
+      "sha256": "f8f63bbda72106cae2aab735e54ff2a2d76cbdb0adc1123c4764d9109f11c46d"
+    },
+    "windows/libs/x86_64/143/Live2DCubismCore_MDd.lib": {
+      "bytes": 336304,
+      "sha256": "cdb38c1b52bfb49695f9e78a41ac33467e32faf808039f50b799acd10b7ae412"
+    }
+  },
+  "web": {
+    "assets/web/flutter_live2d_web.js": {
+      "bytes": 642128,
+      "sha256": "795d4d7fef50c42c393ec9a65ce3caab66eae09f1ea82aa9efad3c4b334a1ba6"
+    },
+    "assets/web/shaders/fragshadersrcalphablend.frag": {
+      "bytes": 2189,
+      "sha256": "855b247f02042a808a41e282ee4d7de7cc4533abeb5032b4ab8fe84f7dec107f"
+    },
+    "assets/web/shaders/fragshadersrccolorblend.frag": {
+      "bytes": 7525,
+      "sha256": "01d4bf6a14b4a738976e9a538767a21da0defa8816f3845a7df08a7713327538"
+    },
+    "assets/web/shaders/fragshadersrccopy.frag": {
+      "bytes": 429,
+      "sha256": "15c67a4ec3adda4c849aff2a8319a3f6aceef8a84d5e5e1f3fb7fd9cd681193c"
+    },
+    "assets/web/shaders/fragshadersrcmaskinvertedpremultipliedalpha.frag": {
+      "bytes": 1051,
+      "sha256": "1005cff8113de587cf1c0e295288d04d85f0f4ebc223684c8340e017fd8fc788"
+    },
+    "assets/web/shaders/fragshadersrcmaskpremultipliedalpha.frag": {
+      "bytes": 1043,
+      "sha256": "f84ff615393d26ea6ab7c28747803db6472524c92567c0ad01e8225fbab36a3b"
+    },
+    "assets/web/shaders/fragshadersrcpremultipliedalpha.frag": {
+      "bytes": 747,
+      "sha256": "c93abe215357cc782a25fc4ef20f5fe1f34e2cc193ee23d763b56b81fae5fce1"
+    },
+    "assets/web/shaders/fragshadersrcpremultipliedalphablend.frag": {
+      "bytes": 2038,
+      "sha256": "2155076275199a2946959838391dfb856e9d1db91b6ca3abd19ed70d4ff27e15"
+    },
+    "assets/web/shaders/fragshadersrcsetupmask.frag": {
+      "bytes": 736,
+      "sha256": "3cccc0b68a56cfbf4bd4841b0a759431dd159812c38dc280981ba633fa0afe7a"
+    },
+    "assets/web/shaders/vertshadersrc.vert": {
+      "bytes": 465,
+      "sha256": "291ed3f35f71f1e71e6df33fb055f009a8a9b36ee664f74f24f6cefef0c4029b"
+    },
+    "assets/web/shaders/vertshadersrcblend.vert": {
+      "bytes": 738,
+      "sha256": "2589837bd7a6a550a1c3af41b4fa776011e6e71f2531320fa39afcb83b209bf4"
+    },
+    "assets/web/shaders/vertshadersrccopy.vert": {
+      "bytes": 392,
+      "sha256": "b7bc4ba7517f405af4812ac47d99bc2b633c99f463c1224029556b00e8dff3cf"
+    },
+    "assets/web/shaders/vertshadersrcmasked.vert": {
+      "bytes": 559,
+      "sha256": "6704a9df2e6d3ee5176c72fca4ba59358ba4827a07054b1e0a72a3c574e281fd"
+    },
+    "assets/web/shaders/vertshadersrcsetupmask.vert": {
+      "bytes": 536,
+      "sha256": "649aad2f6c0af55a7a4adcf33dbf78937ef9d77ed6ba917fd716176adce25afe"
+    }
+  }
+}

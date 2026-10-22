@@ -1,0 +1,2 @@
+# Vendored files are checked against exact upstream hashes; preserve their bytes.
+third_party/live2d_flutter/** -text whitespace=cr-at-eol,-blank-at-eof

@@ -1,0 +1,3381 @@
+{
+  "archive_url": "https://pub.dev/api/archives/live2d_flutter-1.0.3.tar.gz",
+  "archive_sha256": "b16d5d861661427609a692e311f469941526d33a32912616191b8ca5efc84332",
+  "files": {
+    "analysis_options.yaml": {
+      "bytes": 154,
+      "sha256": "df692318073ecc5f3b8a759a1f9338eb21995900d3c2bc1fbcd2c7780a1c7c6e",
+      "upstream_sha256": "df692318073ecc5f3b8a759a1f9338eb21995900d3c2bc1fbcd2c7780a1c7c6e"
+    },
+    "CHANGELOG.md": {
+      "bytes": 1162,
+      "sha256": "30b20cf8bdc2adaeb3689a4ad90b75aac922496210af8d5a0b0eb9f7f30b9da9",
+      "upstream_sha256": "30b20cf8bdc2adaeb3689a4ad90b75aac922496210af8d5a0b0eb9f7f30b9da9"
+    },
+    "LICENSE": {
+      "bytes": 1496,
+      "sha256": "b7509da2f729c7328c45964262f874b5b9fc51eab5c19fef27674780f81b9309",
+      "upstream_sha256": "b7509da2f729c7328c45964262f874b5b9fc51eab5c19fef27674780f81b9309"
+    },
+    "NOTICES": {
+      "bytes": 707,
+      "sha256": "8df0b1e59e62a346efe52f0531e90946962dea93cf41cb104e63b6dae5440773",
+      "upstream_sha256": "8df0b1e59e62a346efe52f0531e90946962dea93cf41cb104e63b6dae5440773"
+    },
+    "pubspec.yaml": {
+      "bytes": 1093,
+      "sha256": "b04fd4f7c5e739b76bebff447ce28c3f6bcff90c509af020282d5f079a6cdc20",
+      "upstream_sha256": "f9434905da6f482898b06c992ae0a16580d618127ee8e5f91473a2a1dc9ebd70"
+    },
+    "README.md": {
+      "bytes": 8443,
+      "sha256": "bdcf93b3b7d257a09686c601fbccc8d5cb7fd5d3bd9600fe61c4144caf6d902e",
+      "upstream_sha256": "bdcf93b3b7d257a09686c601fbccc8d5cb7fd5d3bd9600fe61c4144caf6d902e"
+    },
+    "android/build.gradle.kts": {
+      "bytes": 3229,
+      "sha256": "f3b66738e32635179804fca44c199cd3ab273e40927a42c05cc7afa760536172",
+      "upstream_sha256": "6b04220ef767e96ab6bdbebaacdd9a6cb2fe54d0ebb12cc2453cefb92cf3a1aa"
+    },
+    "android/CMakeLists.txt": {
+      "bytes": 2096,
+      "sha256": "2358a2230e37495c675230c5c6b7bdff39a97821d16c0cab7dfca6f0a664ac1e",
+      "upstream_sha256": "2358a2230e37495c675230c5c6b7bdff39a97821d16c0cab7dfca6f0a664ac1e"
+    },
+    "android/settings.gradle": {
+      "bytes": 36,
+      "sha256": "02dab093b6c99722c6f45aa8522b03a69963f3cb78f5894c28cf4dcbc213f10d",
+      "upstream_sha256": "02dab093b6c99722c6f45aa8522b03a69963f3cb78f5894c28cf4dcbc213f10d"
+    },
+    "android/settings.gradle.kts": {
+      "bytes": 36,
+      "sha256": "02dab093b6c99722c6f45aa8522b03a69963f3cb78f5894c28cf4dcbc213f10d",
+      "upstream_sha256": "02dab093b6c99722c6f45aa8522b03a69963f3cb78f5894c28cf4dcbc213f10d"
+    },
+    "android/src/main/AndroidManifest.xml": {
+      "bytes": 122,
+      "sha256": "eaa10d7d59a6ce2c45f325f2bc730047085d8c4e6c420faace0f87c25bc56157",
+      "upstream_sha256": "eaa10d7d59a6ce2c45f325f2bc730047085d8c4e6c420faace0f87c25bc56157"
+    },
+    "android/src/main/cpp/live2d_flutter.cpp": {
+      "bytes": 12490,
+      "sha256": "51b772f40f5651a9e8f7fa9ceb808bbdc67664a61caa16b7e046adde8d198e32",
+      "upstream_sha256": "7b2d54e9996920db9a20e4668c71f177956391efc0a95245a9d8545c30a8095b"
+    },
+    "android/src/main/cpp/Live2DAllocator.cpp": {
+      "bytes": 925,
+      "sha256": "64518ae2ab5d37b3a1ed4c44c4f927c02e9da22d9ef36d69e6190404214bb717",
+      "upstream_sha256": "64518ae2ab5d37b3a1ed4c44c4f927c02e9da22d9ef36d69e6190404214bb717"
+    },
+    "android/src/main/cpp/Live2DAllocator.hpp": {
+      "bytes": 403,
+      "sha256": "0ad39cc22ac33542114b6c7c92c690fa54d933a461510b8ea97d8bff6c33235f",
+      "upstream_sha256": "0ad39cc22ac33542114b6c7c92c690fa54d933a461510b8ea97d8bff6c33235f"
+    },
+    "android/src/main/cpp/Live2DModel.cpp": {
+      "bytes": 12026,
+      "sha256": "24d87c8cc905ac6bf6926a7b9a2fd747f6a6c2ea31781eb9cc3e39e79735c091",
+      "upstream_sha256": "11e9cffd31bd07162e6bbcb309c5e1ab3649985c9a6120fc77fb69aa71cd25f6"
+    },
+    "android/src/main/cpp/Live2DModel.hpp": {
+      "bytes": 2719,
+      "sha256": "f124928b3236e32341fa5a67767d8664040179fb9d82ab6e57ac9ffdc1841f5d",
+      "upstream_sha256": "f2417460f7d6d6abcdd6e69eb316c3547ca83387a5b3c69a2f975dd42c8ed097"
+    },
+    "android/src/main/cpp/Live2DPal.cpp": {
+      "bytes": 2685,
+      "sha256": "749838570d242723c335a9a3e23b5b39ec30d7de206c8b85f8301fac7a1c2dc4",
+      "upstream_sha256": "ced6be721ba2c9b0463f26459925995321d60a6d43e55a9ff45408b8fb6ec40b"
+    },
+    "android/src/main/cpp/Live2DPal.hpp": {
+      "bytes": 812,
+      "sha256": "d14777c58ca21da83ff9621978ab5f9898d083c559d0ffbc7bdf8b71815db3ad",
+      "upstream_sha256": "d14777c58ca21da83ff9621978ab5f9898d083c559d0ffbc7bdf8b71815db3ad"
+    },
+    "android/src/main/cpp/Live2DTextureManager.cpp": {
+      "bytes": 2222,
+      "sha256": "c17404cddb4975f2d77ca89e69c450746c0a3c0e10cd0779072a540707f31028",
+      "upstream_sha256": "c17404cddb4975f2d77ca89e69c450746c0a3c0e10cd0779072a540707f31028"
+    },
+    "android/src/main/cpp/Live2DTextureManager.hpp": {
+      "bytes": 579,
+      "sha256": "ba294b275c45287e6fd09e437f5e11f8b69e82c5c6179a15e7d50876d6c38a23",
+      "upstream_sha256": "ba294b275c45287e6fd09e437f5e11f8b69e82c5c6179a15e7d50876d6c38a23"
+    },
+    "android/src/main/cpp/stb_image.h": {
+      "bytes": 283010,
+      "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3",
+      "upstream_sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
+    },
+    "android/src/main/cpp/CubismFramework/CMakeLists.txt": {
+      "bytes": 999,
+      "sha256": "6c6d8728ea4555d57ec571e00fcbc82831b39df98cf17a1e9e60b1adca204cd4",
+      "upstream_sha256": "6c6d8728ea4555d57ec571e00fcbc82831b39df98cf17a1e9e60b1adca204cd4"
+    },
+    "android/src/main/cpp/CubismFramework/CubismCdiJson.cpp": {
+      "bytes": 3581,
+      "sha256": "1550651cd9f27d1574d3cf3952459eabbbf2dec4372c7fce83f7ac3cbcd9bf80",
+      "upstream_sha256": "1550651cd9f27d1574d3cf3952459eabbbf2dec4372c7fce83f7ac3cbcd9bf80"
+    },
+    "android/src/main/cpp/CubismFramework/CubismCdiJson.hpp": {
+      "bytes": 4354,
+      "sha256": "2c006f943bdaa2bd03691238467fb1b4779e7ab4a1589f470fb585749dbdc644",
+      "upstream_sha256": "2c006f943bdaa2bd03691238467fb1b4779e7ab4a1589f470fb585749dbdc644"
+    },
+    "android/src/main/cpp/CubismFramework/CubismDefaultParameterId.cpp": {
+      "bytes": 2710,
+      "sha256": "128c14843be26c0b4185daf583b59360668d66dd1edfc11d3f08ec5236b9ea23",
+      "upstream_sha256": "128c14843be26c0b4185daf583b59360668d66dd1edfc11d3f08ec5236b9ea23"
+    },
+    "android/src/main/cpp/CubismFramework/CubismDefaultParameterId.hpp": {
+      "bytes": 2444,
+      "sha256": "1e72916a696872dc07df287e47d0a78844696f2f287848af21656d7b4bee6973",
+      "upstream_sha256": "1e72916a696872dc07df287e47d0a78844696f2f287848af21656d7b4bee6973"
+    },
+    "android/src/main/cpp/CubismFramework/CubismFramework.cpp": {
+      "bytes": 10392,
+      "sha256": "2e4191bcbc84e8b3fc0836930d6524d0a8981e8c58f6383100e7713bc517327c",
+      "upstream_sha256": "2e4191bcbc84e8b3fc0836930d6524d0a8981e8c58f6383100e7713bc517327c"
+    },
+    "android/src/main/cpp/CubismFramework/CubismFramework.hpp": {
+      "bytes": 14567,
+      "sha256": "cec8dc293b282cb79955ca9e465e196e2a8d223d5936bb10ff7aa3b571cbbfdb",
+      "upstream_sha256": "cec8dc293b282cb79955ca9e465e196e2a8d223d5936bb10ff7aa3b571cbbfdb"
+    },
+    "android/src/main/cpp/CubismFramework/CubismFrameworkConfig.hpp": {
+      "bytes": 1532,
+      "sha256": "a9251edcf712050e8cfe88c7c21c65d4f2c39416193fa2f970074399c9a69db9",
+      "upstream_sha256": "a9251edcf712050e8cfe88c7c21c65d4f2c39416193fa2f970074399c9a69db9"
+    },
+    "android/src/main/cpp/CubismFramework/CubismJsonHolder.hpp": {
+      "bytes": 1765,
+      "sha256": "6e229a78b6a6d385b864e6c5d25ed94e1a8f62b50bce4945cf2bb71750478042",
+      "upstream_sha256": "6e229a78b6a6d385b864e6c5d25ed94e1a8f62b50bce4945cf2bb71750478042"
+    },
+    "android/src/main/cpp/CubismFramework/CubismModelSettingJson.cpp": {
+      "bytes": 14631,
+      "sha256": "255885515c4dbddf848a11d80e352dd2452e6b8795d467dc4731d02ba3374981",
+      "upstream_sha256": "255885515c4dbddf848a11d80e352dd2452e6b8795d467dc4731d02ba3374981"
+    },
+    "android/src/main/cpp/CubismFramework/CubismModelSettingJson.hpp": {
+      "bytes": 11263,
+      "sha256": "51a2d7fa2f48f80f20b92ab3d045adc7ea4f061f2a0037e06a87b3df592cae86",
+      "upstream_sha256": "51a2d7fa2f48f80f20b92ab3d045adc7ea4f061f2a0037e06a87b3df592cae86"
+    },
+    "android/src/main/cpp/CubismFramework/ICubismAllocator.hpp": {
+      "bytes": 1576,
+      "sha256": "4edf6a53ff3a2fedfb5211cab78efae788055a8500378a3460f97587b4c64073",
+      "upstream_sha256": "4edf6a53ff3a2fedfb5211cab78efae788055a8500378a3460f97587b4c64073"
+    },
+    "android/src/main/cpp/CubismFramework/ICubismModelSetting.hpp": {
+      "bytes": 6721,
+      "sha256": "9b27645bcaa7758ee35ea58a3b0b9e01b60b591df36defc3d6564ad40b8f769e",
+      "upstream_sha256": "9b27645bcaa7758ee35ea58a3b0b9e01b60b591df36defc3d6564ad40b8f769e"
+    },
+    "android/src/main/cpp/CubismFramework/Live2DCubismCore.hpp": {
+      "bytes": 522,
+      "sha256": "329e17fadcfcf287849b69376586f2b9a10d24092c1bda6bf6482dbed358108b",
+      "upstream_sha256": "329e17fadcfcf287849b69376586f2b9a10d24092c1bda6bf6482dbed358108b"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CMakeLists.txt": {
+      "bytes": 427,
+      "sha256": "014db872dd3f618f3d5dbe1e7459adaf994b2f48c503f1da182f3825d477856b",
+      "upstream_sha256": "014db872dd3f618f3d5dbe1e7459adaf994b2f48c503f1da182f3825d477856b"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismBreath.cpp": {
+      "bytes": 1385,
+      "sha256": "162786fcc90ba4e2c8d7690e458caca42fe5b29b71ce512117eb66129588ab59",
+      "upstream_sha256": "162786fcc90ba4e2c8d7690e458caca42fe5b29b71ce512117eb66129588ab59"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismBreath.hpp": {
+      "bytes": 3280,
+      "sha256": "ab085fc9438c715400e09233580033924c038e272f0e40f59cea103e14a07223",
+      "upstream_sha256": "ab085fc9438c715400e09233580033924c038e272f0e40f59cea103e14a07223"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismEyeBlink.cpp": {
+      "bytes": 3986,
+      "sha256": "d49130e5a56b1dd05487f61fe35d8e6b8451b3a99bc7892ad45cd506cc45967d",
+      "upstream_sha256": "d49130e5a56b1dd05487f61fe35d8e6b8451b3a99bc7892ad45cd506cc45967d"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismEyeBlink.hpp": {
+      "bytes": 3444,
+      "sha256": "5b7e3771f6bc135f97e6e94814bf2b5e553bdc3fbdb35c63d98526190fb91ce5",
+      "upstream_sha256": "5b7e3771f6bc135f97e6e94814bf2b5e553bdc3fbdb35c63d98526190fb91ce5"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismLook.cpp": {
+      "bytes": 1153,
+      "sha256": "4055b2dc6c504ed76dce219c6b1a4e25db214f68a90aa2d4357bd84f75237008",
+      "upstream_sha256": "4055b2dc6c504ed76dce219c6b1a4e25db214f68a90aa2d4357bd84f75237008"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismLook.hpp": {
+      "bytes": 2915,
+      "sha256": "57828d185bb8cae16a302abdb465ee89d903a0ed577e41d37c23bfb8f7c4a16b",
+      "upstream_sha256": "57828d185bb8cae16a302abdb465ee89d903a0ed577e41d37c23bfb8f7c4a16b"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismPose.cpp": {
+      "bytes": 9289,
+      "sha256": "ba29fb74432473bd2bfa6862166a93577fde95fbd5486f321116c55ee705008b",
+      "upstream_sha256": "ba29fb74432473bd2bfa6862166a93577fde95fbd5486f321116c55ee705008b"
+    },
+    "android/src/main/cpp/CubismFramework/Effect/CubismPose.hpp": {
+      "bytes": 2863,
+      "sha256": "fde5bfd3f5499b93dbf2877da9b85a8007e23484cf7999ae68b73a236e174ace",
+      "upstream_sha256": "fde5bfd3f5499b93dbf2877da9b85a8007e23484cf7999ae68b73a236e174ace"
+    },
+    "android/src/main/cpp/CubismFramework/Id/CMakeLists.txt": {
+      "bytes": 233,
+      "sha256": "b76e98a0d2bc2221ee9b3e9cbff096dece9c82c2faf03706f4cf2dce18474b09",
+      "upstream_sha256": "b76e98a0d2bc2221ee9b3e9cbff096dece9c82c2faf03706f4cf2dce18474b09"
+    },
+    "android/src/main/cpp/CubismFramework/Id/CubismId.cpp": {
+      "bytes": 920,
+      "sha256": "4bdab46c31f45a22b5fce470d6621d08d1a70768f59b7b01352b52042e121618",
+      "upstream_sha256": "4bdab46c31f45a22b5fce470d6621d08d1a70768f59b7b01352b52042e121618"
+    },
+    "android/src/main/cpp/CubismFramework/Id/CubismId.hpp": {
+      "bytes": 1563,
+      "sha256": "9f6c35c823b3d623d1db16d93692ecb96b2f4992edae811e8d9720a35bd7ccab",
+      "upstream_sha256": "9f6c35c823b3d623d1db16d93692ecb96b2f4992edae811e8d9720a35bd7ccab"
+    },
+    "android/src/main/cpp/CubismFramework/Id/CubismIdManager.cpp": {
+      "bytes": 1863,
+      "sha256": "57d6e5546ba559423a2820e1566180c436e7254b18368bf2364e83256cbecb4c",
+      "upstream_sha256": "57d6e5546ba559423a2820e1566180c436e7254b18368bf2364e83256cbecb4c"
+    },
+    "android/src/main/cpp/CubismFramework/Id/CubismIdManager.hpp": {
+      "bytes": 2385,
+      "sha256": "f93bef9c91f08829ef46ddcb296d1b501d48ba5da66a63477cab04ac99692ba3",
+      "upstream_sha256": "f93bef9c91f08829ef46ddcb296d1b501d48ba5da66a63477cab04ac99692ba3"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CMakeLists.txt": {
+      "bytes": 657,
+      "sha256": "360b2e3b1d12daa2d59ae0a5d2415753abc3a0b2a5d739c898cc37bb5550ef65",
+      "upstream_sha256": "360b2e3b1d12daa2d59ae0a5d2415753abc3a0b2a5d739c898cc37bb5550ef65"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismMath.cpp": {
+      "bytes": 5201,
+      "sha256": "6fba8b980c0e22011877e2fa71937f2f1d6166fb3cb256d6b4bc26a74054444e",
+      "upstream_sha256": "6fba8b980c0e22011877e2fa71937f2f1d6166fb3cb256d6b4bc26a74054444e"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismMath.hpp": {
+      "bytes": 6365,
+      "sha256": "b38500ca5476e65a429774ecc63c5388731a75cf4bb671856677ec99cba7312c",
+      "upstream_sha256": "b38500ca5476e65a429774ecc63c5388731a75cf4bb671856677ec99cba7312c"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismMatrix44.cpp": {
+      "bytes": 5121,
+      "sha256": "9de9d5f7f8d8e40963c6f0d0143b02d9c329a080a8b61812c5e35a2c8768da5a",
+      "upstream_sha256": "9de9d5f7f8d8e40963c6f0d0143b02d9c329a080a8b61812c5e35a2c8768da5a"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismMatrix44.hpp": {
+      "bytes": 4921,
+      "sha256": "494d35a308120e3772424cd4db8d3549640279884ddaf05bc25cbffe334ca565",
+      "upstream_sha256": "494d35a308120e3772424cd4db8d3549640279884ddaf05bc25cbffe334ca565"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismModelMatrix.cpp": {
+      "bytes": 3619,
+      "sha256": "e1f51fd970238bddebc5d5542f9938203876c94db0bf911523b23864fc0301fb",
+      "upstream_sha256": "e1f51fd970238bddebc5d5542f9938203876c94db0bf911523b23864fc0301fb"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismModelMatrix.hpp": {
+      "bytes": 2963,
+      "sha256": "f2c863f3b690d36c3a26e63517c6e3eac431761f105003c2066888fca74e6b4b",
+      "upstream_sha256": "f2c863f3b690d36c3a26e63517c6e3eac431761f105003c2066888fca74e6b4b"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismTargetPoint.cpp": {
+      "bytes": 4864,
+      "sha256": "95faacf1448b24ab06c648b1519d9eb0768739f08a95e46883ee599aa2def95e",
+      "upstream_sha256": "95faacf1448b24ab06c648b1519d9eb0768739f08a95e46883ee599aa2def95e"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismTargetPoint.hpp": {
+      "bytes": 1574,
+      "sha256": "e9dc0861d2d2c96bfe3d0ce7a100fc157a410457cbb7644c1fec44a4edf42b84",
+      "upstream_sha256": "e9dc0861d2d2c96bfe3d0ce7a100fc157a410457cbb7644c1fec44a4edf42b84"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismVector2.cpp": {
+      "bytes": 2525,
+      "sha256": "0d178155bff124016584ec8249658002e2b8935b2769a2d858d64d51775dd7e6",
+      "upstream_sha256": "0d178155bff124016584ec8249658002e2b8935b2769a2d858d64d51775dd7e6"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismVector2.hpp": {
+      "bytes": 5276,
+      "sha256": "7a654af4f59e20c5011a52c603a5cf6f18d2b38954ebcb817621c86f878c5010",
+      "upstream_sha256": "7a654af4f59e20c5011a52c603a5cf6f18d2b38954ebcb817621c86f878c5010"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismViewMatrix.cpp": {
+      "bytes": 4726,
+      "sha256": "4392774d0d10bc320663ae42ccf4cfb71aafd4df396b64aea94849b3f9b37f23",
+      "upstream_sha256": "4392774d0d10bc320663ae42ccf4cfb71aafd4df396b64aea94849b3f9b37f23"
+    },
+    "android/src/main/cpp/CubismFramework/Math/CubismViewMatrix.hpp": {
+      "bytes": 5249,
+      "sha256": "d329f9fbdb4e6b7ce967dde8d8ab025322a3cbe3b08b8f52079dfe28d4e30ce6",
+      "upstream_sha256": "d329f9fbdb4e6b7ce967dde8d8ab025322a3cbe3b08b8f52079dfe28d4e30ce6"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CMakeLists.txt": {
+      "bytes": 703,
+      "sha256": "172359b15d6b8271fcf03b2e42cc5919ba5ba07328bd5ee2978e3f3d53049808",
+      "upstream_sha256": "172359b15d6b8271fcf03b2e42cc5919ba5ba07328bd5ee2978e3f3d53049808"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismMoc.cpp": {
+      "bytes": 3586,
+      "sha256": "739c0e9c10c40503b28bdb71908195fe3079510a5738649f399e61c117c4dcca",
+      "upstream_sha256": "739c0e9c10c40503b28bdb71908195fe3079510a5738649f399e61c117c4dcca"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismMoc.hpp": {
+      "bytes": 2876,
+      "sha256": "bf74e65f92814642889b42941133e9d5f33ee44adcfe843fc6554bfd246d7ac1",
+      "upstream_sha256": "bf74e65f92814642889b42941133e9d5f33ee44adcfe843fc6554bfd246d7ac1"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModel.cpp": {
+      "bytes": 34821,
+      "sha256": "b0da23c63a8c10bf90a7f68cb7779adc725f41d0241a1093ea3fc214d9b56ffb",
+      "upstream_sha256": "b0da23c63a8c10bf90a7f68cb7779adc725f41d0241a1093ea3fc214d9b56ffb"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModel.hpp": {
+      "bytes": 30897,
+      "sha256": "b93e82a630278624d2ac2745c275eceb31d54c54212356c38fdd8f39f619337e",
+      "upstream_sha256": "b93e82a630278624d2ac2745c275eceb31d54c54212356c38fdd8f39f619337e"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelMultiplyAndScreenColor.cpp": {
+      "bytes": 20595,
+      "sha256": "8b714dcce2c8c018061aa9dff60482871e701bea8bd803db5fa6b4bbfd6456a5",
+      "upstream_sha256": "8b714dcce2c8c018061aa9dff60482871e701bea8bd803db5fa6b4bbfd6456a5"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelMultiplyAndScreenColor.hpp": {
+      "bytes": 14664,
+      "sha256": "cf3cc113c0a8e2ff50ad4f003e35529bbeacf4ad842553276fbf513b0c5e1abd",
+      "upstream_sha256": "cf3cc113c0a8e2ff50ad4f003e35529bbeacf4ad842553276fbf513b0c5e1abd"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelUserData.cpp": {
+      "bytes": 2141,
+      "sha256": "17d971b1cc512a8aad4b0bc9eb7106781319c97ada8ae36343ea35f9ab82f0ea",
+      "upstream_sha256": "17d971b1cc512a8aad4b0bc9eb7106781319c97ada8ae36343ea35f9ab82f0ea"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelUserData.hpp": {
+      "bytes": 1784,
+      "sha256": "3ba8c2c36fe06c35d795c56aee7b20626b6f30cdf36f5e6c4e5c6b1ab36e1f33",
+      "upstream_sha256": "3ba8c2c36fe06c35d795c56aee7b20626b6f30cdf36f5e6c4e5c6b1ab36e1f33"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelUserDataJson.cpp": {
+      "bytes": 1650,
+      "sha256": "9bc2cc905ffea6cb2b66b4cf9e7b29344b7c66401a687b5a3511af8d1dec50e2",
+      "upstream_sha256": "9bc2cc905ffea6cb2b66b4cf9e7b29344b7c66401a687b5a3511af8d1dec50e2"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismModelUserDataJson.hpp": {
+      "bytes": 1938,
+      "sha256": "2cb2bfd742e604b1d5b2b6544f0886f7ef50ca16b68baebea6e8335426519713",
+      "upstream_sha256": "2cb2bfd742e604b1d5b2b6544f0886f7ef50ca16b68baebea6e8335426519713"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismUserModel.cpp": {
+      "bytes": 8130,
+      "sha256": "8591d9b4f9b4aae1b55e9318e7edfd083d0f889175315236de90b54b36a17d1e",
+      "upstream_sha256": "8591d9b4f9b4aae1b55e9318e7edfd083d0f889175315236de90b54b36a17d1e"
+    },
+    "android/src/main/cpp/CubismFramework/Model/CubismUserModel.hpp": {
+      "bytes": 8825,
+      "sha256": "707314a16217e14a545f11cc23271fcff63098d459d4187d21cc88b5bad1e230",
+      "upstream_sha256": "707314a16217e14a545f11cc23271fcff63098d459d4187d21cc88b5bad1e230"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/ACubismMotion.cpp": {
+      "bytes": 7209,
+      "sha256": "b8f03d32ebc678652fee8c87d0cf93fea4717e5f4cb9739503aa8d7e06054867",
+      "upstream_sha256": "b8f03d32ebc678652fee8c87d0cf93fea4717e5f4cb9739503aa8d7e06054867"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/ACubismMotion.hpp": {
+      "bytes": 9978,
+      "sha256": "436b01a9ab59a8aa1f289012a996a2269e2b5cd75ff9e4772679097dc1f74cc5",
+      "upstream_sha256": "436b01a9ab59a8aa1f289012a996a2269e2b5cd75ff9e4772679097dc1f74cc5"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CMakeLists.txt": {
+      "bytes": 2122,
+      "sha256": "cf9f8881b9a2a91e066f373de3e0b4c5b97f5bcaeee5b496a9565c525a48990c",
+      "upstream_sha256": "cf9f8881b9a2a91e066f373de3e0b4c5b97f5bcaeee5b496a9565c525a48990c"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismBreathUpdater.cpp": {
+      "bytes": 844,
+      "sha256": "a670d8e4bece9cce1d54e5923b9c380a7a302c2362c309c3548ca0a583c9c6c0",
+      "upstream_sha256": "a670d8e4bece9cce1d54e5923b9c380a7a302c2362c309c3548ca0a583c9c6c0"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismBreathUpdater.hpp": {
+      "bytes": 1348,
+      "sha256": "ae001719112fe876570496f1050aa065fe4c57fd467c35ba1285427d759b03c8",
+      "upstream_sha256": "ae001719112fe876570496f1050aa065fe4c57fd467c35ba1285427d759b03c8"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionMotion.cpp": {
+      "bytes": 9016,
+      "sha256": "b8f644c9797248c83590a69fcea72e5f280f603002270d2ef000e31098deb6ad",
+      "upstream_sha256": "b8f644c9797248c83590a69fcea72e5f280f603002270d2ef000e31098deb6ad"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionMotion.hpp": {
+      "bytes": 3242,
+      "sha256": "d77f5ae9774171727f75a032e941fcfe83672d18c8f53dd31e1b7d8d455ded4e",
+      "upstream_sha256": "d77f5ae9774171727f75a032e941fcfe83672d18c8f53dd31e1b7d8d455ded4e"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionMotionManager.cpp": {
+      "bytes": 6782,
+      "sha256": "9e5d0ac200daa3a7e56cea5dbba91c54ed022081822294cd3c2d038e8eda4804",
+      "upstream_sha256": "9e5d0ac200daa3a7e56cea5dbba91c54ed022081822294cd3c2d038e8eda4804"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionMotionManager.hpp": {
+      "bytes": 2239,
+      "sha256": "a6e246d80b0b9f915cd914c93a727c2f5c9bedd80fac4b62ec81a218151750c6",
+      "upstream_sha256": "a6e246d80b0b9f915cd914c93a727c2f5c9bedd80fac4b62ec81a218151750c6"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionUpdater.cpp": {
+      "bytes": 1035,
+      "sha256": "93ff0282e1b930b7e4cbdc691e6fd86021ddd113bb6fec64e1cff808ae6e0c9b",
+      "upstream_sha256": "93ff0282e1b930b7e4cbdc691e6fd86021ddd113bb6fec64e1cff808ae6e0c9b"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismExpressionUpdater.hpp": {
+      "bytes": 1520,
+      "sha256": "f5131948a436e8df941c2cba300f28fb374e95b63533d22846623f5c3cba5da1",
+      "upstream_sha256": "f5131948a436e8df941c2cba300f28fb374e95b63533d22846623f5c3cba5da1"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismEyeBlinkUpdater.cpp": {
+      "bytes": 1124,
+      "sha256": "6c50b5da134945f51df835089e74fca9c2e33678c729600c6fb345e9ab8c019b",
+      "upstream_sha256": "6c50b5da134945f51df835089e74fca9c2e33678c729600c6fb345e9ab8c019b"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismEyeBlinkUpdater.hpp": {
+      "bytes": 1589,
+      "sha256": "36e0e2b2482bbb6a1eea8eb26edf03179f3efb0354e93bda116f4ae100bb6d73",
+      "upstream_sha256": "36e0e2b2482bbb6a1eea8eb26edf03179f3efb0354e93bda116f4ae100bb6d73"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismLipSyncUpdater.cpp": {
+      "bytes": 1438,
+      "sha256": "fc31380662a956ab5eae833fec61e1870d518ce07d580faa8177bcb15b8c8f61",
+      "upstream_sha256": "fc31380662a956ab5eae833fec61e1870d518ce07d580faa8177bcb15b8c8f61"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismLipSyncUpdater.hpp": {
+      "bytes": 1679,
+      "sha256": "b09ba43a5d9744929307b18ad943a1f4516ced96ef58e7d9d4ef756c4323adcf",
+      "upstream_sha256": "b09ba43a5d9744929307b18ad943a1f4516ced96ef58e7d9d4ef756c4323adcf"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismLookUpdater.cpp": {
+      "bytes": 1112,
+      "sha256": "b60b60ab2393dfb8a2b80b279ca1726e6ddfc11d3e0cdf44fbc276595c545e2d",
+      "upstream_sha256": "b60b60ab2393dfb8a2b80b279ca1726e6ddfc11d3e0cdf44fbc276595c545e2d"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismLookUpdater.hpp": {
+      "bytes": 1646,
+      "sha256": "b3f388b27fe02f3340e89dcf16330d8d6ef6101ac280500cb8f9e7fd058ae040",
+      "upstream_sha256": "b3f388b27fe02f3340e89dcf16330d8d6ef6101ac280500cb8f9e7fd058ae040"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotion.cpp": {
+      "bytes": 31122,
+      "sha256": "eb2e79452a7ad19bcea7a57fdff4065d5530b2bc3d56deaf53cf4f3dce6bbb43",
+      "upstream_sha256": "eb2e79452a7ad19bcea7a57fdff4065d5530b2bc3d56deaf53cf4f3dce6bbb43"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotion.hpp": {
+      "bytes": 6610,
+      "sha256": "80ed5029dce4439cdd9c4ac47ab2c4f4c40c3b480f64657c51fb82593945b6e1",
+      "upstream_sha256": "80ed5029dce4439cdd9c4ac47ab2c4f4c40c3b480f64657c51fb82593945b6e1"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionInternal.hpp": {
+      "bytes": 4052,
+      "sha256": "0f76b3a407f297a0e8dfbd26546dc9f595157498db5feaa8de264af34240ba31",
+      "upstream_sha256": "0f76b3a407f297a0e8dfbd26546dc9f595157498db5feaa8de264af34240ba31"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionJson.cpp": {
+      "bytes": 6959,
+      "sha256": "97a85ca9486fecde8058c2db45b68cd0ad116af6bcafc99faf87569a74d1ceba",
+      "upstream_sha256": "97a85ca9486fecde8058c2db45b68cd0ad116af6bcafc99faf87569a74d1ceba"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionJson.hpp": {
+      "bytes": 6472,
+      "sha256": "a8eb63c75b911689fec715a6a25f1968a8d9c68d63b830182795314f94ab380c",
+      "upstream_sha256": "a8eb63c75b911689fec715a6a25f1968a8d9c68d63b830182795314f94ab380c"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionManager.cpp": {
+      "bytes": 1776,
+      "sha256": "bed950b1a3871467d7a1be9d7e48fc3f04bf6ff717049b9cf9ae700be6887331",
+      "upstream_sha256": "bed950b1a3871467d7a1be9d7e48fc3f04bf6ff717049b9cf9ae700be6887331"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionManager.hpp": {
+      "bytes": 2459,
+      "sha256": "d64a984f31cc4af7cd941bcb3234ffdc55c77826a6656b59b2191f5293177138",
+      "upstream_sha256": "d64a984f31cc4af7cd941bcb3234ffdc55c77826a6656b59b2191f5293177138"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionQueueEntry.cpp": {
+      "bytes": 3441,
+      "sha256": "ca7da5a1b47aa30db67d239816e53bd641d400ee196a382987031af8c8216087",
+      "upstream_sha256": "ca7da5a1b47aa30db67d239816e53bd641d400ee196a382987031af8c8216087"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionQueueEntry.hpp": {
+      "bytes": 5503,
+      "sha256": "d3a82f00969891112006b5c7c7c84e7bfd3ba8e825f197c6c7fcbc6709cb8c15",
+      "upstream_sha256": "d3a82f00969891112006b5c7c7c84e7bfd3ba8e825f197c6c7fcbc6709cb8c15"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionQueueManager.cpp": {
+      "bytes": 6855,
+      "sha256": "6185b5a3054d163c795da8bf47f09f48a38ddce8662172f2c5686248a23e027b",
+      "upstream_sha256": "6185b5a3054d163c795da8bf47f09f48a38ddce8662172f2c5686248a23e027b"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismMotionQueueManager.hpp": {
+      "bytes": 3802,
+      "sha256": "7f8517cb44c021e42e3e4c47e0560b31d7dea31e479e6bd46f884d07fc44bf27",
+      "upstream_sha256": "7f8517cb44c021e42e3e4c47e0560b31d7dea31e479e6bd46f884d07fc44bf27"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismPhysicsUpdater.cpp": {
+      "bytes": 852,
+      "sha256": "f2f91702110f10bb7d45454f0e877654d45302be7c049990da72e165b15ed2fa",
+      "upstream_sha256": "f2f91702110f10bb7d45454f0e877654d45302be7c049990da72e165b15ed2fa"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismPhysicsUpdater.hpp": {
+      "bytes": 1363,
+      "sha256": "d9670a15a5bcc09f3dbdb6d40a4fa6e5b4ae2e6cbfee8a2a0fe154744a4f3ad6",
+      "upstream_sha256": "d9670a15a5bcc09f3dbdb6d40a4fa6e5b4ae2e6cbfee8a2a0fe154744a4f3ad6"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismPoseUpdater.cpp": {
+      "bytes": 812,
+      "sha256": "62d74f7613f021f03db65b3de53bf3a3deba7d654addb7f9698d0cfed31d8367",
+      "upstream_sha256": "62d74f7613f021f03db65b3de53bf3a3deba7d654addb7f9698d0cfed31d8367"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismPoseUpdater.hpp": {
+      "bytes": 1311,
+      "sha256": "4b18a3b58307bd72be7878386873fa7e1cff5043403eab983b34e57d44fab382",
+      "upstream_sha256": "4b18a3b58307bd72be7878386873fa7e1cff5043403eab983b34e57d44fab382"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismUpdateScheduler.cpp": {
+      "bytes": 1342,
+      "sha256": "251bca6807e59efcf325d9a46a37d2d83b03c2c7aaee0caf99fe99a4a5e44a9b",
+      "upstream_sha256": "251bca6807e59efcf325d9a46a37d2d83b03c2c7aaee0caf99fe99a4a5e44a9b"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/CubismUpdateScheduler.hpp": {
+      "bytes": 1624,
+      "sha256": "e948f00e1c6b763dbd72dcaf03ddb30da77578684ff7babf67f632e1d6d6e7ba",
+      "upstream_sha256": "e948f00e1c6b763dbd72dcaf03ddb30da77578684ff7babf67f632e1d6d6e7ba"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/ICubismUpdater.cpp": {
+      "bytes": 668,
+      "sha256": "0a378cc19e1ca1bfeb759ccdfce1861b39ea8904ddb1fc86340d1fae64bcc01f",
+      "upstream_sha256": "0a378cc19e1ca1bfeb759ccdfce1861b39ea8904ddb1fc86340d1fae64bcc01f"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/ICubismUpdater.hpp": {
+      "bytes": 1867,
+      "sha256": "385e53ff37ea1d639e9ee40c17cc396d7402a95b76c5da1b6643358344da7fbe",
+      "upstream_sha256": "385e53ff37ea1d639e9ee40c17cc396d7402a95b76c5da1b6643358344da7fbe"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/IParameterProvider.cpp": {
+      "bytes": 491,
+      "sha256": "e5555f94f2775cb9a0b9ea85398d436376cff8b83e2aadf3ea661191cdc00127",
+      "upstream_sha256": "e5555f94f2775cb9a0b9ea85398d436376cff8b83e2aadf3ea661191cdc00127"
+    },
+    "android/src/main/cpp/CubismFramework/Motion/IParameterProvider.hpp": {
+      "bytes": 1215,
+      "sha256": "e6a4448ee3711a57a7dd99ee5a3271ecdf7b17341ee808a74d5ef02a7cd5d26f",
+      "upstream_sha256": "e6a4448ee3711a57a7dd99ee5a3271ecdf7b17341ee808a74d5ef02a7cd5d26f"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CMakeLists.txt": {
+      "bytes": 305,
+      "sha256": "214d435d604df1999305f49f5fd8f665dbb8981e52a1db5e6dfa2ce21ccc985f",
+      "upstream_sha256": "214d435d604df1999305f49f5fd8f665dbb8981e52a1db5e6dfa2ce21ccc985f"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CubismPhysics.cpp": {
+      "bytes": 38574,
+      "sha256": "b967e6559f1b1f96b36148bd909e43d515ed6cdf4398fdd0c1250b3cdd1c4623",
+      "upstream_sha256": "b967e6559f1b1f96b36148bd909e43d515ed6cdf4398fdd0c1250b3cdd1c4623"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CubismPhysics.hpp": {
+      "bytes": 4472,
+      "sha256": "b171ba5612d2c2a9e00ec2c8219237519183d5b643e602f4fd15c83943402b67",
+      "upstream_sha256": "b171ba5612d2c2a9e00ec2c8219237519183d5b643e602f4fd15c83943402b67"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CubismPhysicsInternal.hpp": {
+      "bytes": 8192,
+      "sha256": "7ac82e50e5d5f7720fe10deb3bf701f691f52d3553b4e90f2304d47f95785b57",
+      "upstream_sha256": "7ac82e50e5d5f7720fe10deb3bf701f691f52d3553b4e90f2304d47f95785b57"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CubismPhysicsJson.cpp": {
+      "bytes": 8525,
+      "sha256": "c0ecb71841f0241be051243ee0b3018b45841632ed58432f2b3e4a4d200aa78c",
+      "upstream_sha256": "c0ecb71841f0241be051243ee0b3018b45841632ed58432f2b3e4a4d200aa78c"
+    },
+    "android/src/main/cpp/CubismFramework/Physics/CubismPhysicsJson.hpp": {
+      "bytes": 11532,
+      "sha256": "db5c91226ed0b308e9fe46ee6799a16b57ae148acf1253f7ca46c558b5088881",
+      "upstream_sha256": "db5c91226ed0b308e9fe46ee6799a16b57ae148acf1253f7ca46c558b5088881"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/CMakeLists.txt": {
+      "bytes": 765,
+      "sha256": "7cb88ef55370145162b0f705dd69b7d6f98b3898bd120963a26238fd72ad62c6",
+      "upstream_sha256": "7cb88ef55370145162b0f705dd69b7d6f98b3898bd120963a26238fd72ad62c6"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/csmBlendMode.cpp": {
+      "bytes": 3008,
+      "sha256": "4a931a6df75f2e6def18a59d0461dad458eaa1fb03b08210160ff55855396495",
+      "upstream_sha256": "4a931a6df75f2e6def18a59d0461dad458eaa1fb03b08210160ff55855396495"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/csmBlendMode.hpp": {
+      "bytes": 1922,
+      "sha256": "d92aa68ba46581131414e4f67a41a0a89a0c99256c3294415b314be982d27b61",
+      "upstream_sha256": "d92aa68ba46581131414e4f67a41a0a89a0c99256c3294415b314be982d27b61"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/CubismClippingManager.hpp": {
+      "bytes": 8768,
+      "sha256": "4ae0368b79ad6ae85c1408017b2665a42b0b7a8ebafede6635f1fe9a3d16cd19",
+      "upstream_sha256": "4ae0368b79ad6ae85c1408017b2665a42b0b7a8ebafede6635f1fe9a3d16cd19"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/CubismClippingManager.tpp": {
+      "bytes": 27219,
+      "sha256": "d821a53490caefc650f0595f2e862f23fd4c3290b15a98bdee1c48c44cab07b6",
+      "upstream_sha256": "d821a53490caefc650f0595f2e862f23fd4c3290b15a98bdee1c48c44cab07b6"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/CubismRenderer.cpp": {
+      "bytes": 5631,
+      "sha256": "36284f1cbbd195597af26278b785e1b136644f26cef1f80f96cfcb396472b5a1",
+      "upstream_sha256": "36284f1cbbd195597af26278b785e1b136644f26cef1f80f96cfcb396472b5a1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/CubismRenderer.hpp": {
+      "bytes": 12349,
+      "sha256": "8d1c32b104d7dc850d5e4edad437997868efd7fe184270fd2b2b1b98cea06e23",
+      "upstream_sha256": "8d1c32b104d7dc850d5e4edad437997868efd7fe184270fd2b2b1b98cea06e23"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/ICubismOffscreenManager.hpp": {
+      "bytes": 10151,
+      "sha256": "a40fa1ee1563fdcb7c934b56518203107912c2c581b2e006fe06a2d850d34a4b",
+      "upstream_sha256": "a40fa1ee1563fdcb7c934b56518203107912c2c581b2e006fe06a2d850d34a4b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/ICubismOffscreenRenderTarget.hpp": {
+      "bytes": 3939,
+      "sha256": "ca0710d5bc5cae53c8424b27f17aaf1d0cd780cc9fbf0d77961e98a53ab6c53b",
+      "upstream_sha256": "ca0710d5bc5cae53c8424b27f17aaf1d0cd780cc9fbf0d77961e98a53ab6c53b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CMakeLists.txt": {
+      "bytes": 1008,
+      "sha256": "b7ad11bd9b8051401f9ffa715a1ad066a87f8f148fec7bbe6773b7554dcc24c3",
+      "upstream_sha256": "b7ad11bd9b8051401f9ffa715a1ad066a87f8f148fec7bbe6773b7554dcc24c3"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismDeviceInfo_D3D11.cpp": {
+      "bytes": 1683,
+      "sha256": "b3e6803c1339fc5b91b0c4ea53520ad32a0cd5003ca2294435768a5648364f5f",
+      "upstream_sha256": "b3e6803c1339fc5b91b0c4ea53520ad32a0cd5003ca2294435768a5648364f5f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismDeviceInfo_D3D11.hpp": {
+      "bytes": 2342,
+      "sha256": "061bc5323c278b31d950a12c11d64ccf319064bf2c753d9bbd2564acab99565c",
+      "upstream_sha256": "061bc5323c278b31d950a12c11d64ccf319064bf2c753d9bbd2564acab99565c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismNativeInclude_D3D11.hpp": {
+      "bytes": 297,
+      "sha256": "8429cc4028b4dd7e6f0fde30b744b72f773b242dfbadd831d508433d996f56e4",
+      "upstream_sha256": "8429cc4028b4dd7e6f0fde30b744b72f773b242dfbadd831d508433d996f56e4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenManager_D3D11.cpp": {
+      "bytes": 1626,
+      "sha256": "ed02e2f0953a0247f2d5cd7f7eacbf97330e88fa1d185c9431cd079f46c7144c",
+      "upstream_sha256": "ed02e2f0953a0247f2d5cd7f7eacbf97330e88fa1d185c9431cd079f46c7144c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenManager_D3D11.hpp": {
+      "bytes": 1271,
+      "sha256": "07a86ba4379b4d9d461b1937babc892fcfcd9e291dc7ab28853315ee904e82b6",
+      "upstream_sha256": "07a86ba4379b4d9d461b1937babc892fcfcd9e291dc7ab28853315ee904e82b6"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenRenderTarget_D3D11.cpp": {
+      "bytes": 1617,
+      "sha256": "09810b3a84d4887c125e81c472b67824dbd57c470f23eddaffd82688afe5e1f6",
+      "upstream_sha256": "09810b3a84d4887c125e81c472b67824dbd57c470f23eddaffd82688afe5e1f6"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenRenderTarget_D3D11.hpp": {
+      "bytes": 2008,
+      "sha256": "0aa10496046409b0c2f3c715fa9ae8b5eb2a1674501de4c783689058987cdee7",
+      "upstream_sha256": "0aa10496046409b0c2f3c715fa9ae8b5eb2a1674501de4c783689058987cdee7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenSurface_D3D11.cpp": {
+      "bytes": 7660,
+      "sha256": "97f42e053df8c203301e433e98fea7236a372607cc4dcd2e957a2b85ff32b1a1",
+      "upstream_sha256": "97f42e053df8c203301e433e98fea7236a372607cc4dcd2e957a2b85ff32b1a1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismOffscreenSurface_D3D11.hpp": {
+      "bytes": 3252,
+      "sha256": "bd6814d473d884d37c715a70640402d1f50ad48019ca730ce3fa2a93358d7b20",
+      "upstream_sha256": "bd6814d473d884d37c715a70640402d1f50ad48019ca730ce3fa2a93358d7b20"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderer_D3D11.cpp": {
+      "bytes": 74902,
+      "sha256": "ed62d30b3d3c7a666b868cb7c42979d1c860e276d7490e74479d1a04adbfb1ae",
+      "upstream_sha256": "ed62d30b3d3c7a666b868cb7c42979d1c860e276d7490e74479d1a04adbfb1ae"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderer_D3D11.hpp": {
+      "bytes": 24859,
+      "sha256": "2eec748fda7ae2b3531c27b8f0c2eefbf4182cc83b0a94d819ab7bf68623a56f",
+      "upstream_sha256": "2eec748fda7ae2b3531c27b8f0c2eefbf4182cc83b0a94d819ab7bf68623a56f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderState_D3D11.cpp": {
+      "bytes": 17373,
+      "sha256": "257dd1b7a0be36db1b354e1e30188e375c84477a1f6735cfa2b8bb45d4bdf9d0",
+      "upstream_sha256": "257dd1b7a0be36db1b354e1e30188e375c84477a1f6735cfa2b8bb45d4bdf9d0"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderState_D3D11.hpp": {
+      "bytes": 8035,
+      "sha256": "e3ce0ff5769c80da967a1c9fafd701fbf6e2b6c70598bff26722ff492ec0c189",
+      "upstream_sha256": "e3ce0ff5769c80da967a1c9fafd701fbf6e2b6c70598bff26722ff492ec0c189"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderTarget_D3D11.cpp": {
+      "bytes": 7800,
+      "sha256": "2d3cf16f984fbc48d9aebc14277b43397fec8561b24b1989b4be72ada1aeffd4",
+      "upstream_sha256": "2d3cf16f984fbc48d9aebc14277b43397fec8561b24b1989b4be72ada1aeffd4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismRenderTarget_D3D11.hpp": {
+      "bytes": 3550,
+      "sha256": "566bba37f65a6c4abb36ed3c029858f457bccad74ff1b2b938cdf96fdcb4dd11",
+      "upstream_sha256": "566bba37f65a6c4abb36ed3c029858f457bccad74ff1b2b938cdf96fdcb4dd11"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismShader_D3D11.cpp": {
+      "bytes": 14564,
+      "sha256": "80f661c7a324aa496a2bc9d9b4df930789896c89d7da568a68040b1680d87539",
+      "upstream_sha256": "80f661c7a324aa496a2bc9d9b4df930789896c89d7da568a68040b1680d87539"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismShader_D3D11.hpp": {
+      "bytes": 5381,
+      "sha256": "c5fce3338cd6e1ef0e5b94f3e5a1df906daa798fb4cdb5881d09c65cb1b8b0ef",
+      "upstream_sha256": "c5fce3338cd6e1ef0e5b94f3e5a1df906daa798fb4cdb5881d09c65cb1b8b0ef"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/CubismType_D3D11.hpp": {
+      "bytes": 812,
+      "sha256": "fb678e4a2d7be9f54f2dfaadd06261362058abe6ec2a51c5ac6e02546b235647",
+      "upstream_sha256": "fb678e4a2d7be9f54f2dfaadd06261362058abe6ec2a51c5ac6e02546b235647"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/Shaders/CubismBlendMode.fx": {
+      "bytes": 16611,
+      "sha256": "f855444a453ebbedbcca0ef980e67ded68286d183a8559ec11e3dd04e8c542d4",
+      "upstream_sha256": "f855444a453ebbedbcca0ef980e67ded68286d183a8559ec11e3dd04e8c542d4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D11/Shaders/CubismEffect.fx": {
+      "bytes": 5389,
+      "sha256": "dbb89ac3d9f2b9e6a407e0779ac60f6764d97f8d5b62f5bbf380fb69fbdda533",
+      "upstream_sha256": "dbb89ac3d9f2b9e6a407e0779ac60f6764d97f8d5b62f5bbf380fb69fbdda533"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CMakeLists.txt": {
+      "bytes": 992,
+      "sha256": "e2b3f435a29b8fe4e65e954c12ec412e0852b3ef5c77836fe76ef069087e6e73",
+      "upstream_sha256": "e2b3f435a29b8fe4e65e954c12ec412e0852b3ef5c77836fe76ef069087e6e73"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismDeviceInfo_D3D9.cpp": {
+      "bytes": 1773,
+      "sha256": "1217bca48451f5bd0d85baad121afb80bfca1ec9259590b48bffd00e942ec6eb",
+      "upstream_sha256": "1217bca48451f5bd0d85baad121afb80bfca1ec9259590b48bffd00e942ec6eb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismDeviceInfo_D3D9.hpp": {
+      "bytes": 2522,
+      "sha256": "f39892338e8b2de127957dbac39a6314f2b16eaae2845c22f9c86b60d5acce72",
+      "upstream_sha256": "f39892338e8b2de127957dbac39a6314f2b16eaae2845c22f9c86b60d5acce72"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismNativeInclude_D3D9.hpp": {
+      "bytes": 476,
+      "sha256": "18a9d817743f86d2524057dc632abb5281b4676482d794898be0324bef1051b5",
+      "upstream_sha256": "18a9d817743f86d2524057dc632abb5281b4676482d794898be0324bef1051b5"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismOffscreenManager_D3D9.cpp": {
+      "bytes": 1622,
+      "sha256": "2fde772f8caef4fcb419f3ac5a93263f8e42867105f7beb926a8d83a69569ece",
+      "upstream_sha256": "2fde772f8caef4fcb419f3ac5a93263f8e42867105f7beb926a8d83a69569ece"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismOffscreenManager_D3D9.hpp": {
+      "bytes": 1269,
+      "sha256": "2ec5f59a217b03d49253b6b9bc6e469b5e231e8e525e926ad82000c466c8550c",
+      "upstream_sha256": "2ec5f59a217b03d49253b6b9bc6e469b5e231e8e525e926ad82000c466c8550c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismOffscreenRenderTarget_D3D9.cpp": {
+      "bytes": 1610,
+      "sha256": "7aaaef051a5408a26ab548cc1d64e95a7edc5468c04ec9c1e5797f8d9223d495",
+      "upstream_sha256": "7aaaef051a5408a26ab548cc1d64e95a7edc5468c04ec9c1e5797f8d9223d495"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismOffscreenRenderTarget_D3D9.hpp": {
+      "bytes": 2003,
+      "sha256": "9f6ba2625824df208ba2d53793fd2cf992bb869615e7439dd70e8cff3c53acdf",
+      "upstream_sha256": "9f6ba2625824df208ba2d53793fd2cf992bb869615e7439dd70e8cff3c53acdf"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderer_D3D9.cpp": {
+      "bytes": 68342,
+      "sha256": "490a2f03a2d110ef763e46edc5215ff6684fa1917fe3ddda5a28542750056356",
+      "upstream_sha256": "490a2f03a2d110ef763e46edc5215ff6684fa1917fe3ddda5a28542750056356"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderer_D3D9.hpp": {
+      "bytes": 25845,
+      "sha256": "47b856677db79892866fd06ba7d559cac75fb5d4e981be90d0e71bfc3f534f35",
+      "upstream_sha256": "47b856677db79892866fd06ba7d559cac75fb5d4e981be90d0e71bfc3f534f35"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderState_D3D9.cpp": {
+      "bytes": 11536,
+      "sha256": "1ba263f5eedb20c98de34814c4ce348e1622557f1412efd388921501458d87f7",
+      "upstream_sha256": "1ba263f5eedb20c98de34814c4ce348e1622557f1412efd388921501458d87f7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderState_D3D9.hpp": {
+      "bytes": 8912,
+      "sha256": "7ef9da3c978aa0fe0944b1c7e6089211f97e73016588d5d04b63d33cc258d3df",
+      "upstream_sha256": "7ef9da3c978aa0fe0944b1c7e6089211f97e73016588d5d04b63d33cc258d3df"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderTarget_D3D9.cpp": {
+      "bytes": 5070,
+      "sha256": "eb9d88395d4db7b61aae06764a3d69f331e1f7fc2903de0cbab8cdb68b55bb9b",
+      "upstream_sha256": "eb9d88395d4db7b61aae06764a3d69f331e1f7fc2903de0cbab8cdb68b55bb9b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismRenderTarget_D3D9.hpp": {
+      "bytes": 2997,
+      "sha256": "7382eabc37e4488fcc16af11df1e7e601918c8627dc3a32882d9c8945614f1df",
+      "upstream_sha256": "7382eabc37e4488fcc16af11df1e7e601918c8627dc3a32882d9c8945614f1df"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismShader_D3D9.cpp": {
+      "bytes": 4180,
+      "sha256": "a0ff70af0985b6579df71200bb2a70e3e21965600576896c9713a01fcd63b748",
+      "upstream_sha256": "a0ff70af0985b6579df71200bb2a70e3e21965600576896c9713a01fcd63b748"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismShader_D3D9.hpp": {
+      "bytes": 2591,
+      "sha256": "f20695d7d98b7c8e99756886a9793437034de5ce78f6fddd8bb2a5bdfff2ddc9",
+      "upstream_sha256": "f20695d7d98b7c8e99756886a9793437034de5ce78f6fddd8bb2a5bdfff2ddc9"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/CubismType_D3D9.hpp": {
+      "bytes": 618,
+      "sha256": "fc19b278c8be0403776ac2fb9eda8c2a03e4fe06a916aa38279630a6d31b9a3b",
+      "upstream_sha256": "fc19b278c8be0403776ac2fb9eda8c2a03e4fe06a916aa38279630a6d31b9a3b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/Shaders/CubismBlendMode.fx": {
+      "bytes": 19547,
+      "sha256": "65fb5ee8c94d401a4c3ad26a02aa5042773799f9e6a25c0c1ce35e4dc9720cb4",
+      "upstream_sha256": "65fb5ee8c94d401a4c3ad26a02aa5042773799f9e6a25c0c1ce35e4dc9720cb4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/D3D9/Shaders/CubismEffect.fx": {
+      "bytes": 6602,
+      "sha256": "8ededed8e2f4b7d57918307105b6046ba3e46fb2d0d61998b60704add614afe2",
+      "upstream_sha256": "8ededed8e2f4b7d57918307105b6046ba3e46fb2d0d61998b60704add614afe2"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CMakeLists.txt": {
+      "bytes": 1087,
+      "sha256": "30459539d22a990f01089e7dbea84f51a1e2267cbe199027b71790a63142e8d1",
+      "upstream_sha256": "30459539d22a990f01089e7dbea84f51a1e2267cbe199027b71790a63142e8d1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismCommandBuffer_Metal.hpp": {
+      "bytes": 2926,
+      "sha256": "1f0f7684c2abe8139943f3f8630ade039e2ffe556a24c68acaefa39cf46a3aa3",
+      "upstream_sha256": "1f0f7684c2abe8139943f3f8630ade039e2ffe556a24c68acaefa39cf46a3aa3"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismCommandBuffer_Metal.mm": {
+      "bytes": 4498,
+      "sha256": "a38f0f8476d57a2466ee8889d1ff25f6bfb4ce1bc78264589f48b8fbd46d5042",
+      "upstream_sha256": "a38f0f8476d57a2466ee8889d1ff25f6bfb4ce1bc78264589f48b8fbd46d5042"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismDeviceInfo_Metal.hpp": {
+      "bytes": 2052,
+      "sha256": "c7790750e57ff4d92e00fde6c6bdff4cedf780905a47f38e2c29374085c48a61",
+      "upstream_sha256": "c7790750e57ff4d92e00fde6c6bdff4cedf780905a47f38e2c29374085c48a61"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismDeviceInfo_Metal.mm": {
+      "bytes": 1410,
+      "sha256": "fcf5ec556c3b2594fecc4b80d8828358337ff283f93970c0c559dd3139bdd7cc",
+      "upstream_sha256": "fcf5ec556c3b2594fecc4b80d8828358337ff283f93970c0c559dd3139bdd7cc"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismOffscreenManager_Metal.hpp": {
+      "bytes": 1271,
+      "sha256": "1bb086cc049637e1789bc14101108f431916a1e9395ecb019a09ced372635dad",
+      "upstream_sha256": "1bb086cc049637e1789bc14101108f431916a1e9395ecb019a09ced372635dad"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismOffscreenManager_Metal.mm": {
+      "bytes": 1698,
+      "sha256": "6cb2eed3597138f77263e20b047ea81d2b85b465ec7087a762d00efa3bc687f0",
+      "upstream_sha256": "6cb2eed3597138f77263e20b047ea81d2b85b465ec7087a762d00efa3bc687f0"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismOffscreenRenderTarget_Metal.hpp": {
+      "bytes": 2008,
+      "sha256": "84b36aed53795adec90b1f92b70357469f3d5c5ee0e4388c93f3ef11c90f29e1",
+      "upstream_sha256": "84b36aed53795adec90b1f92b70357469f3d5c5ee0e4388c93f3ef11c90f29e1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismOffscreenRenderTarget_Metal.mm": {
+      "bytes": 1617,
+      "sha256": "46584ad5b6ae090c1d2fefffccca227e537c3cdcf1684e609f3b5096df942e61",
+      "upstream_sha256": "46584ad5b6ae090c1d2fefffccca227e537c3cdcf1684e609f3b5096df942e61"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismRenderer_Metal.hpp": {
+      "bytes": 21908,
+      "sha256": "b0728fc8f30c93a698be437d5b826f84980b6da87dd1432e517637446cd1e02b",
+      "upstream_sha256": "b0728fc8f30c93a698be437d5b826f84980b6da87dd1432e517637446cd1e02b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismRenderer_Metal.mm": {
+      "bytes": 55929,
+      "sha256": "b2b88d9c929ae335df3a71853da336e667da704082069d29224438a1a5f300e2",
+      "upstream_sha256": "b2b88d9c929ae335df3a71853da336e667da704082069d29224438a1a5f300e2"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismRenderTarget_Metal.hpp": {
+      "bytes": 4047,
+      "sha256": "ee84df7f860d7b1784c4d7e54eede648595578ef32d4c8ad9658e6fcfffa4986",
+      "upstream_sha256": "ee84df7f860d7b1784c4d7e54eede648595578ef32d4c8ad9658e6fcfffa4986"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismRenderTarget_Metal.mm": {
+      "bytes": 6682,
+      "sha256": "f1c58049ff95494e0976a63685f2601c05cc24f1217874c9050b1453302445c5",
+      "upstream_sha256": "f1c58049ff95494e0976a63685f2601c05cc24f1217874c9050b1453302445c5"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismShader_Metal.hpp": {
+      "bytes": 16156,
+      "sha256": "e046241665cbde9b70780956f10268535ef9b889cf56e037f6f8d14becf508a0",
+      "upstream_sha256": "e046241665cbde9b70780956f10268535ef9b889cf56e037f6f8d14becf508a0"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/CubismShader_Metal.mm": {
+      "bytes": 49986,
+      "sha256": "a356114655c8c8197ccb3f2066fe3adacf17a426d83f5cdd76d845b32e069ed4",
+      "upstream_sha256": "a356114655c8c8197ccb3f2066fe3adacf17a426d83f5cdd76d845b32e069ed4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/BlendShaderFuncs.h": {
+      "bytes": 515,
+      "sha256": "2608b5970ff9cd81378f2eb0533a92750d1ffbc9ca8ab69e9b17e0d346ca17dc",
+      "upstream_sha256": "2608b5970ff9cd81378f2eb0533a92750d1ffbc9ca8ab69e9b17e0d346ca17dc"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/BlendShaderStructs.h": {
+      "bytes": 670,
+      "sha256": "7911686ea7bd548fa82e4ff340dedf792f0e92814db97a9dad6c906fd8982750",
+      "upstream_sha256": "7911686ea7bd548fa82e4ff340dedf792f0e92814db97a9dad6c906fd8982750"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/CMakeLists.txt": {
+      "bytes": 5825,
+      "sha256": "2ee575727a93399eaa79a5a2ba813355ccef4d5791c57dc40da16286db50a8cc",
+      "upstream_sha256": "2ee575727a93399eaa79a5a2ba813355ccef4d5791c57dc40da16286db50a8cc"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcAlphaBlend.metal": {
+      "bytes": 2523,
+      "sha256": "248dda02536d8e0b9d9360755ffdb55aae63cb064dc7987f2358adccd199e434",
+      "upstream_sha256": "248dda02536d8e0b9d9360755ffdb55aae63cb064dc7987f2358adccd199e434"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcBlend.metal": {
+      "bytes": 1391,
+      "sha256": "9f027f1bbe9767dbfc4471b9776cf7ec8ab722b31a941e2f0eb56cbe0cdb38e4",
+      "upstream_sha256": "9f027f1bbe9767dbfc4471b9776cf7ec8ab722b31a941e2f0eb56cbe0cdb38e4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcColorBlend.metal": {
+      "bytes": 8006,
+      "sha256": "c003115dc4aa6a87a8032986c01382965c7f7f089983e73b859443d10d070b5e",
+      "upstream_sha256": "c003115dc4aa6a87a8032986c01382965c7f7f089983e73b859443d10d070b5e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskBlend.metal": {
+      "bytes": 1697,
+      "sha256": "c6f8555a12285520c797fcc8e5fcfc09cd26911daaf9b55c09cc657061ecc2e7",
+      "upstream_sha256": "c6f8555a12285520c797fcc8e5fcfc09cd26911daaf9b55c09cc657061ecc2e7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskInvertedBlend.metal": {
+      "bytes": 1709,
+      "sha256": "384d7aab3fa0ebc3abe8bd19ebea340a7f8499811dc519dcd9836b4c14d28fbc",
+      "upstream_sha256": "384d7aab3fa0ebc3abe8bd19ebea340a7f8499811dc519dcd9836b4c14d28fbc"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.metal": {
+      "bytes": 1774,
+      "sha256": "81b24e34f647b39328c25382803cb64e4d9684d8d65ebf553f0aa757f1114f1a",
+      "upstream_sha256": "81b24e34f647b39328c25382803cb64e4d9684d8d65ebf553f0aa757f1114f1a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskPremultipliedAlphaBlend.metal": {
+      "bytes": 1762,
+      "sha256": "2f1f22a8b30953ef6b227ed743ebd2fade9fbf9f2fb88f2dff442949895d951f",
+      "upstream_sha256": "2f1f22a8b30953ef6b227ed743ebd2fade9fbf9f2fb88f2dff442949895d951f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcPremultipliedAlphaBlend.metal": {
+      "bytes": 1450,
+      "sha256": "95ed052005eddef932041e30a48490157cc6885bd5857dd81fe27fdcc9d73b99",
+      "upstream_sha256": "95ed052005eddef932041e30a48490157cc6885bd5857dd81fe27fdcc9d73b99"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/MetalShaders.metal": {
+      "bytes": 9966,
+      "sha256": "ead2525bf548061d821a6886c9a9a58af38f51b8385c69c7ab789313d0745b8b",
+      "upstream_sha256": "ead2525bf548061d821a6886c9a9a58af38f51b8385c69c7ab789313d0745b8b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/MetalShaderTypes.h": {
+      "bytes": 757,
+      "sha256": "ffe7d0a2a869f01d4c672f0df5f6dc4c686e4af992776247fbc0faab0020ab2d",
+      "upstream_sha256": "ffe7d0a2a869f01d4c672f0df5f6dc4c686e4af992776247fbc0faab0020ab2d"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/VertShaderSrcBlend.metal": {
+      "bytes": 1195,
+      "sha256": "8c00e46812362e7af8167934f1a444c1dbd63c35263be632250482854b5e8dd3",
+      "upstream_sha256": "8c00e46812362e7af8167934f1a444c1dbd63c35263be632250482854b5e8dd3"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Metal/Shaders/VertShaderSrcMaskedBlend.metal": {
+      "bytes": 1313,
+      "sha256": "7d2e8c3d153dac141dc0ae274f04815e943915d6d75056c8acfe92b05b1caceb",
+      "upstream_sha256": "7d2e8c3d153dac141dc0ae274f04815e943915d6d75056c8acfe92b05b1caceb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CMakeLists.txt": {
+      "bytes": 695,
+      "sha256": "df1335ff46a126b99eade9fd95b104120f787f996c7b68f7a7cdb544d477742c",
+      "upstream_sha256": "df1335ff46a126b99eade9fd95b104120f787f996c7b68f7a7cdb544d477742c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.cpp": {
+      "bytes": 2060,
+      "sha256": "4e82d15696cb3b7d2f69b38d88831a098d88c3c9d1a2d17226e41337fe36c887",
+      "upstream_sha256": "4e82d15696cb3b7d2f69b38d88831a098d88c3c9d1a2d17226e41337fe36c887"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp": {
+      "bytes": 1714,
+      "sha256": "2a3c841a8b25f4356d16e0383c64d9fb103b72ade4c1a12281393e5816e6cca5",
+      "upstream_sha256": "2a3c841a8b25f4356d16e0383c64d9fb103b72ade4c1a12281393e5816e6cca5"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismOffscreenRenderTarget_OpenGLES2.cpp": {
+      "bytes": 1596,
+      "sha256": "97fe2527fce01843230f704fefb5ece735b2d4cbd64efb173b52bd3a136de72d",
+      "upstream_sha256": "97fe2527fce01843230f704fefb5ece735b2d4cbd64efb173b52bd3a136de72d"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismOffscreenRenderTarget_OpenGLES2.hpp": {
+      "bytes": 1597,
+      "sha256": "ba0bb5360cc7ce6b27ba9c2543ab7501d1c6f5c78c458406281f32084786ef6f",
+      "upstream_sha256": "ba0bb5360cc7ce6b27ba9c2543ab7501d1c6f5c78c458406281f32084786ef6f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp": {
+      "bytes": 53993,
+      "sha256": "96945f6dac49b250beeab2b4122ff790afb35b1c1d848271cf79fcab4a21c245",
+      "upstream_sha256": "96945f6dac49b250beeab2b4122ff790afb35b1c1d848271cf79fcab4a21c245"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp": {
+      "bytes": 22185,
+      "sha256": "5b6d154f9fa5689eb970ded38613433415f930a19359511ea7d9a2bd9ec4d6c1",
+      "upstream_sha256": "5b6d154f9fa5689eb970ded38613433415f930a19359511ea7d9a2bd9ec4d6c1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderTarget_OpenGLES2.cpp": {
+      "bytes": 5131,
+      "sha256": "4e96a3ef4f10806cb5fab9ab60505eb7d35abefc88ea695c95278587e4913be8",
+      "upstream_sha256": "4e96a3ef4f10806cb5fab9ab60505eb7d35abefc88ea695c95278587e4913be8"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp": {
+      "bytes": 4089,
+      "sha256": "573f6a5a4d9d44ce9a98a1f96265a0c6491ca6b2e4486702dc5af6091232b373",
+      "upstream_sha256": "573f6a5a4d9d44ce9a98a1f96265a0c6491ca6b2e4486702dc5af6091232b373"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.cpp": {
+      "bytes": 52908,
+      "sha256": "6c1958e562b31ea0423759aa047c93c945d8f2dc2b14d92b3033853bfff38e86",
+      "upstream_sha256": "6c1958e562b31ea0423759aa047c93c945d8f2dc2b14d92b3033853bfff38e86"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.hpp": {
+      "bytes": 13801,
+      "sha256": "5d3cb3bb5669b56b8933eb47e92f61811c7c6c86ff4e3675898e39d40ca12be0",
+      "upstream_sha256": "5d3cb3bb5669b56b8933eb47e92f61811c7c6c86ff4e3675898e39d40ca12be0"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrc.frag": {
+      "bytes": 740,
+      "sha256": "a05759315a2471adad530e58e0a7ced243b87bb25250fb522a188cfd9f6f4c65",
+      "upstream_sha256": "a05759315a2471adad530e58e0a7ced243b87bb25250fb522a188cfd9f6f4c65"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcAlphaBlend.frag": {
+      "bytes": 2320,
+      "sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb",
+      "upstream_sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcBlend.frag": {
+      "bytes": 1146,
+      "sha256": "e555ddadc1cfa80d2de0f909f3577eef86b345ba821ee25be535288ff0c7d304",
+      "upstream_sha256": "e555ddadc1cfa80d2de0f909f3577eef86b345ba821ee25be535288ff0c7d304"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcColorBlend.frag": {
+      "bytes": 7737,
+      "sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1",
+      "upstream_sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcCopy.frag": {
+      "bytes": 416,
+      "sha256": "7490f94676b1498468917b79f04a64ccbbeeaea369f09a3201aa346f1a6d2aa5",
+      "upstream_sha256": "7490f94676b1498468917b79f04a64ccbbeeaea369f09a3201aa346f1a6d2aa5"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMask.frag": {
+      "bytes": 1030,
+      "sha256": "eded9e550c7c59c3afbb7e35b3f0b2323f01531cac5f0c3b4a28375827cc91d8",
+      "upstream_sha256": "eded9e550c7c59c3afbb7e35b3f0b2323f01531cac5f0c3b4a28375827cc91d8"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskBlend.frag": {
+      "bytes": 1426,
+      "sha256": "70f8d0c8e0a9fc1c181058bd1d9806c099ddab617db2fdfa92b3cd79d1c2c761",
+      "upstream_sha256": "70f8d0c8e0a9fc1c181058bd1d9806c099ddab617db2fdfa92b3cd79d1c2c761"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInverted.frag": {
+      "bytes": 1038,
+      "sha256": "50e07d507b4147b1b96619e1fdf4a7415ace37c6cd8e47c55b5f6fe5ae1c99ed",
+      "upstream_sha256": "50e07d507b4147b1b96619e1fdf4a7415ace37c6cd8e47c55b5f6fe5ae1c99ed"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedBlend.frag": {
+      "bytes": 1434,
+      "sha256": "e102020be68acca0fc0fe1366ce2d6d915c51e7fbba30e940a74005417a60ad1",
+      "upstream_sha256": "e102020be68acca0fc0fe1366ce2d6d915c51e7fbba30e940a74005417a60ad1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedPremultipliedAlpha.frag": {
+      "bytes": 997,
+      "sha256": "8a83ad7025a6399c9a05f4e9b167de0587a1df9d5cb9773d0e9cafd24b51b809",
+      "upstream_sha256": "8a83ad7025a6399c9a05f4e9b167de0587a1df9d5cb9773d0e9cafd24b51b809"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.frag": {
+      "bytes": 1481,
+      "sha256": "162843847b89ba572d2ab3918f2eed1a6b2353201d31b0dbce317280e5f9100f",
+      "upstream_sha256": "162843847b89ba572d2ab3918f2eed1a6b2353201d31b0dbce317280e5f9100f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskPremultipliedAlpha.frag": {
+      "bytes": 989,
+      "sha256": "b23218f67e607850f047b21f2a85da57e0dd44def02bc2262a9f757097db6453",
+      "upstream_sha256": "b23218f67e607850f047b21f2a85da57e0dd44def02bc2262a9f757097db6453"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskPremultipliedAlphaBlend.frag": {
+      "bytes": 1473,
+      "sha256": "0e31cd1bafd40361f904c1aa3d7492b5fa2b8aa0461cb104964626376fe05c20",
+      "upstream_sha256": "0e31cd1bafd40361f904c1aa3d7492b5fa2b8aa0461cb104964626376fe05c20"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcPremultipliedAlpha.frag": {
+      "bytes": 702,
+      "sha256": "b10b5533752f1f53fff9de51d833c672956fb26a582a178323836e36c71e0206",
+      "upstream_sha256": "b10b5533752f1f53fff9de51d833c672956fb26a582a178323836e36c71e0206"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcPremultipliedAlphaBlend.frag": {
+      "bytes": 1192,
+      "sha256": "1b0277e5edc44bae7340c3f2fe13a7212de9553061ce6c0aed180fd7c5148672",
+      "upstream_sha256": "1b0277e5edc44bae7340c3f2fe13a7212de9553061ce6c0aed180fd7c5148672"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcSetupMask.frag": {
+      "bytes": 706,
+      "sha256": "e93547427c052a54f36c3e668cebf443313d996686a00077dbef08d733617574",
+      "upstream_sha256": "e93547427c052a54f36c3e668cebf443313d996686a00077dbef08d733617574"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrc.vert": {
+      "bytes": 517,
+      "sha256": "31224999977586c5e4054a2276df5e30c7062ce276c22981c0da8b0a5d50ecde",
+      "upstream_sha256": "31224999977586c5e4054a2276df5e30c7062ce276c22981c0da8b0a5d50ecde"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcBlend.vert": {
+      "bytes": 633,
+      "sha256": "31f913762b7cf6b1a3120a94c7cb860e4ac82378174faca1335a584f77b22db8",
+      "upstream_sha256": "31f913762b7cf6b1a3120a94c7cb860e4ac82378174faca1335a584f77b22db8"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcCopy.vert": {
+      "bytes": 405,
+      "sha256": "c9fa34f75f725640bfe0d0e60d05bac54608a8be6bb35d2e3dbb3dd1f0a7154e",
+      "upstream_sha256": "c9fa34f75f725640bfe0d0e60d05bac54608a8be6bb35d2e3dbb3dd1f0a7154e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcMasked.vert": {
+      "bytes": 572,
+      "sha256": "e68ff07c63a6fde693da8acf5eea27094cce29cf2afa448b251602fd3a6324b2",
+      "upstream_sha256": "e68ff07c63a6fde693da8acf5eea27094cce29cf2afa448b251602fd3a6324b2"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcMaskedBlend.vert": {
+      "bytes": 688,
+      "sha256": "b025c0256252dcc1deace19f125e241112f0df5ac97269ce15c3ec7a17b3883d",
+      "upstream_sha256": "b025c0256252dcc1deace19f125e241112f0df5ac97269ce15c3ec7a17b3883d"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcSetupMask.vert": {
+      "bytes": 549,
+      "sha256": "24f566347bd2f1e17ef9e5a96ba3870ff4bfd4fb8d3caf5586a1dab2ae372e0a",
+      "upstream_sha256": "24f566347bd2f1e17ef9e5a96ba3870ff4bfd4fb8d3caf5586a1dab2ae372e0a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrc.frag": {
+      "bytes": 764,
+      "sha256": "54867fd08b41f24e0517630ee8a046265cac2a72d5d20f3a9fa233beec7f5771",
+      "upstream_sha256": "54867fd08b41f24e0517630ee8a046265cac2a72d5d20f3a9fa233beec7f5771"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcAlphaBlend.frag": {
+      "bytes": 2320,
+      "sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb",
+      "upstream_sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcBlend.frag": {
+      "bytes": 1170,
+      "sha256": "bcca3505119e3ae3e9b80eac9c297f33d9f3b8c3ba15baac26e4e44a1d97f465",
+      "upstream_sha256": "bcca3505119e3ae3e9b80eac9c297f33d9f3b8c3ba15baac26e4e44a1d97f465"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcBlendTegra.frag": {
+      "bytes": 1221,
+      "sha256": "1a07ba309fd74ea94bae000588bf552656310545e40b044b3646b1977bc251b3",
+      "upstream_sha256": "1a07ba309fd74ea94bae000588bf552656310545e40b044b3646b1977bc251b3"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcColorBlend.frag": {
+      "bytes": 7737,
+      "sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1",
+      "upstream_sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcCopy.frag": {
+      "bytes": 440,
+      "sha256": "16bce1111e4b5a3948f8a03a6df5995519a2c5691ce0968a59c8823cf5c95e0c",
+      "upstream_sha256": "16bce1111e4b5a3948f8a03a6df5995519a2c5691ce0968a59c8823cf5c95e0c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcCopyTegra.frag": {
+      "bytes": 491,
+      "sha256": "f6c166c0be269f82038a821293978b4e77fc5343ccdb8e34840ed8ffcaa24e75",
+      "upstream_sha256": "f6c166c0be269f82038a821293978b4e77fc5343ccdb8e34840ed8ffcaa24e75"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMask.frag": {
+      "bytes": 1054,
+      "sha256": "73e09f6bd200d8d532e82586492328f3b0ae5980eddb5f1c228123abeb7945f9",
+      "upstream_sha256": "73e09f6bd200d8d532e82586492328f3b0ae5980eddb5f1c228123abeb7945f9"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskBlend.frag": {
+      "bytes": 1450,
+      "sha256": "e91b5902bfd91b7a31422f497c787adb8b76c80c2bd93d00873c414aa623bf80",
+      "upstream_sha256": "e91b5902bfd91b7a31422f497c787adb8b76c80c2bd93d00873c414aa623bf80"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskBlendTegra.frag": {
+      "bytes": 1501,
+      "sha256": "c80636f2bc0a7d494993bd68bc82cfcf5d4e3fe13925ea7094849cd42b34b730",
+      "upstream_sha256": "c80636f2bc0a7d494993bd68bc82cfcf5d4e3fe13925ea7094849cd42b34b730"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInverted.frag": {
+      "bytes": 1062,
+      "sha256": "dcc7d8dfbf7afbd0359483f09c6184644f24a37f59a2c3d31aa1ec4bc915daff",
+      "upstream_sha256": "dcc7d8dfbf7afbd0359483f09c6184644f24a37f59a2c3d31aa1ec4bc915daff"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedBlend.frag": {
+      "bytes": 1458,
+      "sha256": "b6d59389954c9eeb3562b6381700c892c9043401021630f3e90b63571347a778",
+      "upstream_sha256": "b6d59389954c9eeb3562b6381700c892c9043401021630f3e90b63571347a778"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedBlendTegra.frag": {
+      "bytes": 1509,
+      "sha256": "2440a5e45e39fa18e2ef367ad4bfe3c07b77afe9fcfed2a156629046220fb07b",
+      "upstream_sha256": "2440a5e45e39fa18e2ef367ad4bfe3c07b77afe9fcfed2a156629046220fb07b"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlpha.frag": {
+      "bytes": 1021,
+      "sha256": "96511c331227b8e3b02d10cfe8847b907b18c815285ab5023ad325ccd88b4939",
+      "upstream_sha256": "96511c331227b8e3b02d10cfe8847b907b18c815285ab5023ad325ccd88b4939"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.frag": {
+      "bytes": 1505,
+      "sha256": "ac5562c4d05b1ad93391e5c1340afda29c8514f5f08a9cb1d4b3e8547906928a",
+      "upstream_sha256": "ac5562c4d05b1ad93391e5c1340afda29c8514f5f08a9cb1d4b3e8547906928a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1556,
+      "sha256": "4546f46ac825c87da91dc40f30f93ad7e071f2f6b77987c3ac876cf770196212",
+      "upstream_sha256": "4546f46ac825c87da91dc40f30f93ad7e071f2f6b77987c3ac876cf770196212"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaTegra.frag": {
+      "bytes": 1072,
+      "sha256": "9845f8f4e785d312a2c7093c263db6f459391187039bcb1f6d1a8733975d5bd6",
+      "upstream_sha256": "9845f8f4e785d312a2c7093c263db6f459391187039bcb1f6d1a8733975d5bd6"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedTegra.frag": {
+      "bytes": 1113,
+      "sha256": "21b2fd1ff0467dfa02440e592ed8ceb4bbd45226fb3cd5306b00250d864d83e4",
+      "upstream_sha256": "21b2fd1ff0467dfa02440e592ed8ceb4bbd45226fb3cd5306b00250d864d83e4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlpha.frag": {
+      "bytes": 1013,
+      "sha256": "6a51dc2f300ee86942152c97ee81c491f4a65a67529b7d091c9a8a8931c301c4",
+      "upstream_sha256": "6a51dc2f300ee86942152c97ee81c491f4a65a67529b7d091c9a8a8931c301c4"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaBlend.frag": {
+      "bytes": 1497,
+      "sha256": "bf8227e5b2858db4cc85880def5d0256d5b57c103b7778c573ade5f4808aee9e",
+      "upstream_sha256": "bf8227e5b2858db4cc85880def5d0256d5b57c103b7778c573ade5f4808aee9e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1548,
+      "sha256": "9b1c3ed8250a883332978c992073679d8b42a0c7b74ad3042bc6200e661658e5",
+      "upstream_sha256": "9b1c3ed8250a883332978c992073679d8b42a0c7b74ad3042bc6200e661658e5"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaTegra.frag": {
+      "bytes": 1064,
+      "sha256": "5bc50ff3ba72a700d90f7d39bb10906d72ce2cc5dc84a6b4049ba35cbea24606",
+      "upstream_sha256": "5bc50ff3ba72a700d90f7d39bb10906d72ce2cc5dc84a6b4049ba35cbea24606"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskTegra.frag": {
+      "bytes": 1105,
+      "sha256": "6b7a194e31b0049970e3d1e3f51c26c5b51486accb9675bbc91c4a5b3718940f",
+      "upstream_sha256": "6b7a194e31b0049970e3d1e3f51c26c5b51486accb9675bbc91c4a5b3718940f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlpha.frag": {
+      "bytes": 726,
+      "sha256": "f10239646235b405db1d3b774e96cca1b6dc0911ee9e7b20171b774337913d87",
+      "upstream_sha256": "f10239646235b405db1d3b774e96cca1b6dc0911ee9e7b20171b774337913d87"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaBlend.frag": {
+      "bytes": 1216,
+      "sha256": "3f6a086dc1d7cf1874d9606249f495bb2f2f83ed89f1718471c7a90d2226e2ac",
+      "upstream_sha256": "3f6a086dc1d7cf1874d9606249f495bb2f2f83ed89f1718471c7a90d2226e2ac"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1267,
+      "sha256": "265dffdc69e533698331036ddd8f96c48dead2495b4bc93a679545f24cf6709e",
+      "upstream_sha256": "265dffdc69e533698331036ddd8f96c48dead2495b4bc93a679545f24cf6709e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaTegra.frag": {
+      "bytes": 777,
+      "sha256": "5769247b0599c5603f8ab52bfe6763e0f5f91f51cd5309d47d1ee5236c790d25",
+      "upstream_sha256": "5769247b0599c5603f8ab52bfe6763e0f5f91f51cd5309d47d1ee5236c790d25"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcSetupMask.frag": {
+      "bytes": 730,
+      "sha256": "c1a9c54c6a74b1626ee930e88c59d95753ce6469df731f2b32d052fffa30d78f",
+      "upstream_sha256": "c1a9c54c6a74b1626ee930e88c59d95753ce6469df731f2b32d052fffa30d78f"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcSetupMaskTegra.frag": {
+      "bytes": 781,
+      "sha256": "ba71917e1189926ef8287a94699ac38f57c14a2d2ae00d39b4a638212f93db05",
+      "upstream_sha256": "ba71917e1189926ef8287a94699ac38f57c14a2d2ae00d39b4a638212f93db05"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcTegra.frag": {
+      "bytes": 815,
+      "sha256": "d80df54e4db58986f825ca4e41865d7ddcaa07e79d3df9717d797bcae7e4fc34",
+      "upstream_sha256": "d80df54e4db58986f825ca4e41865d7ddcaa07e79d3df9717d797bcae7e4fc34"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrc.vert": {
+      "bytes": 517,
+      "sha256": "d095ff3916ac43a9066b3c37629e3e516707adfea0a61887e6eb16bbd57689da",
+      "upstream_sha256": "d095ff3916ac43a9066b3c37629e3e516707adfea0a61887e6eb16bbd57689da"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcBlend.vert": {
+      "bytes": 633,
+      "sha256": "6c027ad654ea3b38353fde80a40f7a8fd23a74badeb6fc74f542a98baf682aeb",
+      "upstream_sha256": "6c027ad654ea3b38353fde80a40f7a8fd23a74badeb6fc74f542a98baf682aeb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcCopy.vert": {
+      "bytes": 405,
+      "sha256": "d56e015be2348f1fd42cf7ccaef7bb869c5cd2095759d1ffc806dddca4339a74",
+      "upstream_sha256": "d56e015be2348f1fd42cf7ccaef7bb869c5cd2095759d1ffc806dddca4339a74"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcMasked.vert": {
+      "bytes": 572,
+      "sha256": "a9e7132f364266a34f1ed8ac4c18907a2561d01a74db0c424c43a6f83915e887",
+      "upstream_sha256": "a9e7132f364266a34f1ed8ac4c18907a2561d01a74db0c424c43a6f83915e887"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcMaskedBlend.vert": {
+      "bytes": 688,
+      "sha256": "b4c967636de6d0286f6356459a70a4cd44debeb87c167bcf4866b4a3d2ca7618",
+      "upstream_sha256": "b4c967636de6d0286f6356459a70a4cd44debeb87c167bcf4866b4a3d2ca7618"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcSetupMask.vert": {
+      "bytes": 549,
+      "sha256": "713c9df3a8ee1d64d68b69a4bdf682fe9bd19fe3e91857fc267d03b0ba23df5a",
+      "upstream_sha256": "713c9df3a8ee1d64d68b69a4bdf682fe9bd19fe3e91857fc267d03b0ba23df5a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CMakeLists.txt": {
+      "bytes": 783,
+      "sha256": "dc067797084fde0c5390e740bd6c0442ea6086d066e5437082c337c37d2fdd6e",
+      "upstream_sha256": "dc067797084fde0c5390e740bd6c0442ea6086d066e5437082c337c37d2fdd6e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismClass_Vulkan.cpp": {
+      "bytes": 11090,
+      "sha256": "72c98aa78b15c4e50927714510e6cbd4405e9da8f056265ce85ccab974ea0e04",
+      "upstream_sha256": "72c98aa78b15c4e50927714510e6cbd4405e9da8f056265ce85ccab974ea0e04"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismClass_Vulkan.hpp": {
+      "bytes": 7233,
+      "sha256": "94bfc86e33176a87c4f9d6d787c34ed18ff59d37eb99f5ee3bd9779138d804bb",
+      "upstream_sha256": "94bfc86e33176a87c4f9d6d787c34ed18ff59d37eb99f5ee3bd9779138d804bb"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismDeviceInfo_Vulkan.cpp": {
+      "bytes": 1256,
+      "sha256": "02ab4251e61cb397b1455e11680e0c1ed616ae2d1d6f34be444c66032728c93d",
+      "upstream_sha256": "02ab4251e61cb397b1455e11680e0c1ed616ae2d1d6f34be444c66032728c93d"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismDeviceInfo_Vulkan.hpp": {
+      "bytes": 2050,
+      "sha256": "f6c2497e92d338016042d37f9ebe39d9c775119bb12568f0944a330b03a699c7",
+      "upstream_sha256": "f6c2497e92d338016042d37f9ebe39d9c775119bb12568f0944a330b03a699c7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismOffscreenManager_Vulkan.cpp": {
+      "bytes": 2008,
+      "sha256": "43f7ce25b730a29a61610849942e4f748cc90254f592b65883e9a2343b16d7ad",
+      "upstream_sha256": "43f7ce25b730a29a61610849942e4f748cc90254f592b65883e9a2343b16d7ad"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismOffscreenManager_Vulkan.hpp": {
+      "bytes": 1741,
+      "sha256": "a7dbe0f0abfac1ea3b528eab7bbf386e33a6a9101ba8291cc990a3461ce4e24a",
+      "upstream_sha256": "a7dbe0f0abfac1ea3b528eab7bbf386e33a6a9101ba8291cc990a3461ce4e24a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismOffscreenRenderTarget_Vulkan.cpp": {
+      "bytes": 1990,
+      "sha256": "780b345ac96ad75ee5cbf978d12b2f3955d9dc3fa3ec3c91fe2e70d620122b29",
+      "upstream_sha256": "780b345ac96ad75ee5cbf978d12b2f3955d9dc3fa3ec3c91fe2e70d620122b29"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismOffscreenRenderTarget_Vulkan.hpp": {
+      "bytes": 2565,
+      "sha256": "c219651a8ad0cb5de33f9f2d6650d54eea3e5200bcdb3b95e772679ba1b3b668",
+      "upstream_sha256": "c219651a8ad0cb5de33f9f2d6650d54eea3e5200bcdb3b95e772679ba1b3b668"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismRenderer_Vulkan.cpp": {
+      "bytes": 139159,
+      "sha256": "a88f98add1567b34617c5184c614b099533c1f4a6662897fb07cc87bd5f3b2c7",
+      "upstream_sha256": "a88f98add1567b34617c5184c614b099533c1f4a6662897fb07cc87bd5f3b2c7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismRenderer_Vulkan.hpp": {
+      "bytes": 43969,
+      "sha256": "5daf9584f4d8852a8ccacd4aafd86de208765afae895055713a2ec380292e348",
+      "upstream_sha256": "5daf9584f4d8852a8ccacd4aafd86de208765afae895055713a2ec380292e348"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismRenderTarget_Vulkan.cpp": {
+      "bytes": 7192,
+      "sha256": "120a42f818416b9368d76cd4dfac1330512b4247ca4e6f1acadef77b32eaf0fa",
+      "upstream_sha256": "120a42f818416b9368d76cd4dfac1330512b4247ca4e6f1acadef77b32eaf0fa"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/CubismRenderTarget_Vulkan.hpp": {
+      "bytes": 3798,
+      "sha256": "eff35f2bc71fe9467fbb3a9441c6798d48f14e2919e227e472fdb2f247383331",
+      "upstream_sha256": "eff35f2bc71fe9467fbb3a9441c6798d48f14e2919e227e472fdb2f247383331"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/CMakeLists.txt": {
+      "bytes": 5866,
+      "sha256": "66a80b2beb7457b57d1d2c542d22b4849296a0300fd9ec9ead1d45e98afd5de7",
+      "upstream_sha256": "66a80b2beb7457b57d1d2c542d22b4849296a0300fd9ec9ead1d45e98afd5de7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/common.glsl": {
+      "bytes": 333,
+      "sha256": "31d36f0c3c061f8caabd58660a4401858943fbb49c44f5cb05829a4577164ec7",
+      "upstream_sha256": "31d36f0c3c061f8caabd58660a4401858943fbb49c44f5cb05829a4577164ec7"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrc.frag": {
+      "bytes": 727,
+      "sha256": "fb4c8f12aaae8ba791a56ecad7ac072f0c6bdb1b02c67d2e20dcadc1a6d44615",
+      "upstream_sha256": "fb4c8f12aaae8ba791a56ecad7ac072f0c6bdb1b02c67d2e20dcadc1a6d44615"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcAlphaBlend.glsl": {
+      "bytes": 2376,
+      "sha256": "6da75a4a94511894a2df350cbf6081436fd10633839a86c6aa683f7f79a7ce61",
+      "upstream_sha256": "6da75a4a94511894a2df350cbf6081436fd10633839a86c6aa683f7f79a7ce61"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcBlend.frag": {
+      "bytes": 1207,
+      "sha256": "b70f007b6bcaa7e415d00bbca578ca819ae7eb3da8cbab8579e5cc43f57217df",
+      "upstream_sha256": "b70f007b6bcaa7e415d00bbca578ca819ae7eb3da8cbab8579e5cc43f57217df"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcColorBlend.glsl": {
+      "bytes": 7776,
+      "sha256": "3c87f6c4a63bac8ca4e4eb0db0354b6086357eea42a73a99507810b1a95643f3",
+      "upstream_sha256": "3c87f6c4a63bac8ca4e4eb0db0354b6086357eea42a73a99507810b1a95643f3"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcCopy.frag": {
+      "bytes": 567,
+      "sha256": "5edbc295befebd1395323dedc58c3cf6824ca71a67a1981ce1539155f60a4eb2",
+      "upstream_sha256": "5edbc295befebd1395323dedc58c3cf6824ca71a67a1981ce1539155f60a4eb2"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMask.frag": {
+      "bytes": 1014,
+      "sha256": "0a7889014fcc28d93227b27f58e916bd4d0fc5940e9b1d68e926ed9b01030da2",
+      "upstream_sha256": "0a7889014fcc28d93227b27f58e916bd4d0fc5940e9b1d68e926ed9b01030da2"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskBlend.frag": {
+      "bytes": 1470,
+      "sha256": "33287091e691b41512ed035cb3122767011acc4653194627ca602d307fb31fca",
+      "upstream_sha256": "33287091e691b41512ed035cb3122767011acc4653194627ca602d307fb31fca"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskInverted.frag": {
+      "bytes": 1023,
+      "sha256": "ba4aae9e4d47b6bfa27368ff7851c40da5ae5dae3d570ef0e17b364a7d2789e1",
+      "upstream_sha256": "ba4aae9e4d47b6bfa27368ff7851c40da5ae5dae3d570ef0e17b364a7d2789e1"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskInvertedBlend.frag": {
+      "bytes": 1478,
+      "sha256": "b9c1bd71742d6f8ddf4de54ab564f02f484eb2ff9c89e37ad5f7912681c39215",
+      "upstream_sha256": "b9c1bd71742d6f8ddf4de54ab564f02f484eb2ff9c89e37ad5f7912681c39215"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskInvertedPremultipliedAlpha.frag": {
+      "bytes": 981,
+      "sha256": "546f48116f7456320deb45b2676b51031fa6d3c0ac21276e748ea1c2a5ece23c",
+      "upstream_sha256": "546f48116f7456320deb45b2676b51031fa6d3c0ac21276e748ea1c2a5ece23c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.frag": {
+      "bytes": 1525,
+      "sha256": "865f6550574146739926221c659e4e13a3f4111f843334a1e2aaa8ec2aa4937c",
+      "upstream_sha256": "865f6550574146739926221c659e4e13a3f4111f843334a1e2aaa8ec2aa4937c"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskPremultipliedAlpha.frag": {
+      "bytes": 973,
+      "sha256": "e0974224726c9c41a67151ce42c38a323a200946eeed65eb0fd5dd9afa221447",
+      "upstream_sha256": "e0974224726c9c41a67151ce42c38a323a200946eeed65eb0fd5dd9afa221447"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcMaskPremultipliedAlphaBlend.frag": {
+      "bytes": 1517,
+      "sha256": "c85ba2deafbaaaadb8d3cc707f561664f24170a226c59b912954f5fd2a88256a",
+      "upstream_sha256": "c85ba2deafbaaaadb8d3cc707f561664f24170a226c59b912954f5fd2a88256a"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcPremultipliedAlpha.frag": {
+      "bytes": 688,
+      "sha256": "f5d2d57298faf79ee9fe91d323649498c3776dfd83a60118d252452df9b11dec",
+      "upstream_sha256": "f5d2d57298faf79ee9fe91d323649498c3776dfd83a60118d252452df9b11dec"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcPremultipliedAlphaBlend.frag": {
+      "bytes": 1206,
+      "sha256": "63f87eabe8e2ed44e815b3d615f3b01c7bfe5dfdf75f2746456a534a562b9099",
+      "upstream_sha256": "63f87eabe8e2ed44e815b3d615f3b01c7bfe5dfdf75f2746456a534a562b9099"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/FragShaderSrcSetupMask.frag": {
+      "bytes": 757,
+      "sha256": "661f29805d3b90c3c6bcaedb2b074f414858bfb9b0a1ae9a0b5a5d67dddfce3e",
+      "upstream_sha256": "661f29805d3b90c3c6bcaedb2b074f414858bfb9b0a1ae9a0b5a5d67dddfce3e"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrc.vert": {
+      "bytes": 616,
+      "sha256": "6c64e2b44caa2689812f9264dc7eef1f3c0bf5d048c907af9e9cb597fc671cbe",
+      "upstream_sha256": "6c64e2b44caa2689812f9264dc7eef1f3c0bf5d048c907af9e9cb597fc671cbe"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrcBlend.vert": {
+      "bytes": 772,
+      "sha256": "c6bf74a9374a578718db234d63c372e7eb96710fab7229ab7f46076e4e35a3f0",
+      "upstream_sha256": "c6bf74a9374a578718db234d63c372e7eb96710fab7229ab7f46076e4e35a3f0"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrcCopy.vert": {
+      "bytes": 499,
+      "sha256": "81e4b769a9fd54996d4e161e51990d04cdbba43ff296199e1242c0a322bc2c82",
+      "upstream_sha256": "81e4b769a9fd54996d4e161e51990d04cdbba43ff296199e1242c0a322bc2c82"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrcMasked.vert": {
+      "bytes": 741,
+      "sha256": "99ad55adc7393732790bbc74810d17a5ab869d3ad1aca228d20ceb97373e5406",
+      "upstream_sha256": "99ad55adc7393732790bbc74810d17a5ab869d3ad1aca228d20ceb97373e5406"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrcMaskedBlend.vert": {
+      "bytes": 858,
+      "sha256": "a6a2a9d8d77294f990348d3e977077a3ea7314e4b16d9c7fd0d07d97589b3540",
+      "upstream_sha256": "a6a2a9d8d77294f990348d3e977077a3ea7314e4b16d9c7fd0d07d97589b3540"
+    },
+    "android/src/main/cpp/CubismFramework/Rendering/Vulkan/Shaders/src/VertShaderSrcSetupMask.vert": {
+      "bytes": 704,
+      "sha256": "6bc1774c90f3b922305beee9b8b3d29b3deab71cc82e04ef3a2699b37f04b846",
+      "upstream_sha256": "6bc1774c90f3b922305beee9b8b3d29b3deab71cc82e04ef3a2699b37f04b846"
+    },
+    "android/src/main/cpp/CubismFramework/Type/CMakeLists.txt": {
+      "bytes": 412,
+      "sha256": "b1233eefecbffb86d278ae1d88e1ed6e3b4556749125404df8ee93e471150546",
+      "upstream_sha256": "b1233eefecbffb86d278ae1d88e1ed6e3b4556749125404df8ee93e471150546"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmMap.hpp": {
+      "bytes": 19876,
+      "sha256": "8edf69f058637c12958f0e7e0f98ede4271ac29656b0601dbe84bac9fd4566aa",
+      "upstream_sha256": "8edf69f058637c12958f0e7e0f98ede4271ac29656b0601dbe84bac9fd4566aa"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmRectF.cpp": {
+      "bytes": 840,
+      "sha256": "2ea11a41a5a60ece5c7e4f09437ef9eb85b81e9209f0877f277f485d737403c1",
+      "upstream_sha256": "2ea11a41a5a60ece5c7e4f09437ef9eb85b81e9209f0877f277f485d737403c1"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmRectF.hpp": {
+      "bytes": 2096,
+      "sha256": "7d3c79de68eaad227dbb11a3fe66741b6485f1a960bcf01bb0fa8c973d533de1",
+      "upstream_sha256": "7d3c79de68eaad227dbb11a3fe66741b6485f1a960bcf01bb0fa8c973d533de1"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmString.cpp": {
+      "bytes": 12429,
+      "sha256": "5fd48d1b765d98e79fa9bde762ad5be4ac8d989a41ebe2f1338f0c165deff0d7",
+      "upstream_sha256": "5fd48d1b765d98e79fa9bde762ad5be4ac8d989a41ebe2f1338f0c165deff0d7"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmString.hpp": {
+      "bytes": 6990,
+      "sha256": "07fd380fdb66a234a45666cc05e399c9394ba03d4f476a9831bb8b73da8284d6",
+      "upstream_sha256": "07fd380fdb66a234a45666cc05e399c9394ba03d4f476a9831bb8b73da8284d6"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmVector.hpp": {
+      "bytes": 20827,
+      "sha256": "5ca108f6cb1612ff6a5b8bfeb3d31b9ccf63460e98ef0909ca58ef1e83eb90be",
+      "upstream_sha256": "5ca108f6cb1612ff6a5b8bfeb3d31b9ccf63460e98ef0909ca58ef1e83eb90be"
+    },
+    "android/src/main/cpp/CubismFramework/Type/csmVectorSort.hpp": {
+      "bytes": 5844,
+      "sha256": "fb4a0ca0bab6914d52aba1deefe1bd360c0f8f2c7877b84b5431410c44482312",
+      "upstream_sha256": "fb4a0ca0bab6914d52aba1deefe1bd360c0f8f2c7877b84b5431410c44482312"
+    },
+    "android/src/main/cpp/CubismFramework/Type/CubismBasicType.hpp": {
+      "bytes": 1488,
+      "sha256": "30132436ade4bc98b23ecd0299a09b6d26d499c1158d123811dac5d6ef645f0e",
+      "upstream_sha256": "30132436ade4bc98b23ecd0299a09b6d26d499c1158d123811dac5d6ef645f0e"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CMakeLists.txt": {
+      "bytes": 327,
+      "sha256": "1c6179dea9fcce53a587005d838757dc4286cfa0d4c5487e9d759baa8b2cc2f4",
+      "upstream_sha256": "1c6179dea9fcce53a587005d838757dc4286cfa0d4c5487e9d759baa8b2cc2f4"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismDebug.cpp": {
+      "bytes": 1520,
+      "sha256": "fd98a0f2f04c50fd4ec0949ac05eec74e968062e24b25caf917f73a802302855",
+      "upstream_sha256": "fd98a0f2f04c50fd4ec0949ac05eec74e968062e24b25caf917f73a802302855"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismDebug.hpp": {
+      "bytes": 5231,
+      "sha256": "b5dc3aebc364d61c355acf9f9b00969e907b746e59b9ae9c1c660fa07c494de4",
+      "upstream_sha256": "b5dc3aebc364d61c355acf9f9b00969e907b746e59b9ae9c1c660fa07c494de4"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismJson.cpp": {
+      "bytes": 14313,
+      "sha256": "a838ca574f1ff24abb66822480579a03c9185e1ef6913ef0575390a984ffe19a",
+      "upstream_sha256": "a838ca574f1ff24abb66822480579a03c9185e1ef6913ef0575390a984ffe19a"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismJson.hpp": {
+      "bytes": 24116,
+      "sha256": "e56a1fcd187e73e88bb0ef89f7fa1f8231cb3b6738b89765660938c1a7f18096",
+      "upstream_sha256": "e56a1fcd187e73e88bb0ef89f7fa1f8231cb3b6738b89765660938c1a7f18096"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismString.cpp": {
+      "bytes": 3139,
+      "sha256": "d540f63dbeaf23b89349797f67e25db46642b0730c2658432bd48c8d1d0f59cd",
+      "upstream_sha256": "d540f63dbeaf23b89349797f67e25db46642b0730c2658432bd48c8d1d0f59cd"
+    },
+    "android/src/main/cpp/CubismFramework/Utils/CubismString.hpp": {
+      "bytes": 1911,
+      "sha256": "33281e2b963f979b63de2b793ec6915b279bba6de84e87cc5e946c4bdf75485d",
+      "upstream_sha256": "33281e2b963f979b63de2b793ec6915b279bba6de84e87cc5e946c4bdf75485d"
+    },
+    "android/src/main/kotlin/com/linh18nd/flutter_live2d/FlutterLive2dPlugin.kt": {
+      "bytes": 7727,
+      "sha256": "e38116f5e73ef44cb3162e0f7d6483dbbfa0b278dc1e9f9bef82786089bc1429",
+      "upstream_sha256": "8606d5b464ce58504373b2bccaf58856fb03e15f2fc7097b926b4510cda4542c"
+    },
+    "android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DBridge.kt": {
+      "bytes": 1590,
+      "sha256": "a2df70d4da06da08345b6bfecf1e8c76c811b75fa512c2da6b1cf54cd7215af3",
+      "upstream_sha256": "277cd3257ac074736bf4a16ec46e60ae9d70292feb09de26ef99ec5150a1fa36"
+    },
+    "android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DPlatformView.kt": {
+      "bytes": 17451,
+      "sha256": "bfbb918b49534afda1331aef297cf2e89b1b082a47a0e8bb10a5329943d2e4e7",
+      "upstream_sha256": "879803fd57f784dc8b109b8acb1efc25d1964833c6394b63409a066091913edc"
+    },
+    "android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DViewFactory.kt": {
+      "bytes": 621,
+      "sha256": "1debc4f6a6689347a18ec5fffc8d7f0d84995312d30342d327a4f9acc1b7a156",
+      "upstream_sha256": "1debc4f6a6689347a18ec5fffc8d7f0d84995312d30342d327a4f9acc1b7a156"
+    },
+    "ios/live2d_flutter.podspec": {
+      "bytes": 2266,
+      "sha256": "3f595659452b5304905b20e6f66f9628907899d0024d0ca946f255f848b2a331",
+      "upstream_sha256": "3f595659452b5304905b20e6f66f9628907899d0024d0ca946f255f848b2a331"
+    },
+    "ios/Classes/FlutterLive2dPlugin.swift": {
+      "bytes": 6404,
+      "sha256": "c8d8910393e05f88cfec15fd77bef6e5f8835faae312126a0431f89b5f2ea695",
+      "upstream_sha256": "c8d8910393e05f88cfec15fd77bef6e5f8835faae312126a0431f89b5f2ea695"
+    },
+    "ios/Classes/Live2DView.swift": {
+      "bytes": 25002,
+      "sha256": "293280d3f480590f07191885eced36bb520c340ee0a76c43bc6f9dfa3be12288",
+      "upstream_sha256": "293280d3f480590f07191885eced36bb520c340ee0a76c43bc6f9dfa3be12288"
+    },
+    "ios/Classes/Live2DWrapper.h": {
+      "bytes": 2124,
+      "sha256": "0e1f85faad8e34ea0e84650b7fc7e539bbe114b5350e17d30bd7ef35c7ac46b6",
+      "upstream_sha256": "0e1f85faad8e34ea0e84650b7fc7e539bbe114b5350e17d30bd7ef35c7ac46b6"
+    },
+    "ios/Classes/Live2DWrapper.mm": {
+      "bytes": 33225,
+      "sha256": "01ff228f26edabcccff0671ba4bdd4af76ecf11fffbe4c5cd1fd8cdc16d5f5a0",
+      "upstream_sha256": "01ff228f26edabcccff0671ba4bdd4af76ecf11fffbe4c5cd1fd8cdc16d5f5a0"
+    },
+    "ios/Classes/stb_image.h": {
+      "bytes": 283010,
+      "sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3",
+      "upstream_sha256": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
+    },
+    "ios/CubismFramework/CMakeLists.txt": {
+      "bytes": 999,
+      "sha256": "6c6d8728ea4555d57ec571e00fcbc82831b39df98cf17a1e9e60b1adca204cd4",
+      "upstream_sha256": "6c6d8728ea4555d57ec571e00fcbc82831b39df98cf17a1e9e60b1adca204cd4"
+    },
+    "ios/CubismFramework/CubismCdiJson.cpp": {
+      "bytes": 3581,
+      "sha256": "1550651cd9f27d1574d3cf3952459eabbbf2dec4372c7fce83f7ac3cbcd9bf80",
+      "upstream_sha256": "1550651cd9f27d1574d3cf3952459eabbbf2dec4372c7fce83f7ac3cbcd9bf80"
+    },
+    "ios/CubismFramework/CubismCdiJson.hpp": {
+      "bytes": 4354,
+      "sha256": "2c006f943bdaa2bd03691238467fb1b4779e7ab4a1589f470fb585749dbdc644",
+      "upstream_sha256": "2c006f943bdaa2bd03691238467fb1b4779e7ab4a1589f470fb585749dbdc644"
+    },
+    "ios/CubismFramework/CubismDefaultParameterId.cpp": {
+      "bytes": 2710,
+      "sha256": "128c14843be26c0b4185daf583b59360668d66dd1edfc11d3f08ec5236b9ea23",
+      "upstream_sha256": "128c14843be26c0b4185daf583b59360668d66dd1edfc11d3f08ec5236b9ea23"
+    },
+    "ios/CubismFramework/CubismDefaultParameterId.hpp": {
+      "bytes": 2444,
+      "sha256": "1e72916a696872dc07df287e47d0a78844696f2f287848af21656d7b4bee6973",
+      "upstream_sha256": "1e72916a696872dc07df287e47d0a78844696f2f287848af21656d7b4bee6973"
+    },
+    "ios/CubismFramework/CubismFramework.cpp": {
+      "bytes": 10392,
+      "sha256": "2e4191bcbc84e8b3fc0836930d6524d0a8981e8c58f6383100e7713bc517327c",
+      "upstream_sha256": "2e4191bcbc84e8b3fc0836930d6524d0a8981e8c58f6383100e7713bc517327c"
+    },
+    "ios/CubismFramework/CubismFramework.hpp": {
+      "bytes": 14567,
+      "sha256": "cec8dc293b282cb79955ca9e465e196e2a8d223d5936bb10ff7aa3b571cbbfdb",
+      "upstream_sha256": "cec8dc293b282cb79955ca9e465e196e2a8d223d5936bb10ff7aa3b571cbbfdb"
+    },
+    "ios/CubismFramework/CubismFrameworkConfig.hpp": {
+      "bytes": 1532,
+      "sha256": "a9251edcf712050e8cfe88c7c21c65d4f2c39416193fa2f970074399c9a69db9",
+      "upstream_sha256": "a9251edcf712050e8cfe88c7c21c65d4f2c39416193fa2f970074399c9a69db9"
+    },
+    "ios/CubismFramework/CubismJsonHolder.hpp": {
+      "bytes": 1765,
+      "sha256": "6e229a78b6a6d385b864e6c5d25ed94e1a8f62b50bce4945cf2bb71750478042",
+      "upstream_sha256": "6e229a78b6a6d385b864e6c5d25ed94e1a8f62b50bce4945cf2bb71750478042"
+    },
+    "ios/CubismFramework/CubismModelSettingJson.cpp": {
+      "bytes": 14631,
+      "sha256": "255885515c4dbddf848a11d80e352dd2452e6b8795d467dc4731d02ba3374981",
+      "upstream_sha256": "255885515c4dbddf848a11d80e352dd2452e6b8795d467dc4731d02ba3374981"
+    },
+    "ios/CubismFramework/CubismModelSettingJson.hpp": {
+      "bytes": 11263,
+      "sha256": "51a2d7fa2f48f80f20b92ab3d045adc7ea4f061f2a0037e06a87b3df592cae86",
+      "upstream_sha256": "51a2d7fa2f48f80f20b92ab3d045adc7ea4f061f2a0037e06a87b3df592cae86"
+    },
+    "ios/CubismFramework/ICubismAllocator.hpp": {
+      "bytes": 1576,
+      "sha256": "4edf6a53ff3a2fedfb5211cab78efae788055a8500378a3460f97587b4c64073",
+      "upstream_sha256": "4edf6a53ff3a2fedfb5211cab78efae788055a8500378a3460f97587b4c64073"
+    },
+    "ios/CubismFramework/ICubismModelSetting.hpp": {
+      "bytes": 6721,
+      "sha256": "9b27645bcaa7758ee35ea58a3b0b9e01b60b591df36defc3d6564ad40b8f769e",
+      "upstream_sha256": "9b27645bcaa7758ee35ea58a3b0b9e01b60b591df36defc3d6564ad40b8f769e"
+    },
+    "ios/CubismFramework/Live2DCubismCore.hpp": {
+      "bytes": 522,
+      "sha256": "329e17fadcfcf287849b69376586f2b9a10d24092c1bda6bf6482dbed358108b",
+      "upstream_sha256": "329e17fadcfcf287849b69376586f2b9a10d24092c1bda6bf6482dbed358108b"
+    },
+    "ios/CubismFramework/Effect/CMakeLists.txt": {
+      "bytes": 427,
+      "sha256": "014db872dd3f618f3d5dbe1e7459adaf994b2f48c503f1da182f3825d477856b",
+      "upstream_sha256": "014db872dd3f618f3d5dbe1e7459adaf994b2f48c503f1da182f3825d477856b"
+    },
+    "ios/CubismFramework/Effect/CubismBreath.cpp": {
+      "bytes": 1385,
+      "sha256": "162786fcc90ba4e2c8d7690e458caca42fe5b29b71ce512117eb66129588ab59",
+      "upstream_sha256": "162786fcc90ba4e2c8d7690e458caca42fe5b29b71ce512117eb66129588ab59"
+    },
+    "ios/CubismFramework/Effect/CubismBreath.hpp": {
+      "bytes": 3280,
+      "sha256": "ab085fc9438c715400e09233580033924c038e272f0e40f59cea103e14a07223",
+      "upstream_sha256": "ab085fc9438c715400e09233580033924c038e272f0e40f59cea103e14a07223"
+    },
+    "ios/CubismFramework/Effect/CubismEyeBlink.cpp": {
+      "bytes": 3986,
+      "sha256": "d49130e5a56b1dd05487f61fe35d8e6b8451b3a99bc7892ad45cd506cc45967d",
+      "upstream_sha256": "d49130e5a56b1dd05487f61fe35d8e6b8451b3a99bc7892ad45cd506cc45967d"
+    },
+    "ios/CubismFramework/Effect/CubismEyeBlink.hpp": {
+      "bytes": 3444,
+      "sha256": "5b7e3771f6bc135f97e6e94814bf2b5e553bdc3fbdb35c63d98526190fb91ce5",
+      "upstream_sha256": "5b7e3771f6bc135f97e6e94814bf2b5e553bdc3fbdb35c63d98526190fb91ce5"
+    },
+    "ios/CubismFramework/Effect/CubismLook.cpp": {
+      "bytes": 1153,
+      "sha256": "4055b2dc6c504ed76dce219c6b1a4e25db214f68a90aa2d4357bd84f75237008",
+      "upstream_sha256": "4055b2dc6c504ed76dce219c6b1a4e25db214f68a90aa2d4357bd84f75237008"
+    },
+    "ios/CubismFramework/Effect/CubismLook.hpp": {
+      "bytes": 2915,
+      "sha256": "57828d185bb8cae16a302abdb465ee89d903a0ed577e41d37c23bfb8f7c4a16b",
+      "upstream_sha256": "57828d185bb8cae16a302abdb465ee89d903a0ed577e41d37c23bfb8f7c4a16b"
+    },
+    "ios/CubismFramework/Effect/CubismPose.cpp": {
+      "bytes": 9289,
+      "sha256": "ba29fb74432473bd2bfa6862166a93577fde95fbd5486f321116c55ee705008b",
+      "upstream_sha256": "ba29fb74432473bd2bfa6862166a93577fde95fbd5486f321116c55ee705008b"
+    },
+    "ios/CubismFramework/Effect/CubismPose.hpp": {
+      "bytes": 2863,
+      "sha256": "fde5bfd3f5499b93dbf2877da9b85a8007e23484cf7999ae68b73a236e174ace",
+      "upstream_sha256": "fde5bfd3f5499b93dbf2877da9b85a8007e23484cf7999ae68b73a236e174ace"
+    },
+    "ios/CubismFramework/Id/CMakeLists.txt": {
+      "bytes": 233,
+      "sha256": "b76e98a0d2bc2221ee9b3e9cbff096dece9c82c2faf03706f4cf2dce18474b09",
+      "upstream_sha256": "b76e98a0d2bc2221ee9b3e9cbff096dece9c82c2faf03706f4cf2dce18474b09"
+    },
+    "ios/CubismFramework/Id/CubismId.cpp": {
+      "bytes": 920,
+      "sha256": "4bdab46c31f45a22b5fce470d6621d08d1a70768f59b7b01352b52042e121618",
+      "upstream_sha256": "4bdab46c31f45a22b5fce470d6621d08d1a70768f59b7b01352b52042e121618"
+    },
+    "ios/CubismFramework/Id/CubismId.hpp": {
+      "bytes": 1563,
+      "sha256": "9f6c35c823b3d623d1db16d93692ecb96b2f4992edae811e8d9720a35bd7ccab",
+      "upstream_sha256": "9f6c35c823b3d623d1db16d93692ecb96b2f4992edae811e8d9720a35bd7ccab"
+    },
+    "ios/CubismFramework/Id/CubismIdManager.cpp": {
+      "bytes": 1863,
+      "sha256": "57d6e5546ba559423a2820e1566180c436e7254b18368bf2364e83256cbecb4c",
+      "upstream_sha256": "57d6e5546ba559423a2820e1566180c436e7254b18368bf2364e83256cbecb4c"
+    },
+    "ios/CubismFramework/Id/CubismIdManager.hpp": {
+      "bytes": 2385,
+      "sha256": "f93bef9c91f08829ef46ddcb296d1b501d48ba5da66a63477cab04ac99692ba3",
+      "upstream_sha256": "f93bef9c91f08829ef46ddcb296d1b501d48ba5da66a63477cab04ac99692ba3"
+    },
+    "ios/CubismFramework/Math/CMakeLists.txt": {
+      "bytes": 657,
+      "sha256": "360b2e3b1d12daa2d59ae0a5d2415753abc3a0b2a5d739c898cc37bb5550ef65",
+      "upstream_sha256": "360b2e3b1d12daa2d59ae0a5d2415753abc3a0b2a5d739c898cc37bb5550ef65"
+    },
+    "ios/CubismFramework/Math/CubismMath.cpp": {
+      "bytes": 5201,
+      "sha256": "6fba8b980c0e22011877e2fa71937f2f1d6166fb3cb256d6b4bc26a74054444e",
+      "upstream_sha256": "6fba8b980c0e22011877e2fa71937f2f1d6166fb3cb256d6b4bc26a74054444e"
+    },
+    "ios/CubismFramework/Math/CubismMath.hpp": {
+      "bytes": 6365,
+      "sha256": "b38500ca5476e65a429774ecc63c5388731a75cf4bb671856677ec99cba7312c",
+      "upstream_sha256": "b38500ca5476e65a429774ecc63c5388731a75cf4bb671856677ec99cba7312c"
+    },
+    "ios/CubismFramework/Math/CubismMatrix44.cpp": {
+      "bytes": 5121,
+      "sha256": "9de9d5f7f8d8e40963c6f0d0143b02d9c329a080a8b61812c5e35a2c8768da5a",
+      "upstream_sha256": "9de9d5f7f8d8e40963c6f0d0143b02d9c329a080a8b61812c5e35a2c8768da5a"
+    },
+    "ios/CubismFramework/Math/CubismMatrix44.hpp": {
+      "bytes": 4921,
+      "sha256": "494d35a308120e3772424cd4db8d3549640279884ddaf05bc25cbffe334ca565",
+      "upstream_sha256": "494d35a308120e3772424cd4db8d3549640279884ddaf05bc25cbffe334ca565"
+    },
+    "ios/CubismFramework/Math/CubismModelMatrix.cpp": {
+      "bytes": 3619,
+      "sha256": "e1f51fd970238bddebc5d5542f9938203876c94db0bf911523b23864fc0301fb",
+      "upstream_sha256": "e1f51fd970238bddebc5d5542f9938203876c94db0bf911523b23864fc0301fb"
+    },
+    "ios/CubismFramework/Math/CubismModelMatrix.hpp": {
+      "bytes": 2963,
+      "sha256": "f2c863f3b690d36c3a26e63517c6e3eac431761f105003c2066888fca74e6b4b",
+      "upstream_sha256": "f2c863f3b690d36c3a26e63517c6e3eac431761f105003c2066888fca74e6b4b"
+    },
+    "ios/CubismFramework/Math/CubismTargetPoint.cpp": {
+      "bytes": 4864,
+      "sha256": "95faacf1448b24ab06c648b1519d9eb0768739f08a95e46883ee599aa2def95e",
+      "upstream_sha256": "95faacf1448b24ab06c648b1519d9eb0768739f08a95e46883ee599aa2def95e"
+    },
+    "ios/CubismFramework/Math/CubismTargetPoint.hpp": {
+      "bytes": 1574,
+      "sha256": "e9dc0861d2d2c96bfe3d0ce7a100fc157a410457cbb7644c1fec44a4edf42b84",
+      "upstream_sha256": "e9dc0861d2d2c96bfe3d0ce7a100fc157a410457cbb7644c1fec44a4edf42b84"
+    },
+    "ios/CubismFramework/Math/CubismVector2.cpp": {
+      "bytes": 2525,
+      "sha256": "0d178155bff124016584ec8249658002e2b8935b2769a2d858d64d51775dd7e6",
+      "upstream_sha256": "0d178155bff124016584ec8249658002e2b8935b2769a2d858d64d51775dd7e6"
+    },
+    "ios/CubismFramework/Math/CubismVector2.hpp": {
+      "bytes": 5276,
+      "sha256": "7a654af4f59e20c5011a52c603a5cf6f18d2b38954ebcb817621c86f878c5010",
+      "upstream_sha256": "7a654af4f59e20c5011a52c603a5cf6f18d2b38954ebcb817621c86f878c5010"
+    },
+    "ios/CubismFramework/Math/CubismViewMatrix.cpp": {
+      "bytes": 4726,
+      "sha256": "4392774d0d10bc320663ae42ccf4cfb71aafd4df396b64aea94849b3f9b37f23",
+      "upstream_sha256": "4392774d0d10bc320663ae42ccf4cfb71aafd4df396b64aea94849b3f9b37f23"
+    },
+    "ios/CubismFramework/Math/CubismViewMatrix.hpp": {
+      "bytes": 5249,
+      "sha256": "d329f9fbdb4e6b7ce967dde8d8ab025322a3cbe3b08b8f52079dfe28d4e30ce6",
+      "upstream_sha256": "d329f9fbdb4e6b7ce967dde8d8ab025322a3cbe3b08b8f52079dfe28d4e30ce6"
+    },
+    "ios/CubismFramework/Model/CMakeLists.txt": {
+      "bytes": 703,
+      "sha256": "172359b15d6b8271fcf03b2e42cc5919ba5ba07328bd5ee2978e3f3d53049808",
+      "upstream_sha256": "172359b15d6b8271fcf03b2e42cc5919ba5ba07328bd5ee2978e3f3d53049808"
+    },
+    "ios/CubismFramework/Model/CubismMoc.cpp": {
+      "bytes": 3586,
+      "sha256": "739c0e9c10c40503b28bdb71908195fe3079510a5738649f399e61c117c4dcca",
+      "upstream_sha256": "739c0e9c10c40503b28bdb71908195fe3079510a5738649f399e61c117c4dcca"
+    },
+    "ios/CubismFramework/Model/CubismMoc.hpp": {
+      "bytes": 2876,
+      "sha256": "bf74e65f92814642889b42941133e9d5f33ee44adcfe843fc6554bfd246d7ac1",
+      "upstream_sha256": "bf74e65f92814642889b42941133e9d5f33ee44adcfe843fc6554bfd246d7ac1"
+    },
+    "ios/CubismFramework/Model/CubismModel.cpp": {
+      "bytes": 34821,
+      "sha256": "b0da23c63a8c10bf90a7f68cb7779adc725f41d0241a1093ea3fc214d9b56ffb",
+      "upstream_sha256": "b0da23c63a8c10bf90a7f68cb7779adc725f41d0241a1093ea3fc214d9b56ffb"
+    },
+    "ios/CubismFramework/Model/CubismModel.hpp": {
+      "bytes": 30897,
+      "sha256": "b93e82a630278624d2ac2745c275eceb31d54c54212356c38fdd8f39f619337e",
+      "upstream_sha256": "b93e82a630278624d2ac2745c275eceb31d54c54212356c38fdd8f39f619337e"
+    },
+    "ios/CubismFramework/Model/CubismModelMultiplyAndScreenColor.cpp": {
+      "bytes": 20595,
+      "sha256": "8b714dcce2c8c018061aa9dff60482871e701bea8bd803db5fa6b4bbfd6456a5",
+      "upstream_sha256": "8b714dcce2c8c018061aa9dff60482871e701bea8bd803db5fa6b4bbfd6456a5"
+    },
+    "ios/CubismFramework/Model/CubismModelMultiplyAndScreenColor.hpp": {
+      "bytes": 14664,
+      "sha256": "cf3cc113c0a8e2ff50ad4f003e35529bbeacf4ad842553276fbf513b0c5e1abd",
+      "upstream_sha256": "cf3cc113c0a8e2ff50ad4f003e35529bbeacf4ad842553276fbf513b0c5e1abd"
+    },
+    "ios/CubismFramework/Model/CubismModelUserData.cpp": {
+      "bytes": 2141,
+      "sha256": "17d971b1cc512a8aad4b0bc9eb7106781319c97ada8ae36343ea35f9ab82f0ea",
+      "upstream_sha256": "17d971b1cc512a8aad4b0bc9eb7106781319c97ada8ae36343ea35f9ab82f0ea"
+    },
+    "ios/CubismFramework/Model/CubismModelUserData.hpp": {
+      "bytes": 1784,
+      "sha256": "3ba8c2c36fe06c35d795c56aee7b20626b6f30cdf36f5e6c4e5c6b1ab36e1f33",
+      "upstream_sha256": "3ba8c2c36fe06c35d795c56aee7b20626b6f30cdf36f5e6c4e5c6b1ab36e1f33"
+    },
+    "ios/CubismFramework/Model/CubismModelUserDataJson.cpp": {
+      "bytes": 1650,
+      "sha256": "9bc2cc905ffea6cb2b66b4cf9e7b29344b7c66401a687b5a3511af8d1dec50e2",
+      "upstream_sha256": "9bc2cc905ffea6cb2b66b4cf9e7b29344b7c66401a687b5a3511af8d1dec50e2"
+    },
+    "ios/CubismFramework/Model/CubismModelUserDataJson.hpp": {
+      "bytes": 1938,
+      "sha256": "2cb2bfd742e604b1d5b2b6544f0886f7ef50ca16b68baebea6e8335426519713",
+      "upstream_sha256": "2cb2bfd742e604b1d5b2b6544f0886f7ef50ca16b68baebea6e8335426519713"
+    },
+    "ios/CubismFramework/Model/CubismUserModel.cpp": {
+      "bytes": 8130,
+      "sha256": "8591d9b4f9b4aae1b55e9318e7edfd083d0f889175315236de90b54b36a17d1e",
+      "upstream_sha256": "8591d9b4f9b4aae1b55e9318e7edfd083d0f889175315236de90b54b36a17d1e"
+    },
+    "ios/CubismFramework/Model/CubismUserModel.hpp": {
+      "bytes": 8825,
+      "sha256": "707314a16217e14a545f11cc23271fcff63098d459d4187d21cc88b5bad1e230",
+      "upstream_sha256": "707314a16217e14a545f11cc23271fcff63098d459d4187d21cc88b5bad1e230"
+    },
+    "ios/CubismFramework/Motion/ACubismMotion.cpp": {
+      "bytes": 7209,
+      "sha256": "b8f03d32ebc678652fee8c87d0cf93fea4717e5f4cb9739503aa8d7e06054867",
+      "upstream_sha256": "b8f03d32ebc678652fee8c87d0cf93fea4717e5f4cb9739503aa8d7e06054867"
+    },
+    "ios/CubismFramework/Motion/ACubismMotion.hpp": {
+      "bytes": 9978,
+      "sha256": "436b01a9ab59a8aa1f289012a996a2269e2b5cd75ff9e4772679097dc1f74cc5",
+      "upstream_sha256": "436b01a9ab59a8aa1f289012a996a2269e2b5cd75ff9e4772679097dc1f74cc5"
+    },
+    "ios/CubismFramework/Motion/CMakeLists.txt": {
+      "bytes": 2122,
+      "sha256": "cf9f8881b9a2a91e066f373de3e0b4c5b97f5bcaeee5b496a9565c525a48990c",
+      "upstream_sha256": "cf9f8881b9a2a91e066f373de3e0b4c5b97f5bcaeee5b496a9565c525a48990c"
+    },
+    "ios/CubismFramework/Motion/CubismBreathUpdater.cpp": {
+      "bytes": 844,
+      "sha256": "a670d8e4bece9cce1d54e5923b9c380a7a302c2362c309c3548ca0a583c9c6c0",
+      "upstream_sha256": "a670d8e4bece9cce1d54e5923b9c380a7a302c2362c309c3548ca0a583c9c6c0"
+    },
+    "ios/CubismFramework/Motion/CubismBreathUpdater.hpp": {
+      "bytes": 1348,
+      "sha256": "ae001719112fe876570496f1050aa065fe4c57fd467c35ba1285427d759b03c8",
+      "upstream_sha256": "ae001719112fe876570496f1050aa065fe4c57fd467c35ba1285427d759b03c8"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionMotion.cpp": {
+      "bytes": 9016,
+      "sha256": "b8f644c9797248c83590a69fcea72e5f280f603002270d2ef000e31098deb6ad",
+      "upstream_sha256": "b8f644c9797248c83590a69fcea72e5f280f603002270d2ef000e31098deb6ad"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionMotion.hpp": {
+      "bytes": 3242,
+      "sha256": "d77f5ae9774171727f75a032e941fcfe83672d18c8f53dd31e1b7d8d455ded4e",
+      "upstream_sha256": "d77f5ae9774171727f75a032e941fcfe83672d18c8f53dd31e1b7d8d455ded4e"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionMotionManager.cpp": {
+      "bytes": 6782,
+      "sha256": "9e5d0ac200daa3a7e56cea5dbba91c54ed022081822294cd3c2d038e8eda4804",
+      "upstream_sha256": "9e5d0ac200daa3a7e56cea5dbba91c54ed022081822294cd3c2d038e8eda4804"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionMotionManager.hpp": {
+      "bytes": 2239,
+      "sha256": "a6e246d80b0b9f915cd914c93a727c2f5c9bedd80fac4b62ec81a218151750c6",
+      "upstream_sha256": "a6e246d80b0b9f915cd914c93a727c2f5c9bedd80fac4b62ec81a218151750c6"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionUpdater.cpp": {
+      "bytes": 1035,
+      "sha256": "93ff0282e1b930b7e4cbdc691e6fd86021ddd113bb6fec64e1cff808ae6e0c9b",
+      "upstream_sha256": "93ff0282e1b930b7e4cbdc691e6fd86021ddd113bb6fec64e1cff808ae6e0c9b"
+    },
+    "ios/CubismFramework/Motion/CubismExpressionUpdater.hpp": {
+      "bytes": 1520,
+      "sha256": "f5131948a436e8df941c2cba300f28fb374e95b63533d22846623f5c3cba5da1",
+      "upstream_sha256": "f5131948a436e8df941c2cba300f28fb374e95b63533d22846623f5c3cba5da1"
+    },
+    "ios/CubismFramework/Motion/CubismEyeBlinkUpdater.cpp": {
+      "bytes": 1124,
+      "sha256": "6c50b5da134945f51df835089e74fca9c2e33678c729600c6fb345e9ab8c019b",
+      "upstream_sha256": "6c50b5da134945f51df835089e74fca9c2e33678c729600c6fb345e9ab8c019b"
+    },
+    "ios/CubismFramework/Motion/CubismEyeBlinkUpdater.hpp": {
+      "bytes": 1589,
+      "sha256": "36e0e2b2482bbb6a1eea8eb26edf03179f3efb0354e93bda116f4ae100bb6d73",
+      "upstream_sha256": "36e0e2b2482bbb6a1eea8eb26edf03179f3efb0354e93bda116f4ae100bb6d73"
+    },
+    "ios/CubismFramework/Motion/CubismLipSyncUpdater.cpp": {
+      "bytes": 1438,
+      "sha256": "fc31380662a956ab5eae833fec61e1870d518ce07d580faa8177bcb15b8c8f61",
+      "upstream_sha256": "fc31380662a956ab5eae833fec61e1870d518ce07d580faa8177bcb15b8c8f61"
+    },
+    "ios/CubismFramework/Motion/CubismLipSyncUpdater.hpp": {
+      "bytes": 1679,
+      "sha256": "b09ba43a5d9744929307b18ad943a1f4516ced96ef58e7d9d4ef756c4323adcf",
+      "upstream_sha256": "b09ba43a5d9744929307b18ad943a1f4516ced96ef58e7d9d4ef756c4323adcf"
+    },
+    "ios/CubismFramework/Motion/CubismLookUpdater.cpp": {
+      "bytes": 1112,
+      "sha256": "b60b60ab2393dfb8a2b80b279ca1726e6ddfc11d3e0cdf44fbc276595c545e2d",
+      "upstream_sha256": "b60b60ab2393dfb8a2b80b279ca1726e6ddfc11d3e0cdf44fbc276595c545e2d"
+    },
+    "ios/CubismFramework/Motion/CubismLookUpdater.hpp": {
+      "bytes": 1646,
+      "sha256": "b3f388b27fe02f3340e89dcf16330d8d6ef6101ac280500cb8f9e7fd058ae040",
+      "upstream_sha256": "b3f388b27fe02f3340e89dcf16330d8d6ef6101ac280500cb8f9e7fd058ae040"
+    },
+    "ios/CubismFramework/Motion/CubismMotion.cpp": {
+      "bytes": 31122,
+      "sha256": "eb2e79452a7ad19bcea7a57fdff4065d5530b2bc3d56deaf53cf4f3dce6bbb43",
+      "upstream_sha256": "eb2e79452a7ad19bcea7a57fdff4065d5530b2bc3d56deaf53cf4f3dce6bbb43"
+    },
+    "ios/CubismFramework/Motion/CubismMotion.hpp": {
+      "bytes": 6610,
+      "sha256": "80ed5029dce4439cdd9c4ac47ab2c4f4c40c3b480f64657c51fb82593945b6e1",
+      "upstream_sha256": "80ed5029dce4439cdd9c4ac47ab2c4f4c40c3b480f64657c51fb82593945b6e1"
+    },
+    "ios/CubismFramework/Motion/CubismMotionInternal.hpp": {
+      "bytes": 4052,
+      "sha256": "0f76b3a407f297a0e8dfbd26546dc9f595157498db5feaa8de264af34240ba31",
+      "upstream_sha256": "0f76b3a407f297a0e8dfbd26546dc9f595157498db5feaa8de264af34240ba31"
+    },
+    "ios/CubismFramework/Motion/CubismMotionJson.cpp": {
+      "bytes": 6959,
+      "sha256": "97a85ca9486fecde8058c2db45b68cd0ad116af6bcafc99faf87569a74d1ceba",
+      "upstream_sha256": "97a85ca9486fecde8058c2db45b68cd0ad116af6bcafc99faf87569a74d1ceba"
+    },
+    "ios/CubismFramework/Motion/CubismMotionJson.hpp": {
+      "bytes": 6472,
+      "sha256": "a8eb63c75b911689fec715a6a25f1968a8d9c68d63b830182795314f94ab380c",
+      "upstream_sha256": "a8eb63c75b911689fec715a6a25f1968a8d9c68d63b830182795314f94ab380c"
+    },
+    "ios/CubismFramework/Motion/CubismMotionManager.cpp": {
+      "bytes": 1776,
+      "sha256": "bed950b1a3871467d7a1be9d7e48fc3f04bf6ff717049b9cf9ae700be6887331",
+      "upstream_sha256": "bed950b1a3871467d7a1be9d7e48fc3f04bf6ff717049b9cf9ae700be6887331"
+    },
+    "ios/CubismFramework/Motion/CubismMotionManager.hpp": {
+      "bytes": 2459,
+      "sha256": "d64a984f31cc4af7cd941bcb3234ffdc55c77826a6656b59b2191f5293177138",
+      "upstream_sha256": "d64a984f31cc4af7cd941bcb3234ffdc55c77826a6656b59b2191f5293177138"
+    },
+    "ios/CubismFramework/Motion/CubismMotionQueueEntry.cpp": {
+      "bytes": 3441,
+      "sha256": "ca7da5a1b47aa30db67d239816e53bd641d400ee196a382987031af8c8216087",
+      "upstream_sha256": "ca7da5a1b47aa30db67d239816e53bd641d400ee196a382987031af8c8216087"
+    },
+    "ios/CubismFramework/Motion/CubismMotionQueueEntry.hpp": {
+      "bytes": 5503,
+      "sha256": "d3a82f00969891112006b5c7c7c84e7bfd3ba8e825f197c6c7fcbc6709cb8c15",
+      "upstream_sha256": "d3a82f00969891112006b5c7c7c84e7bfd3ba8e825f197c6c7fcbc6709cb8c15"
+    },
+    "ios/CubismFramework/Motion/CubismMotionQueueManager.cpp": {
+      "bytes": 6855,
+      "sha256": "6185b5a3054d163c795da8bf47f09f48a38ddce8662172f2c5686248a23e027b",
+      "upstream_sha256": "6185b5a3054d163c795da8bf47f09f48a38ddce8662172f2c5686248a23e027b"
+    },
+    "ios/CubismFramework/Motion/CubismMotionQueueManager.hpp": {
+      "bytes": 3802,
+      "sha256": "7f8517cb44c021e42e3e4c47e0560b31d7dea31e479e6bd46f884d07fc44bf27",
+      "upstream_sha256": "7f8517cb44c021e42e3e4c47e0560b31d7dea31e479e6bd46f884d07fc44bf27"
+    },
+    "ios/CubismFramework/Motion/CubismPhysicsUpdater.cpp": {
+      "bytes": 852,
+      "sha256": "f2f91702110f10bb7d45454f0e877654d45302be7c049990da72e165b15ed2fa",
+      "upstream_sha256": "f2f91702110f10bb7d45454f0e877654d45302be7c049990da72e165b15ed2fa"
+    },
+    "ios/CubismFramework/Motion/CubismPhysicsUpdater.hpp": {
+      "bytes": 1363,
+      "sha256": "d9670a15a5bcc09f3dbdb6d40a4fa6e5b4ae2e6cbfee8a2a0fe154744a4f3ad6",
+      "upstream_sha256": "d9670a15a5bcc09f3dbdb6d40a4fa6e5b4ae2e6cbfee8a2a0fe154744a4f3ad6"
+    },
+    "ios/CubismFramework/Motion/CubismPoseUpdater.cpp": {
+      "bytes": 812,
+      "sha256": "62d74f7613f021f03db65b3de53bf3a3deba7d654addb7f9698d0cfed31d8367",
+      "upstream_sha256": "62d74f7613f021f03db65b3de53bf3a3deba7d654addb7f9698d0cfed31d8367"
+    },
+    "ios/CubismFramework/Motion/CubismPoseUpdater.hpp": {
+      "bytes": 1311,
+      "sha256": "4b18a3b58307bd72be7878386873fa7e1cff5043403eab983b34e57d44fab382",
+      "upstream_sha256": "4b18a3b58307bd72be7878386873fa7e1cff5043403eab983b34e57d44fab382"
+    },
+    "ios/CubismFramework/Motion/CubismUpdateScheduler.cpp": {
+      "bytes": 1342,
+      "sha256": "251bca6807e59efcf325d9a46a37d2d83b03c2c7aaee0caf99fe99a4a5e44a9b",
+      "upstream_sha256": "251bca6807e59efcf325d9a46a37d2d83b03c2c7aaee0caf99fe99a4a5e44a9b"
+    },
+    "ios/CubismFramework/Motion/CubismUpdateScheduler.hpp": {
+      "bytes": 1624,
+      "sha256": "e948f00e1c6b763dbd72dcaf03ddb30da77578684ff7babf67f632e1d6d6e7ba",
+      "upstream_sha256": "e948f00e1c6b763dbd72dcaf03ddb30da77578684ff7babf67f632e1d6d6e7ba"
+    },
+    "ios/CubismFramework/Motion/ICubismUpdater.cpp": {
+      "bytes": 668,
+      "sha256": "0a378cc19e1ca1bfeb759ccdfce1861b39ea8904ddb1fc86340d1fae64bcc01f",
+      "upstream_sha256": "0a378cc19e1ca1bfeb759ccdfce1861b39ea8904ddb1fc86340d1fae64bcc01f"
+    },
+    "ios/CubismFramework/Motion/ICubismUpdater.hpp": {
+      "bytes": 1867,
+      "sha256": "385e53ff37ea1d639e9ee40c17cc396d7402a95b76c5da1b6643358344da7fbe",
+      "upstream_sha256": "385e53ff37ea1d639e9ee40c17cc396d7402a95b76c5da1b6643358344da7fbe"
+    },
+    "ios/CubismFramework/Motion/IParameterProvider.cpp": {
+      "bytes": 491,
+      "sha256": "e5555f94f2775cb9a0b9ea85398d436376cff8b83e2aadf3ea661191cdc00127",
+      "upstream_sha256": "e5555f94f2775cb9a0b9ea85398d436376cff8b83e2aadf3ea661191cdc00127"
+    },
+    "ios/CubismFramework/Motion/IParameterProvider.hpp": {
+      "bytes": 1215,
+      "sha256": "e6a4448ee3711a57a7dd99ee5a3271ecdf7b17341ee808a74d5ef02a7cd5d26f",
+      "upstream_sha256": "e6a4448ee3711a57a7dd99ee5a3271ecdf7b17341ee808a74d5ef02a7cd5d26f"
+    },
+    "ios/CubismFramework/Physics/CMakeLists.txt": {
+      "bytes": 305,
+      "sha256": "214d435d604df1999305f49f5fd8f665dbb8981e52a1db5e6dfa2ce21ccc985f",
+      "upstream_sha256": "214d435d604df1999305f49f5fd8f665dbb8981e52a1db5e6dfa2ce21ccc985f"
+    },
+    "ios/CubismFramework/Physics/CubismPhysics.cpp": {
+      "bytes": 38574,
+      "sha256": "b967e6559f1b1f96b36148bd909e43d515ed6cdf4398fdd0c1250b3cdd1c4623",
+      "upstream_sha256": "b967e6559f1b1f96b36148bd909e43d515ed6cdf4398fdd0c1250b3cdd1c4623"
+    },
+    "ios/CubismFramework/Physics/CubismPhysics.hpp": {
+      "bytes": 4472,
+      "sha256": "b171ba5612d2c2a9e00ec2c8219237519183d5b643e602f4fd15c83943402b67",
+      "upstream_sha256": "b171ba5612d2c2a9e00ec2c8219237519183d5b643e602f4fd15c83943402b67"
+    },
+    "ios/CubismFramework/Physics/CubismPhysicsInternal.hpp": {
+      "bytes": 8192,
+      "sha256": "7ac82e50e5d5f7720fe10deb3bf701f691f52d3553b4e90f2304d47f95785b57",
+      "upstream_sha256": "7ac82e50e5d5f7720fe10deb3bf701f691f52d3553b4e90f2304d47f95785b57"
+    },
+    "ios/CubismFramework/Physics/CubismPhysicsJson.cpp": {
+      "bytes": 8525,
+      "sha256": "c0ecb71841f0241be051243ee0b3018b45841632ed58432f2b3e4a4d200aa78c",
+      "upstream_sha256": "c0ecb71841f0241be051243ee0b3018b45841632ed58432f2b3e4a4d200aa78c"
+    },
+    "ios/CubismFramework/Physics/CubismPhysicsJson.hpp": {
+      "bytes": 11532,
+      "sha256": "db5c91226ed0b308e9fe46ee6799a16b57ae148acf1253f7ca46c558b5088881",
+      "upstream_sha256": "db5c91226ed0b308e9fe46ee6799a16b57ae148acf1253f7ca46c558b5088881"
+    },
+    "ios/CubismFramework/Rendering/CMakeLists.txt": {
+      "bytes": 765,
+      "sha256": "7cb88ef55370145162b0f705dd69b7d6f98b3898bd120963a26238fd72ad62c6",
+      "upstream_sha256": "7cb88ef55370145162b0f705dd69b7d6f98b3898bd120963a26238fd72ad62c6"
+    },
+    "ios/CubismFramework/Rendering/csmBlendMode.cpp": {
+      "bytes": 3008,
+      "sha256": "4a931a6df75f2e6def18a59d0461dad458eaa1fb03b08210160ff55855396495",
+      "upstream_sha256": "4a931a6df75f2e6def18a59d0461dad458eaa1fb03b08210160ff55855396495"
+    },
+    "ios/CubismFramework/Rendering/csmBlendMode.hpp": {
+      "bytes": 1922,
+      "sha256": "d92aa68ba46581131414e4f67a41a0a89a0c99256c3294415b314be982d27b61",
+      "upstream_sha256": "d92aa68ba46581131414e4f67a41a0a89a0c99256c3294415b314be982d27b61"
+    },
+    "ios/CubismFramework/Rendering/CubismClippingManager.hpp": {
+      "bytes": 8768,
+      "sha256": "4ae0368b79ad6ae85c1408017b2665a42b0b7a8ebafede6635f1fe9a3d16cd19",
+      "upstream_sha256": "4ae0368b79ad6ae85c1408017b2665a42b0b7a8ebafede6635f1fe9a3d16cd19"
+    },
+    "ios/CubismFramework/Rendering/CubismClippingManager.tpp": {
+      "bytes": 27219,
+      "sha256": "d821a53490caefc650f0595f2e862f23fd4c3290b15a98bdee1c48c44cab07b6",
+      "upstream_sha256": "d821a53490caefc650f0595f2e862f23fd4c3290b15a98bdee1c48c44cab07b6"
+    },
+    "ios/CubismFramework/Rendering/CubismRenderer.cpp": {
+      "bytes": 5631,
+      "sha256": "36284f1cbbd195597af26278b785e1b136644f26cef1f80f96cfcb396472b5a1",
+      "upstream_sha256": "36284f1cbbd195597af26278b785e1b136644f26cef1f80f96cfcb396472b5a1"
+    },
+    "ios/CubismFramework/Rendering/CubismRenderer.hpp": {
+      "bytes": 12349,
+      "sha256": "8d1c32b104d7dc850d5e4edad437997868efd7fe184270fd2b2b1b98cea06e23",
+      "upstream_sha256": "8d1c32b104d7dc850d5e4edad437997868efd7fe184270fd2b2b1b98cea06e23"
+    },
+    "ios/CubismFramework/Rendering/ICubismOffscreenManager.hpp": {
+      "bytes": 10151,
+      "sha256": "a40fa1ee1563fdcb7c934b56518203107912c2c581b2e006fe06a2d850d34a4b",
+      "upstream_sha256": "a40fa1ee1563fdcb7c934b56518203107912c2c581b2e006fe06a2d850d34a4b"
+    },
+    "ios/CubismFramework/Rendering/ICubismOffscreenRenderTarget.hpp": {
+      "bytes": 3939,
+      "sha256": "ca0710d5bc5cae53c8424b27f17aaf1d0cd780cc9fbf0d77961e98a53ab6c53b",
+      "upstream_sha256": "ca0710d5bc5cae53c8424b27f17aaf1d0cd780cc9fbf0d77961e98a53ab6c53b"
+    },
+    "ios/CubismFramework/Rendering/Metal/CMakeLists.txt": {
+      "bytes": 1087,
+      "sha256": "30459539d22a990f01089e7dbea84f51a1e2267cbe199027b71790a63142e8d1",
+      "upstream_sha256": "30459539d22a990f01089e7dbea84f51a1e2267cbe199027b71790a63142e8d1"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismCommandBuffer_Metal.hpp": {
+      "bytes": 2926,
+      "sha256": "1f0f7684c2abe8139943f3f8630ade039e2ffe556a24c68acaefa39cf46a3aa3",
+      "upstream_sha256": "1f0f7684c2abe8139943f3f8630ade039e2ffe556a24c68acaefa39cf46a3aa3"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismCommandBuffer_Metal.mm": {
+      "bytes": 4498,
+      "sha256": "a38f0f8476d57a2466ee8889d1ff25f6bfb4ce1bc78264589f48b8fbd46d5042",
+      "upstream_sha256": "a38f0f8476d57a2466ee8889d1ff25f6bfb4ce1bc78264589f48b8fbd46d5042"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismDeviceInfo_Metal.hpp": {
+      "bytes": 2052,
+      "sha256": "c7790750e57ff4d92e00fde6c6bdff4cedf780905a47f38e2c29374085c48a61",
+      "upstream_sha256": "c7790750e57ff4d92e00fde6c6bdff4cedf780905a47f38e2c29374085c48a61"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismDeviceInfo_Metal.mm": {
+      "bytes": 1410,
+      "sha256": "fcf5ec556c3b2594fecc4b80d8828358337ff283f93970c0c559dd3139bdd7cc",
+      "upstream_sha256": "fcf5ec556c3b2594fecc4b80d8828358337ff283f93970c0c559dd3139bdd7cc"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismOffscreenManager_Metal.hpp": {
+      "bytes": 1271,
+      "sha256": "1bb086cc049637e1789bc14101108f431916a1e9395ecb019a09ced372635dad",
+      "upstream_sha256": "1bb086cc049637e1789bc14101108f431916a1e9395ecb019a09ced372635dad"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismOffscreenManager_Metal.mm": {
+      "bytes": 1698,
+      "sha256": "6cb2eed3597138f77263e20b047ea81d2b85b465ec7087a762d00efa3bc687f0",
+      "upstream_sha256": "6cb2eed3597138f77263e20b047ea81d2b85b465ec7087a762d00efa3bc687f0"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismOffscreenRenderTarget_Metal.hpp": {
+      "bytes": 2008,
+      "sha256": "84b36aed53795adec90b1f92b70357469f3d5c5ee0e4388c93f3ef11c90f29e1",
+      "upstream_sha256": "84b36aed53795adec90b1f92b70357469f3d5c5ee0e4388c93f3ef11c90f29e1"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismOffscreenRenderTarget_Metal.mm": {
+      "bytes": 1617,
+      "sha256": "46584ad5b6ae090c1d2fefffccca227e537c3cdcf1684e609f3b5096df942e61",
+      "upstream_sha256": "46584ad5b6ae090c1d2fefffccca227e537c3cdcf1684e609f3b5096df942e61"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismRenderer_Metal.hpp": {
+      "bytes": 21908,
+      "sha256": "b0728fc8f30c93a698be437d5b826f84980b6da87dd1432e517637446cd1e02b",
+      "upstream_sha256": "b0728fc8f30c93a698be437d5b826f84980b6da87dd1432e517637446cd1e02b"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismRenderer_Metal.mm": {
+      "bytes": 55929,
+      "sha256": "b2b88d9c929ae335df3a71853da336e667da704082069d29224438a1a5f300e2",
+      "upstream_sha256": "b2b88d9c929ae335df3a71853da336e667da704082069d29224438a1a5f300e2"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismRenderTarget_Metal.hpp": {
+      "bytes": 4047,
+      "sha256": "ee84df7f860d7b1784c4d7e54eede648595578ef32d4c8ad9658e6fcfffa4986",
+      "upstream_sha256": "ee84df7f860d7b1784c4d7e54eede648595578ef32d4c8ad9658e6fcfffa4986"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismRenderTarget_Metal.mm": {
+      "bytes": 6682,
+      "sha256": "f1c58049ff95494e0976a63685f2601c05cc24f1217874c9050b1453302445c5",
+      "upstream_sha256": "f1c58049ff95494e0976a63685f2601c05cc24f1217874c9050b1453302445c5"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismShader_Metal.hpp": {
+      "bytes": 16156,
+      "sha256": "e046241665cbde9b70780956f10268535ef9b889cf56e037f6f8d14becf508a0",
+      "upstream_sha256": "e046241665cbde9b70780956f10268535ef9b889cf56e037f6f8d14becf508a0"
+    },
+    "ios/CubismFramework/Rendering/Metal/CubismShader_Metal.mm": {
+      "bytes": 49986,
+      "sha256": "a356114655c8c8197ccb3f2066fe3adacf17a426d83f5cdd76d845b32e069ed4",
+      "upstream_sha256": "a356114655c8c8197ccb3f2066fe3adacf17a426d83f5cdd76d845b32e069ed4"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/BlendShaderFuncs.h": {
+      "bytes": 515,
+      "sha256": "2608b5970ff9cd81378f2eb0533a92750d1ffbc9ca8ab69e9b17e0d346ca17dc",
+      "upstream_sha256": "2608b5970ff9cd81378f2eb0533a92750d1ffbc9ca8ab69e9b17e0d346ca17dc"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/BlendShaderStructs.h": {
+      "bytes": 670,
+      "sha256": "7911686ea7bd548fa82e4ff340dedf792f0e92814db97a9dad6c906fd8982750",
+      "upstream_sha256": "7911686ea7bd548fa82e4ff340dedf792f0e92814db97a9dad6c906fd8982750"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/CMakeLists.txt": {
+      "bytes": 5825,
+      "sha256": "2ee575727a93399eaa79a5a2ba813355ccef4d5791c57dc40da16286db50a8cc",
+      "upstream_sha256": "2ee575727a93399eaa79a5a2ba813355ccef4d5791c57dc40da16286db50a8cc"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcAlphaBlend.metal": {
+      "bytes": 2523,
+      "sha256": "248dda02536d8e0b9d9360755ffdb55aae63cb064dc7987f2358adccd199e434",
+      "upstream_sha256": "248dda02536d8e0b9d9360755ffdb55aae63cb064dc7987f2358adccd199e434"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcBlend.metal": {
+      "bytes": 1391,
+      "sha256": "9f027f1bbe9767dbfc4471b9776cf7ec8ab722b31a941e2f0eb56cbe0cdb38e4",
+      "upstream_sha256": "9f027f1bbe9767dbfc4471b9776cf7ec8ab722b31a941e2f0eb56cbe0cdb38e4"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcColorBlend.metal": {
+      "bytes": 8006,
+      "sha256": "c003115dc4aa6a87a8032986c01382965c7f7f089983e73b859443d10d070b5e",
+      "upstream_sha256": "c003115dc4aa6a87a8032986c01382965c7f7f089983e73b859443d10d070b5e"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskBlend.metal": {
+      "bytes": 1697,
+      "sha256": "c6f8555a12285520c797fcc8e5fcfc09cd26911daaf9b55c09cc657061ecc2e7",
+      "upstream_sha256": "c6f8555a12285520c797fcc8e5fcfc09cd26911daaf9b55c09cc657061ecc2e7"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskInvertedBlend.metal": {
+      "bytes": 1709,
+      "sha256": "384d7aab3fa0ebc3abe8bd19ebea340a7f8499811dc519dcd9836b4c14d28fbc",
+      "upstream_sha256": "384d7aab3fa0ebc3abe8bd19ebea340a7f8499811dc519dcd9836b4c14d28fbc"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.metal": {
+      "bytes": 1774,
+      "sha256": "81b24e34f647b39328c25382803cb64e4d9684d8d65ebf553f0aa757f1114f1a",
+      "upstream_sha256": "81b24e34f647b39328c25382803cb64e4d9684d8d65ebf553f0aa757f1114f1a"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcMaskPremultipliedAlphaBlend.metal": {
+      "bytes": 1762,
+      "sha256": "2f1f22a8b30953ef6b227ed743ebd2fade9fbf9f2fb88f2dff442949895d951f",
+      "upstream_sha256": "2f1f22a8b30953ef6b227ed743ebd2fade9fbf9f2fb88f2dff442949895d951f"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/FragShaderSrcPremultipliedAlphaBlend.metal": {
+      "bytes": 1450,
+      "sha256": "95ed052005eddef932041e30a48490157cc6885bd5857dd81fe27fdcc9d73b99",
+      "upstream_sha256": "95ed052005eddef932041e30a48490157cc6885bd5857dd81fe27fdcc9d73b99"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/MetalShaders.metal": {
+      "bytes": 9966,
+      "sha256": "ead2525bf548061d821a6886c9a9a58af38f51b8385c69c7ab789313d0745b8b",
+      "upstream_sha256": "ead2525bf548061d821a6886c9a9a58af38f51b8385c69c7ab789313d0745b8b"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/MetalShaderTypes.h": {
+      "bytes": 757,
+      "sha256": "ffe7d0a2a869f01d4c672f0df5f6dc4c686e4af992776247fbc0faab0020ab2d",
+      "upstream_sha256": "ffe7d0a2a869f01d4c672f0df5f6dc4c686e4af992776247fbc0faab0020ab2d"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/VertShaderSrcBlend.metal": {
+      "bytes": 1195,
+      "sha256": "8c00e46812362e7af8167934f1a444c1dbd63c35263be632250482854b5e8dd3",
+      "upstream_sha256": "8c00e46812362e7af8167934f1a444c1dbd63c35263be632250482854b5e8dd3"
+    },
+    "ios/CubismFramework/Rendering/Metal/Shaders/VertShaderSrcMaskedBlend.metal": {
+      "bytes": 1313,
+      "sha256": "7d2e8c3d153dac141dc0ae274f04815e943915d6d75056c8acfe92b05b1caceb",
+      "upstream_sha256": "7d2e8c3d153dac141dc0ae274f04815e943915d6d75056c8acfe92b05b1caceb"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CMakeLists.txt": {
+      "bytes": 695,
+      "sha256": "df1335ff46a126b99eade9fd95b104120f787f996c7b68f7a7cdb544d477742c",
+      "upstream_sha256": "df1335ff46a126b99eade9fd95b104120f787f996c7b68f7a7cdb544d477742c"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.cpp": {
+      "bytes": 2060,
+      "sha256": "4e82d15696cb3b7d2f69b38d88831a098d88c3c9d1a2d17226e41337fe36c887",
+      "upstream_sha256": "4e82d15696cb3b7d2f69b38d88831a098d88c3c9d1a2d17226e41337fe36c887"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismOffscreenManager_OpenGLES2.hpp": {
+      "bytes": 1714,
+      "sha256": "2a3c841a8b25f4356d16e0383c64d9fb103b72ade4c1a12281393e5816e6cca5",
+      "upstream_sha256": "2a3c841a8b25f4356d16e0383c64d9fb103b72ade4c1a12281393e5816e6cca5"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismOffscreenRenderTarget_OpenGLES2.cpp": {
+      "bytes": 1596,
+      "sha256": "97fe2527fce01843230f704fefb5ece735b2d4cbd64efb173b52bd3a136de72d",
+      "upstream_sha256": "97fe2527fce01843230f704fefb5ece735b2d4cbd64efb173b52bd3a136de72d"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismOffscreenRenderTarget_OpenGLES2.hpp": {
+      "bytes": 1597,
+      "sha256": "ba0bb5360cc7ce6b27ba9c2543ab7501d1c6f5c78c458406281f32084786ef6f",
+      "upstream_sha256": "ba0bb5360cc7ce6b27ba9c2543ab7501d1c6f5c78c458406281f32084786ef6f"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.cpp": {
+      "bytes": 53993,
+      "sha256": "96945f6dac49b250beeab2b4122ff790afb35b1c1d848271cf79fcab4a21c245",
+      "upstream_sha256": "96945f6dac49b250beeab2b4122ff790afb35b1c1d848271cf79fcab4a21c245"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismRenderer_OpenGLES2.hpp": {
+      "bytes": 22185,
+      "sha256": "5b6d154f9fa5689eb970ded38613433415f930a19359511ea7d9a2bd9ec4d6c1",
+      "upstream_sha256": "5b6d154f9fa5689eb970ded38613433415f930a19359511ea7d9a2bd9ec4d6c1"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismRenderTarget_OpenGLES2.cpp": {
+      "bytes": 5131,
+      "sha256": "4e96a3ef4f10806cb5fab9ab60505eb7d35abefc88ea695c95278587e4913be8",
+      "upstream_sha256": "4e96a3ef4f10806cb5fab9ab60505eb7d35abefc88ea695c95278587e4913be8"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismRenderTarget_OpenGLES2.hpp": {
+      "bytes": 4089,
+      "sha256": "573f6a5a4d9d44ce9a98a1f96265a0c6491ca6b2e4486702dc5af6091232b373",
+      "upstream_sha256": "573f6a5a4d9d44ce9a98a1f96265a0c6491ca6b2e4486702dc5af6091232b373"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.cpp": {
+      "bytes": 52451,
+      "sha256": "8938e53b14fec2a5df6263c596a4eb0f5e88993123e7506016a21ed6de0fba29",
+      "upstream_sha256": "8938e53b14fec2a5df6263c596a4eb0f5e88993123e7506016a21ed6de0fba29"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/CubismShader_OpenGLES2.hpp": {
+      "bytes": 13801,
+      "sha256": "5d3cb3bb5669b56b8933eb47e92f61811c7c6c86ff4e3675898e39d40ca12be0",
+      "upstream_sha256": "5d3cb3bb5669b56b8933eb47e92f61811c7c6c86ff4e3675898e39d40ca12be0"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrc.frag": {
+      "bytes": 740,
+      "sha256": "a05759315a2471adad530e58e0a7ced243b87bb25250fb522a188cfd9f6f4c65",
+      "upstream_sha256": "a05759315a2471adad530e58e0a7ced243b87bb25250fb522a188cfd9f6f4c65"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcAlphaBlend.frag": {
+      "bytes": 2320,
+      "sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb",
+      "upstream_sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcBlend.frag": {
+      "bytes": 1146,
+      "sha256": "e555ddadc1cfa80d2de0f909f3577eef86b345ba821ee25be535288ff0c7d304",
+      "upstream_sha256": "e555ddadc1cfa80d2de0f909f3577eef86b345ba821ee25be535288ff0c7d304"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcColorBlend.frag": {
+      "bytes": 7737,
+      "sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1",
+      "upstream_sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcCopy.frag": {
+      "bytes": 416,
+      "sha256": "7490f94676b1498468917b79f04a64ccbbeeaea369f09a3201aa346f1a6d2aa5",
+      "upstream_sha256": "7490f94676b1498468917b79f04a64ccbbeeaea369f09a3201aa346f1a6d2aa5"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMask.frag": {
+      "bytes": 1030,
+      "sha256": "eded9e550c7c59c3afbb7e35b3f0b2323f01531cac5f0c3b4a28375827cc91d8",
+      "upstream_sha256": "eded9e550c7c59c3afbb7e35b3f0b2323f01531cac5f0c3b4a28375827cc91d8"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskBlend.frag": {
+      "bytes": 1426,
+      "sha256": "70f8d0c8e0a9fc1c181058bd1d9806c099ddab617db2fdfa92b3cd79d1c2c761",
+      "upstream_sha256": "70f8d0c8e0a9fc1c181058bd1d9806c099ddab617db2fdfa92b3cd79d1c2c761"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInverted.frag": {
+      "bytes": 1038,
+      "sha256": "50e07d507b4147b1b96619e1fdf4a7415ace37c6cd8e47c55b5f6fe5ae1c99ed",
+      "upstream_sha256": "50e07d507b4147b1b96619e1fdf4a7415ace37c6cd8e47c55b5f6fe5ae1c99ed"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedBlend.frag": {
+      "bytes": 1434,
+      "sha256": "e102020be68acca0fc0fe1366ce2d6d915c51e7fbba30e940a74005417a60ad1",
+      "upstream_sha256": "e102020be68acca0fc0fe1366ce2d6d915c51e7fbba30e940a74005417a60ad1"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedPremultipliedAlpha.frag": {
+      "bytes": 997,
+      "sha256": "8a83ad7025a6399c9a05f4e9b167de0587a1df9d5cb9773d0e9cafd24b51b809",
+      "upstream_sha256": "8a83ad7025a6399c9a05f4e9b167de0587a1df9d5cb9773d0e9cafd24b51b809"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.frag": {
+      "bytes": 1481,
+      "sha256": "162843847b89ba572d2ab3918f2eed1a6b2353201d31b0dbce317280e5f9100f",
+      "upstream_sha256": "162843847b89ba572d2ab3918f2eed1a6b2353201d31b0dbce317280e5f9100f"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskPremultipliedAlpha.frag": {
+      "bytes": 989,
+      "sha256": "b23218f67e607850f047b21f2a85da57e0dd44def02bc2262a9f757097db6453",
+      "upstream_sha256": "b23218f67e607850f047b21f2a85da57e0dd44def02bc2262a9f757097db6453"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcMaskPremultipliedAlphaBlend.frag": {
+      "bytes": 1473,
+      "sha256": "0e31cd1bafd40361f904c1aa3d7492b5fa2b8aa0461cb104964626376fe05c20",
+      "upstream_sha256": "0e31cd1bafd40361f904c1aa3d7492b5fa2b8aa0461cb104964626376fe05c20"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcPremultipliedAlpha.frag": {
+      "bytes": 702,
+      "sha256": "b10b5533752f1f53fff9de51d833c672956fb26a582a178323836e36c71e0206",
+      "upstream_sha256": "b10b5533752f1f53fff9de51d833c672956fb26a582a178323836e36c71e0206"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcPremultipliedAlphaBlend.frag": {
+      "bytes": 1192,
+      "sha256": "1b0277e5edc44bae7340c3f2fe13a7212de9553061ce6c0aed180fd7c5148672",
+      "upstream_sha256": "1b0277e5edc44bae7340c3f2fe13a7212de9553061ce6c0aed180fd7c5148672"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/FragShaderSrcSetupMask.frag": {
+      "bytes": 706,
+      "sha256": "e93547427c052a54f36c3e668cebf443313d996686a00077dbef08d733617574",
+      "upstream_sha256": "e93547427c052a54f36c3e668cebf443313d996686a00077dbef08d733617574"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrc.vert": {
+      "bytes": 517,
+      "sha256": "31224999977586c5e4054a2276df5e30c7062ce276c22981c0da8b0a5d50ecde",
+      "upstream_sha256": "31224999977586c5e4054a2276df5e30c7062ce276c22981c0da8b0a5d50ecde"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcBlend.vert": {
+      "bytes": 633,
+      "sha256": "31f913762b7cf6b1a3120a94c7cb860e4ac82378174faca1335a584f77b22db8",
+      "upstream_sha256": "31f913762b7cf6b1a3120a94c7cb860e4ac82378174faca1335a584f77b22db8"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcCopy.vert": {
+      "bytes": 405,
+      "sha256": "c9fa34f75f725640bfe0d0e60d05bac54608a8be6bb35d2e3dbb3dd1f0a7154e",
+      "upstream_sha256": "c9fa34f75f725640bfe0d0e60d05bac54608a8be6bb35d2e3dbb3dd1f0a7154e"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcMasked.vert": {
+      "bytes": 572,
+      "sha256": "e68ff07c63a6fde693da8acf5eea27094cce29cf2afa448b251602fd3a6324b2",
+      "upstream_sha256": "e68ff07c63a6fde693da8acf5eea27094cce29cf2afa448b251602fd3a6324b2"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcMaskedBlend.vert": {
+      "bytes": 688,
+      "sha256": "b025c0256252dcc1deace19f125e241112f0df5ac97269ce15c3ec7a17b3883d",
+      "upstream_sha256": "b025c0256252dcc1deace19f125e241112f0df5ac97269ce15c3ec7a17b3883d"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/Standard/VertShaderSrcSetupMask.vert": {
+      "bytes": 549,
+      "sha256": "24f566347bd2f1e17ef9e5a96ba3870ff4bfd4fb8d3caf5586a1dab2ae372e0a",
+      "upstream_sha256": "24f566347bd2f1e17ef9e5a96ba3870ff4bfd4fb8d3caf5586a1dab2ae372e0a"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrc.frag": {
+      "bytes": 764,
+      "sha256": "54867fd08b41f24e0517630ee8a046265cac2a72d5d20f3a9fa233beec7f5771",
+      "upstream_sha256": "54867fd08b41f24e0517630ee8a046265cac2a72d5d20f3a9fa233beec7f5771"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcAlphaBlend.frag": {
+      "bytes": 2320,
+      "sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb",
+      "upstream_sha256": "2b778f70fd42e1e6cac4660dcdbe377ae8f23d49e9c08672ab6b0371477211fb"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcBlend.frag": {
+      "bytes": 1170,
+      "sha256": "bcca3505119e3ae3e9b80eac9c297f33d9f3b8c3ba15baac26e4e44a1d97f465",
+      "upstream_sha256": "bcca3505119e3ae3e9b80eac9c297f33d9f3b8c3ba15baac26e4e44a1d97f465"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcBlendTegra.frag": {
+      "bytes": 1221,
+      "sha256": "1a07ba309fd74ea94bae000588bf552656310545e40b044b3646b1977bc251b3",
+      "upstream_sha256": "1a07ba309fd74ea94bae000588bf552656310545e40b044b3646b1977bc251b3"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcColorBlend.frag": {
+      "bytes": 7737,
+      "sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1",
+      "upstream_sha256": "d6f40b618f72e6a19d1e43776de8d24bd4c800055c80779611126972ddc688d1"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcCopy.frag": {
+      "bytes": 440,
+      "sha256": "16bce1111e4b5a3948f8a03a6df5995519a2c5691ce0968a59c8823cf5c95e0c",
+      "upstream_sha256": "16bce1111e4b5a3948f8a03a6df5995519a2c5691ce0968a59c8823cf5c95e0c"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcCopyTegra.frag": {
+      "bytes": 491,
+      "sha256": "f6c166c0be269f82038a821293978b4e77fc5343ccdb8e34840ed8ffcaa24e75",
+      "upstream_sha256": "f6c166c0be269f82038a821293978b4e77fc5343ccdb8e34840ed8ffcaa24e75"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMask.frag": {
+      "bytes": 1054,
+      "sha256": "73e09f6bd200d8d532e82586492328f3b0ae5980eddb5f1c228123abeb7945f9",
+      "upstream_sha256": "73e09f6bd200d8d532e82586492328f3b0ae5980eddb5f1c228123abeb7945f9"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskBlend.frag": {
+      "bytes": 1450,
+      "sha256": "e91b5902bfd91b7a31422f497c787adb8b76c80c2bd93d00873c414aa623bf80",
+      "upstream_sha256": "e91b5902bfd91b7a31422f497c787adb8b76c80c2bd93d00873c414aa623bf80"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskBlendTegra.frag": {
+      "bytes": 1501,
+      "sha256": "c80636f2bc0a7d494993bd68bc82cfcf5d4e3fe13925ea7094849cd42b34b730",
+      "upstream_sha256": "c80636f2bc0a7d494993bd68bc82cfcf5d4e3fe13925ea7094849cd42b34b730"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInverted.frag": {
+      "bytes": 1062,
+      "sha256": "dcc7d8dfbf7afbd0359483f09c6184644f24a37f59a2c3d31aa1ec4bc915daff",
+      "upstream_sha256": "dcc7d8dfbf7afbd0359483f09c6184644f24a37f59a2c3d31aa1ec4bc915daff"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedBlend.frag": {
+      "bytes": 1458,
+      "sha256": "b6d59389954c9eeb3562b6381700c892c9043401021630f3e90b63571347a778",
+      "upstream_sha256": "b6d59389954c9eeb3562b6381700c892c9043401021630f3e90b63571347a778"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedBlendTegra.frag": {
+      "bytes": 1509,
+      "sha256": "2440a5e45e39fa18e2ef367ad4bfe3c07b77afe9fcfed2a156629046220fb07b",
+      "upstream_sha256": "2440a5e45e39fa18e2ef367ad4bfe3c07b77afe9fcfed2a156629046220fb07b"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlpha.frag": {
+      "bytes": 1021,
+      "sha256": "96511c331227b8e3b02d10cfe8847b907b18c815285ab5023ad325ccd88b4939",
+      "upstream_sha256": "96511c331227b8e3b02d10cfe8847b907b18c815285ab5023ad325ccd88b4939"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaBlend.frag": {
+      "bytes": 1505,
+      "sha256": "ac5562c4d05b1ad93391e5c1340afda29c8514f5f08a9cb1d4b3e8547906928a",
+      "upstream_sha256": "ac5562c4d05b1ad93391e5c1340afda29c8514f5f08a9cb1d4b3e8547906928a"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1556,
+      "sha256": "4546f46ac825c87da91dc40f30f93ad7e071f2f6b77987c3ac876cf770196212",
+      "upstream_sha256": "4546f46ac825c87da91dc40f30f93ad7e071f2f6b77987c3ac876cf770196212"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedPremultipliedAlphaTegra.frag": {
+      "bytes": 1072,
+      "sha256": "9845f8f4e785d312a2c7093c263db6f459391187039bcb1f6d1a8733975d5bd6",
+      "upstream_sha256": "9845f8f4e785d312a2c7093c263db6f459391187039bcb1f6d1a8733975d5bd6"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskInvertedTegra.frag": {
+      "bytes": 1113,
+      "sha256": "21b2fd1ff0467dfa02440e592ed8ceb4bbd45226fb3cd5306b00250d864d83e4",
+      "upstream_sha256": "21b2fd1ff0467dfa02440e592ed8ceb4bbd45226fb3cd5306b00250d864d83e4"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlpha.frag": {
+      "bytes": 1013,
+      "sha256": "6a51dc2f300ee86942152c97ee81c491f4a65a67529b7d091c9a8a8931c301c4",
+      "upstream_sha256": "6a51dc2f300ee86942152c97ee81c491f4a65a67529b7d091c9a8a8931c301c4"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaBlend.frag": {
+      "bytes": 1497,
+      "sha256": "bf8227e5b2858db4cc85880def5d0256d5b57c103b7778c573ade5f4808aee9e",
+      "upstream_sha256": "bf8227e5b2858db4cc85880def5d0256d5b57c103b7778c573ade5f4808aee9e"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1548,
+      "sha256": "9b1c3ed8250a883332978c992073679d8b42a0c7b74ad3042bc6200e661658e5",
+      "upstream_sha256": "9b1c3ed8250a883332978c992073679d8b42a0c7b74ad3042bc6200e661658e5"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskPremultipliedAlphaTegra.frag": {
+      "bytes": 1064,
+      "sha256": "5bc50ff3ba72a700d90f7d39bb10906d72ce2cc5dc84a6b4049ba35cbea24606",
+      "upstream_sha256": "5bc50ff3ba72a700d90f7d39bb10906d72ce2cc5dc84a6b4049ba35cbea24606"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcMaskTegra.frag": {
+      "bytes": 1105,
+      "sha256": "6b7a194e31b0049970e3d1e3f51c26c5b51486accb9675bbc91c4a5b3718940f",
+      "upstream_sha256": "6b7a194e31b0049970e3d1e3f51c26c5b51486accb9675bbc91c4a5b3718940f"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlpha.frag": {
+      "bytes": 726,
+      "sha256": "f10239646235b405db1d3b774e96cca1b6dc0911ee9e7b20171b774337913d87",
+      "upstream_sha256": "f10239646235b405db1d3b774e96cca1b6dc0911ee9e7b20171b774337913d87"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaBlend.frag": {
+      "bytes": 1216,
+      "sha256": "3f6a086dc1d7cf1874d9606249f495bb2f2f83ed89f1718471c7a90d2226e2ac",
+      "upstream_sha256": "3f6a086dc1d7cf1874d9606249f495bb2f2f83ed89f1718471c7a90d2226e2ac"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaBlendTegra.frag": {
+      "bytes": 1267,
+      "sha256": "265dffdc69e533698331036ddd8f96c48dead2495b4bc93a679545f24cf6709e",
+      "upstream_sha256": "265dffdc69e533698331036ddd8f96c48dead2495b4bc93a679545f24cf6709e"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcPremultipliedAlphaTegra.frag": {
+      "bytes": 777,
+      "sha256": "5769247b0599c5603f8ab52bfe6763e0f5f91f51cd5309d47d1ee5236c790d25",
+      "upstream_sha256": "5769247b0599c5603f8ab52bfe6763e0f5f91f51cd5309d47d1ee5236c790d25"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcSetupMask.frag": {
+      "bytes": 730,
+      "sha256": "c1a9c54c6a74b1626ee930e88c59d95753ce6469df731f2b32d052fffa30d78f",
+      "upstream_sha256": "c1a9c54c6a74b1626ee930e88c59d95753ce6469df731f2b32d052fffa30d78f"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcSetupMaskTegra.frag": {
+      "bytes": 781,
+      "sha256": "ba71917e1189926ef8287a94699ac38f57c14a2d2ae00d39b4a638212f93db05",
+      "upstream_sha256": "ba71917e1189926ef8287a94699ac38f57c14a2d2ae00d39b4a638212f93db05"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/FragShaderSrcTegra.frag": {
+      "bytes": 815,
+      "sha256": "d80df54e4db58986f825ca4e41865d7ddcaa07e79d3df9717d797bcae7e4fc34",
+      "upstream_sha256": "d80df54e4db58986f825ca4e41865d7ddcaa07e79d3df9717d797bcae7e4fc34"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrc.vert": {
+      "bytes": 517,
+      "sha256": "d095ff3916ac43a9066b3c37629e3e516707adfea0a61887e6eb16bbd57689da",
+      "upstream_sha256": "d095ff3916ac43a9066b3c37629e3e516707adfea0a61887e6eb16bbd57689da"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcBlend.vert": {
+      "bytes": 633,
+      "sha256": "6c027ad654ea3b38353fde80a40f7a8fd23a74badeb6fc74f542a98baf682aeb",
+      "upstream_sha256": "6c027ad654ea3b38353fde80a40f7a8fd23a74badeb6fc74f542a98baf682aeb"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcCopy.vert": {
+      "bytes": 405,
+      "sha256": "d56e015be2348f1fd42cf7ccaef7bb869c5cd2095759d1ffc806dddca4339a74",
+      "upstream_sha256": "d56e015be2348f1fd42cf7ccaef7bb869c5cd2095759d1ffc806dddca4339a74"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcMasked.vert": {
+      "bytes": 572,
+      "sha256": "a9e7132f364266a34f1ed8ac4c18907a2561d01a74db0c424c43a6f83915e887",
+      "upstream_sha256": "a9e7132f364266a34f1ed8ac4c18907a2561d01a74db0c424c43a6f83915e887"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcMaskedBlend.vert": {
+      "bytes": 688,
+      "sha256": "b4c967636de6d0286f6356459a70a4cd44debeb87c167bcf4866b4a3d2ca7618",
+      "upstream_sha256": "b4c967636de6d0286f6356459a70a4cd44debeb87c167bcf4866b4a3d2ca7618"
+    },
+    "ios/CubismFramework/Rendering/OpenGL/Shaders/StandardES/VertShaderSrcSetupMask.vert": {
+      "bytes": 549,
+      "sha256": "713c9df3a8ee1d64d68b69a4bdf682fe9bd19fe3e91857fc267d03b0ba23df5a",
+      "upstream_sha256": "713c9df3a8ee1d64d68b69a4bdf682fe9bd19fe3e91857fc267d03b0ba23df5a"
+    },
+    "ios/CubismFramework/Type/CMakeLists.txt": {
+      "bytes": 412,
+      "sha256": "b1233eefecbffb86d278ae1d88e1ed6e3b4556749125404df8ee93e471150546",
+      "upstream_sha256": "b1233eefecbffb86d278ae1d88e1ed6e3b4556749125404df8ee93e471150546"
+    },
+    "ios/CubismFramework/Type/csmMap.hpp": {
+      "bytes": 19876,
+      "sha256": "8edf69f058637c12958f0e7e0f98ede4271ac29656b0601dbe84bac9fd4566aa",
+      "upstream_sha256": "8edf69f058637c12958f0e7e0f98ede4271ac29656b0601dbe84bac9fd4566aa"
+    },
+    "ios/CubismFramework/Type/csmRectF.cpp": {
+      "bytes": 840,
+      "sha256": "2ea11a41a5a60ece5c7e4f09437ef9eb85b81e9209f0877f277f485d737403c1",
+      "upstream_sha256": "2ea11a41a5a60ece5c7e4f09437ef9eb85b81e9209f0877f277f485d737403c1"
+    },
+    "ios/CubismFramework/Type/csmRectF.hpp": {
+      "bytes": 2096,
+      "sha256": "7d3c79de68eaad227dbb11a3fe66741b6485f1a960bcf01bb0fa8c973d533de1",
+      "upstream_sha256": "7d3c79de68eaad227dbb11a3fe66741b6485f1a960bcf01bb0fa8c973d533de1"
+    },
+    "ios/CubismFramework/Type/csmString.cpp": {
+      "bytes": 12429,
+      "sha256": "5fd48d1b765d98e79fa9bde762ad5be4ac8d989a41ebe2f1338f0c165deff0d7",
+      "upstream_sha256": "5fd48d1b765d98e79fa9bde762ad5be4ac8d989a41ebe2f1338f0c165deff0d7"
+    },
+    "ios/CubismFramework/Type/csmString.hpp": {
+      "bytes": 6990,
+      "sha256": "07fd380fdb66a234a45666cc05e399c9394ba03d4f476a9831bb8b73da8284d6",
+      "upstream_sha256": "07fd380fdb66a234a45666cc05e399c9394ba03d4f476a9831bb8b73da8284d6"
+    },
+    "ios/CubismFramework/Type/csmVector.hpp": {
+      "bytes": 20827,
+      "sha256": "5ca108f6cb1612ff6a5b8bfeb3d31b9ccf63460e98ef0909ca58ef1e83eb90be",
+      "upstream_sha256": "5ca108f6cb1612ff6a5b8bfeb3d31b9ccf63460e98ef0909ca58ef1e83eb90be"
+    },
+    "ios/CubismFramework/Type/csmVectorSort.hpp": {
+      "bytes": 5844,
+      "sha256": "fb4a0ca0bab6914d52aba1deefe1bd360c0f8f2c7877b84b5431410c44482312",
+      "upstream_sha256": "fb4a0ca0bab6914d52aba1deefe1bd360c0f8f2c7877b84b5431410c44482312"
+    },
+    "ios/CubismFramework/Type/CubismBasicType.hpp": {
+      "bytes": 1488,
+      "sha256": "30132436ade4bc98b23ecd0299a09b6d26d499c1158d123811dac5d6ef645f0e",
+      "upstream_sha256": "30132436ade4bc98b23ecd0299a09b6d26d499c1158d123811dac5d6ef645f0e"
+    },
+    "ios/CubismFramework/Utils/CMakeLists.txt": {
+      "bytes": 327,
+      "sha256": "1c6179dea9fcce53a587005d838757dc4286cfa0d4c5487e9d759baa8b2cc2f4",
+      "upstream_sha256": "1c6179dea9fcce53a587005d838757dc4286cfa0d4c5487e9d759baa8b2cc2f4"
+    },
+    "ios/CubismFramework/Utils/CubismDebug.cpp": {
+      "bytes": 1520,
+      "sha256": "fd98a0f2f04c50fd4ec0949ac05eec74e968062e24b25caf917f73a802302855",
+      "upstream_sha256": "fd98a0f2f04c50fd4ec0949ac05eec74e968062e24b25caf917f73a802302855"
+    },
+    "ios/CubismFramework/Utils/CubismDebug.hpp": {
+      "bytes": 5231,
+      "sha256": "b5dc3aebc364d61c355acf9f9b00969e907b746e59b9ae9c1c660fa07c494de4",
+      "upstream_sha256": "b5dc3aebc364d61c355acf9f9b00969e907b746e59b9ae9c1c660fa07c494de4"
+    },
+    "ios/CubismFramework/Utils/CubismJson.cpp": {
+      "bytes": 14313,
+      "sha256": "a838ca574f1ff24abb66822480579a03c9185e1ef6913ef0575390a984ffe19a",
+      "upstream_sha256": "a838ca574f1ff24abb66822480579a03c9185e1ef6913ef0575390a984ffe19a"
+    },
+    "ios/CubismFramework/Utils/CubismJson.hpp": {
+      "bytes": 24116,
+      "sha256": "e56a1fcd187e73e88bb0ef89f7fa1f8231cb3b6738b89765660938c1a7f18096",
+      "upstream_sha256": "e56a1fcd187e73e88bb0ef89f7fa1f8231cb3b6738b89765660938c1a7f18096"
+    },
+    "ios/CubismFramework/Utils/CubismString.cpp": {
+      "bytes": 3139,
+      "sha256": "d540f63dbeaf23b89349797f67e25db46642b0730c2658432bd48c8d1d0f59cd",
+      "upstream_sha256": "d540f63dbeaf23b89349797f67e25db46642b0730c2658432bd48c8d1d0f59cd"
+    },
+    "ios/CubismFramework/Utils/CubismString.hpp": {
+      "bytes": 1911,
+      "sha256": "33281e2b963f979b63de2b793ec6915b279bba6de84e87cc5e946c4bdf75485d",
+      "upstream_sha256": "33281e2b963f979b63de2b793ec6915b279bba6de84e87cc5e946c4bdf75485d"
+    },
+    "ios/Resources/PrivacyInfo.xcprivacy": {
+      "bytes": 373,
+      "sha256": "6d2da0d8d930227d428c1d9363b0ad6e3a12e2c9b68c5ce297158a7412fc8c31",
+      "upstream_sha256": "6d2da0d8d930227d428c1d9363b0ad6e3a12e2c9b68c5ce297158a7412fc8c31"
+    },
+    "lib/flutter_live2d_method_channel.dart": {
+      "bytes": 3440,
+      "sha256": "02a8aeba3335abda6937495e9187fc0bff3db9fe238af03ae2d8780041597c41",
+      "upstream_sha256": "e296388163d75599505c9e2ff32c93fcbdfb1a8e0756986240a6b799d53db531"
+    },
+    "lib/flutter_live2d_platform_interface.dart": {
+      "bytes": 5457,
+      "sha256": "948baac6cbfbba3a0d517608c698ab21301e7f8925e7378073be6661f89987c6",
+      "upstream_sha256": "d9eed2574b4709227a1d4a2139636c33302712a0926a865b0af6a9e31ca475cc"
+    },
+    "lib/flutter_live2d_web.dart": {
+      "bytes": 7204,
+      "sha256": "5acdf9c91b311f136364215a7e5ad1bd71e77fa5402267a284794e7f3d661a17",
+      "upstream_sha256": "5acdf9c91b311f136364215a7e5ad1bd71e77fa5402267a284794e7f3d661a17"
+    },
+    "lib/flutter_live2d.dart": {
+      "bytes": 1682,
+      "sha256": "0a69eb23b2135d257f945e5635de01a4bbc2d5c8bb5182a7bc3e6a8f8a61fe2e",
+      "upstream_sha256": "0a69eb23b2135d257f945e5635de01a4bbc2d5c8bb5182a7bc3e6a8f8a61fe2e"
+    },
+    "lib/live2d_flutter.dart": {
+      "bytes": 95,
+      "sha256": "fbff1b5e1696f28590495d875b70778c89cf79e072a5ac8a33d8c3902ae764d8",
+      "upstream_sha256": "fbff1b5e1696f28590495d875b70778c89cf79e072a5ac8a33d8c3902ae764d8"
+    },
+    "lib/src/asset_cache.dart": {
+      "bytes": 4155,
+      "sha256": "eb1c6a569c9dc7de0e2e3adcd088904c48a585e4e137bd593aacb48f3b21d055",
+      "upstream_sha256": "eb1c6a569c9dc7de0e2e3adcd088904c48a585e4e137bd593aacb48f3b21d055"
+    },
+    "lib/src/exception.dart": {
+      "bytes": 2564,
+      "sha256": "cd78283173fc7624e38ed5ecf54cec7da03a1424009e138fb9713085e2810ceb",
+      "upstream_sha256": "55ac49f5294295b36a7122502675c774895692cab2bb1df7870fa60a88cccd66"
+    },
+    "lib/src/native_asset_writer_io.dart": {
+      "bytes": 1164,
+      "sha256": "d20eb8e540bf3c34f86e07268afb26cb0afedf1f9bc1e8f4292fe7dee0b2e220",
+      "upstream_sha256": "d20eb8e540bf3c34f86e07268afb26cb0afedf1f9bc1e8f4292fe7dee0b2e220"
+    },
+    "lib/src/native_asset_writer_stub.dart": {
+      "bytes": 286,
+      "sha256": "88e4ab4781d9bd62350688e04f79950dd0a5c4353461e46355aa346701b62f0b",
+      "upstream_sha256": "88e4ab4781d9bd62350688e04f79950dd0a5c4353461e46355aa346701b62f0b"
+    },
+    "lib/src/view_controller.dart": {
+      "bytes": 14023,
+      "sha256": "caf0b493c85470531c288d22a54aeea08b50d8115efeea0963784f03f81c1f6d",
+      "upstream_sha256": "c0411d8e891fb3090727585b8a787524455808ac19cd0517df094f2201d6e7ae"
+    },
+    "lib/src/view_lifecycle.dart": {
+      "bytes": 155,
+      "sha256": "163d2a8acfa34b69d5811364b7343187664a79408f1bc96ccde5a1d283ddb680",
+      "upstream_sha256": "163d2a8acfa34b69d5811364b7343187664a79408f1bc96ccde5a1d283ddb680"
+    },
+    "lib/src/view_state.dart": {
+      "bytes": 6496,
+      "sha256": "849b510f2d1fca8fd4cadf3fd3ad77bf6bd98bf9faf83c6644957fe6196b9c58",
+      "upstream_sha256": "849b510f2d1fca8fd4cadf3fd3ad77bf6bd98bf9faf83c6644957fe6196b9c58"
+    },
+    "lib/src/view.dart": {
+      "bytes": 4746,
+      "sha256": "6f9fcdd1b30053d939fc47a2b6ce26b8f268410e4aaa99f15c1c86e00eaa8ccc",
+      "upstream_sha256": "6f9fcdd1b30053d939fc47a2b6ce26b8f268410e4aaa99f15c1c86e00eaa8ccc"
+    },
+    "lib/src/web_canvas_registry.dart": {
+      "bytes": 101,
+      "sha256": "ebea0dc2d2d2febf60a5bc5e061daa4f5d2c22c6cabb9773576c38d3e533f090",
+      "upstream_sha256": "ebea0dc2d2d2febf60a5bc5e061daa4f5d2c22c6cabb9773576c38d3e533f090"
+    },
+    "lib/src/web_view_stub.dart": {
+      "bytes": 161,
+      "sha256": "391b14a9c0f802a2bddf43fcbebeee10236f27ed6c909bd4e730fbc1b28837fc",
+      "upstream_sha256": "391b14a9c0f802a2bddf43fcbebeee10236f27ed6c909bd4e730fbc1b28837fc"
+    },
+    "lib/src/web_view.dart": {
+      "bytes": 2790,
+      "sha256": "2265aab87a90fe82a7c0a2bc0a61d5699fe8644ba42e081adbf4a00fff5828b2",
+      "upstream_sha256": "2265aab87a90fe82a7c0a2bc0a61d5699fe8644ba42e081adbf4a00fff5828b2"
+    },
+    "lib/src/windows_view.dart": {
+      "bytes": 4492,
+      "sha256": "fa4d85735b5f9e1685baf987b2669176d7c704f277cdf31fa269eb1cb77022f6",
+      "upstream_sha256": "fa4d85735b5f9e1685baf987b2669176d7c704f277cdf31fa269eb1cb77022f6"
+    },
+    "macos/live2d_flutter.podspec": {
+      "bytes": 736,
+      "sha256": "d53acd4a708fe1ea4f71be9c0be3cd1b8159936e8c0687f7b8e2d761ec6be265",
+      "upstream_sha256": "d53acd4a708fe1ea4f71be9c0be3cd1b8159936e8c0687f7b8e2d761ec6be265"
+    },
+    "macos/live2d_flutter/Package.swift": {
+      "bytes": 559,
+      "sha256": "4d74303136e95808655f3ecbed53fc31efc73eb3afe25577cea25c31936bdd7f",
+      "upstream_sha256": "4d74303136e95808655f3ecbed53fc31efc73eb3afe25577cea25c31936bdd7f"
+    },
+    "macos/live2d_flutter/Sources/live2d_flutter/FlutterLive2dPlugin.swift": {
+      "bytes": 31788,
+      "sha256": "f2c2c203d768642470f35f92159eb2e0cddbfe052438cda352662e10da4292b0",
+      "upstream_sha256": "f2c2c203d768642470f35f92159eb2e0cddbfe052438cda352662e10da4292b0"
+    },
+    "web_runtime/build.mjs": {
+      "bytes": 1224,
+      "sha256": "b997ccbd0c7e222419d33ec4060ab476797b11f76a60b826a1eaa1d6345036a3",
+      "upstream_sha256": "b997ccbd0c7e222419d33ec4060ab476797b11f76a60b826a1eaa1d6345036a3"
+    },
+    "web_runtime/LICENSE.framework.md": {
+      "bytes": 2234,
+      "sha256": "7ed849bff1e6499aa7cd882e47d246ddbbe06817c1e84cb974df949488302614",
+      "upstream_sha256": "7ed849bff1e6499aa7cd882e47d246ddbbe06817c1e84cb974df949488302614"
+    },
+    "web_runtime/LICENSE.samples.md": {
+      "bytes": 3042,
+      "sha256": "787a7d1454240865420b96ea9a20ab5e1a5ec3c1abced2e308288c2de8aac991",
+      "upstream_sha256": "787a7d1454240865420b96ea9a20ab5e1a5ec3c1abced2e308288c2de8aac991"
+    },
+    "web_runtime/package-lock.json": {
+      "bytes": 14390,
+      "sha256": "c15f0b07a8791d0199c8c66f3248a6f0b7aace03ba4f378f8c538d7410c4f7f4",
+      "upstream_sha256": "c15f0b07a8791d0199c8c66f3248a6f0b7aace03ba4f378f8c538d7410c4f7f4"
+    },
+    "web_runtime/package.json": {
+      "bytes": 124,
+      "sha256": "58ab5bbbc02d755d0b8031b41b3a80499f092b9f10471149d1e293568ec8ae78",
+      "upstream_sha256": "58ab5bbbc02d755d0b8031b41b3a80499f092b9f10471149d1e293568ec8ae78"
+    },
+    "web_runtime/src/lappdefine.ts": {
+      "bytes": 275,
+      "sha256": "e32109ccebe542489af4ae4e5417d59f71432bf9421bbc3452637fd2c5bc88e7",
+      "upstream_sha256": "e32109ccebe542489af4ae4e5417d59f71432bf9421bbc3452637fd2c5bc88e7"
+    },
+    "web_runtime/src/lappmodel.ts": {
+      "bytes": 34946,
+      "sha256": "c5bcb422d4c5424a3143fddf1b35be288956d00cffe284354ebf660143e4ff2b",
+      "upstream_sha256": "c5bcb422d4c5424a3143fddf1b35be288956d00cffe284354ebf660143e4ff2b"
+    },
+    "web_runtime/src/lapppal.ts": {
+      "bytes": 1671,
+      "sha256": "b94648ba0cc8a6f34d3d5f6f26ee63616ee12a21a87eaf13c3ef5f23feeaee95",
+      "upstream_sha256": "b94648ba0cc8a6f34d3d5f6f26ee63616ee12a21a87eaf13c3ef5f23feeaee95"
+    },
+    "web_runtime/src/lapptexturemanager.ts": {
+      "bytes": 6114,
+      "sha256": "0c760a686375193de26bda50234b75017db165e51ca07faaf1b8156a44b70eed",
+      "upstream_sha256": "0c760a686375193de26bda50234b75017db165e51ca07faaf1b8156a44b70eed"
+    },
+    "web_runtime/src/lappwavfilehandler.ts": {
+      "bytes": 12772,
+      "sha256": "e2906ac21374779a36aa97861a297a7d04f3990c899903330d734deeb65a18d1",
+      "upstream_sha256": "e2906ac21374779a36aa97861a297a7d04f3990c899903330d734deeb65a18d1"
+    },
+    "web_runtime/src/runtime_host.ts": {
+      "bytes": 381,
+      "sha256": "30c6602e9158386205bf7bb13c2dcf10ce1e529516f20408693738cc5672f6db",
+      "upstream_sha256": "30c6602e9158386205bf7bb13c2dcf10ce1e529516f20408693738cc5672f6db"
+    },
+    "web_runtime/src/runtime.ts": {
+      "bytes": 11346,
+      "sha256": "a324da88a22ae266de6006200a122d6f4de8ff10411677b5fab45aa911fa9a1f",
+      "upstream_sha256": "a324da88a22ae266de6006200a122d6f4de8ff10411677b5fab45aa911fa9a1f"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcalphablend.frag": {
+      "bytes": 2189,
+      "sha256": "855b247f02042a808a41e282ee4d7de7cc4533abeb5032b4ab8fe84f7dec107f",
+      "upstream_sha256": "855b247f02042a808a41e282ee4d7de7cc4533abeb5032b4ab8fe84f7dec107f"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrccolorblend.frag": {
+      "bytes": 7525,
+      "sha256": "01d4bf6a14b4a738976e9a538767a21da0defa8816f3845a7df08a7713327538",
+      "upstream_sha256": "01d4bf6a14b4a738976e9a538767a21da0defa8816f3845a7df08a7713327538"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrccopy.frag": {
+      "bytes": 429,
+      "sha256": "15c67a4ec3adda4c849aff2a8319a3f6aceef8a84d5e5e1f3fb7fd9cd681193c",
+      "upstream_sha256": "15c67a4ec3adda4c849aff2a8319a3f6aceef8a84d5e5e1f3fb7fd9cd681193c"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcmaskinvertedpremultipliedalpha.frag": {
+      "bytes": 1051,
+      "sha256": "1005cff8113de587cf1c0e295288d04d85f0f4ebc223684c8340e017fd8fc788",
+      "upstream_sha256": "1005cff8113de587cf1c0e295288d04d85f0f4ebc223684c8340e017fd8fc788"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcmaskpremultipliedalpha.frag": {
+      "bytes": 1043,
+      "sha256": "f84ff615393d26ea6ab7c28747803db6472524c92567c0ad01e8225fbab36a3b",
+      "upstream_sha256": "f84ff615393d26ea6ab7c28747803db6472524c92567c0ad01e8225fbab36a3b"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcpremultipliedalpha.frag": {
+      "bytes": 747,
+      "sha256": "c93abe215357cc782a25fc4ef20f5fe1f34e2cc193ee23d763b56b81fae5fce1",
+      "upstream_sha256": "c93abe215357cc782a25fc4ef20f5fe1f34e2cc193ee23d763b56b81fae5fce1"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcpremultipliedalphablend.frag": {
+      "bytes": 2038,
+      "sha256": "2155076275199a2946959838391dfb856e9d1db91b6ca3abd19ed70d4ff27e15",
+      "upstream_sha256": "2155076275199a2946959838391dfb856e9d1db91b6ca3abd19ed70d4ff27e15"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/fragshadersrcsetupmask.frag": {
+      "bytes": 736,
+      "sha256": "3cccc0b68a56cfbf4bd4841b0a759431dd159812c38dc280981ba633fa0afe7a",
+      "upstream_sha256": "3cccc0b68a56cfbf4bd4841b0a759431dd159812c38dc280981ba633fa0afe7a"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/vertshadersrc.vert": {
+      "bytes": 465,
+      "sha256": "291ed3f35f71f1e71e6df33fb055f009a8a9b36ee664f74f24f6cefef0c4029b",
+      "upstream_sha256": "291ed3f35f71f1e71e6df33fb055f009a8a9b36ee664f74f24f6cefef0c4029b"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/vertshadersrcblend.vert": {
+      "bytes": 738,
+      "sha256": "2589837bd7a6a550a1c3af41b4fa776011e6e71f2531320fa39afcb83b209bf4",
+      "upstream_sha256": "2589837bd7a6a550a1c3af41b4fa776011e6e71f2531320fa39afcb83b209bf4"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/vertshadersrccopy.vert": {
+      "bytes": 392,
+      "sha256": "b7bc4ba7517f405af4812ac47d99bc2b633c99f463c1224029556b00e8dff3cf",
+      "upstream_sha256": "b7bc4ba7517f405af4812ac47d99bc2b633c99f463c1224029556b00e8dff3cf"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/vertshadersrcmasked.vert": {
+      "bytes": 559,
+      "sha256": "6704a9df2e6d3ee5176c72fca4ba59358ba4827a07054b1e0a72a3c574e281fd",
+      "upstream_sha256": "6704a9df2e6d3ee5176c72fca4ba59358ba4827a07054b1e0a72a3c574e281fd"
+    },
+    "web_runtime/vendor/framework/Shaders/WebGL/vertshadersrcsetupmask.vert": {
+      "bytes": 536,
+      "sha256": "649aad2f6c0af55a7a4adcf33dbf78937ef9d77ed6ba917fd716176adce25afe",
+      "upstream_sha256": "649aad2f6c0af55a7a4adcf33dbf78937ef9d77ed6ba917fd716176adce25afe"
+    },
+    "web_runtime/vendor/framework/src/cubismdefaultparameterid.ts": {
+      "bytes": 5783,
+      "sha256": "f92e20db8145f06b73728fb6ba4215bbaed723e26959471f2e291962142c95b5",
+      "upstream_sha256": "f92e20db8145f06b73728fb6ba4215bbaed723e26959471f2e291962142c95b5"
+    },
+    "web_runtime/vendor/framework/src/cubismframeworkconfig.ts": {
+      "bytes": 1111,
+      "sha256": "92399ad1a572ec6048ea351ce4363b357f6f86471f9edb4af84bb7e16790828b",
+      "upstream_sha256": "92399ad1a572ec6048ea351ce4363b357f6f86471f9edb4af84bb7e16790828b"
+    },
+    "web_runtime/vendor/framework/src/cubismmodelsettingjson.ts": {
+      "bytes": 24382,
+      "sha256": "58ff868afbdab05f905782be3ae411c787ad0c9c3e79ad254fc596d08bbe0b6e",
+      "upstream_sha256": "58ff868afbdab05f905782be3ae411c787ad0c9c3e79ad254fc596d08bbe0b6e"
+    },
+    "web_runtime/vendor/framework/src/icubismallcator.ts": {
+      "bytes": 1932,
+      "sha256": "d0c3a178e6c6b86697117eac21cd7faa422bf180b4cc84adecfc3491c573055f",
+      "upstream_sha256": "d0c3a178e6c6b86697117eac21cd7faa422bf180b4cc84adecfc3491c573055f"
+    },
+    "web_runtime/vendor/framework/src/icubismmodelsetting.ts": {
+      "bytes": 6652,
+      "sha256": "87543afb93a5938211c08c2e5ae0116d0fd2bd813f92f3b5f48cf38105b1cf39",
+      "upstream_sha256": "87543afb93a5938211c08c2e5ae0116d0fd2bd813f92f3b5f48cf38105b1cf39"
+    },
+    "web_runtime/vendor/framework/src/live2dcubismframework.ts": {
+      "bytes": 8900,
+      "sha256": "dc20093ded82ed6704d94a443fa28961ba23aefb64fb76b9be35c8de869bd934",
+      "upstream_sha256": "dc20093ded82ed6704d94a443fa28961ba23aefb64fb76b9be35c8de869bd934"
+    },
+    "web_runtime/vendor/framework/src/effect/cubismbreath.ts": {
+      "bytes": 3765,
+      "sha256": "06da2c2c10e91782fb99833c94842e6267dc996ddb35a1bfb99765f053c7729a",
+      "upstream_sha256": "06da2c2c10e91782fb99833c94842e6267dc996ddb35a1bfb99765f053c7729a"
+    },
+    "web_runtime/vendor/framework/src/effect/cubismeyeblink.ts": {
+      "bytes": 7222,
+      "sha256": "a1c26cfcf2656424f370e17d4b4cb0f9642db2dd452af8f562c67ced26ba64de",
+      "upstream_sha256": "a1c26cfcf2656424f370e17d4b4cb0f9642db2dd452af8f562c67ced26ba64de"
+    },
+    "web_runtime/vendor/framework/src/effect/cubismlook.ts": {
+      "bytes": 3657,
+      "sha256": "3c7f7dbea7b34c524bcf36fb5a15f9264d4a8a7228f5b124fdaddb2c82193f21",
+      "upstream_sha256": "3c7f7dbea7b34c524bcf36fb5a15f9264d4a8a7228f5b124fdaddb2c82193f21"
+    },
+    "web_runtime/vendor/framework/src/effect/cubismpose.ts": {
+      "bytes": 11698,
+      "sha256": "8eba3f692c8cd267ca75664d035565c6f61ac38201c56e7e2aa04389b964f1c2",
+      "upstream_sha256": "8eba3f692c8cd267ca75664d035565c6f61ac38201c56e7e2aa04389b964f1c2"
+    },
+    "web_runtime/vendor/framework/src/id/cubismid.ts": {
+      "bytes": 2281,
+      "sha256": "ff10538238bcda0a97756bf3e6017409acfdb901657174e7f6a027b965d34ee0",
+      "upstream_sha256": "ff10538238bcda0a97756bf3e6017409acfdb901657174e7f6a027b965d34ee0"
+    },
+    "web_runtime/vendor/framework/src/id/cubismidmanager.ts": {
+      "bytes": 2413,
+      "sha256": "1ae3c3b2de5462d1bf6a98b5878eb7228d228d67adc7426bf549702fe6a5551e",
+      "upstream_sha256": "1ae3c3b2de5462d1bf6a98b5878eb7228d228d67adc7426bf549702fe6a5551e"
+    },
+    "web_runtime/vendor/framework/src/math/cubismmath.ts": {
+      "bytes": 9603,
+      "sha256": "2e6816bfcecc459bb1c8bd7fcaa03f971b2545c90a9c75a7236cca9a0c282961",
+      "upstream_sha256": "2e6816bfcecc459bb1c8bd7fcaa03f971b2545c90a9c75a7236cca9a0c282961"
+    },
+    "web_runtime/vendor/framework/src/math/cubismmatrix44.ts": {
+      "bytes": 8038,
+      "sha256": "aa81745acf70315c536d0bada6cc422822765b2f44f8088a2ccea6cb6f9edc0d",
+      "upstream_sha256": "aa81745acf70315c536d0bada6cc422822765b2f44f8088a2ccea6cb6f9edc0d"
+    },
+    "web_runtime/vendor/framework/src/math/cubismmodelmatrix.ts": {
+      "bytes": 4715,
+      "sha256": "31e8787385c4c26d78d2f627f373d7a446db1a72d38f247a442a9bc9de42ee0f",
+      "upstream_sha256": "31e8787385c4c26d78d2f627f373d7a446db1a72d38f247a442a9bc9de42ee0f"
+    },
+    "web_runtime/vendor/framework/src/math/cubismtargetpoint.ts": {
+      "bytes": 5764,
+      "sha256": "b09812890e639d89f96e0b1774a4ccdc076d1174fcb3daa95b0acd8102285999",
+      "upstream_sha256": "b09812890e639d89f96e0b1774a4ccdc076d1174fcb3daa95b0acd8102285999"
+    },
+    "web_runtime/vendor/framework/src/math/cubismvector2.ts": {
+      "bytes": 4153,
+      "sha256": "369b0c0b842432f7156827bf77047276fb23b10301d9f5d40762497b9f75372d",
+      "upstream_sha256": "369b0c0b842432f7156827bf77047276fb23b10301d9f5d40762497b9f75372d"
+    },
+    "web_runtime/vendor/framework/src/math/cubismviewmatrix.ts": {
+      "bytes": 8345,
+      "sha256": "3276768bd6efbe287a3384eb1960f6c1901f10137f38396096a9e8e84b9a65f5",
+      "upstream_sha256": "3276768bd6efbe287a3384eb1960f6c1901f10137f38396096a9e8e84b9a65f5"
+    },
+    "web_runtime/vendor/framework/src/model/cubismmoc.ts": {
+      "bytes": 3675,
+      "sha256": "99a80e2102af7b3ba10b15d684f965930707018b6b239a0ce6d14e3a867f266b",
+      "upstream_sha256": "99a80e2102af7b3ba10b15d684f965930707018b6b239a0ce6d14e3a867f266b"
+    },
+    "web_runtime/vendor/framework/src/model/cubismmodel.ts": {
+      "bytes": 62659,
+      "sha256": "fa4c21a270b3d18ae9f550cebf181d54504cf4b4198f1eeba6d0f3c55d7055a5",
+      "upstream_sha256": "fa4c21a270b3d18ae9f550cebf181d54504cf4b4198f1eeba6d0f3c55d7055a5"
+    },
+    "web_runtime/vendor/framework/src/model/cubismmodelmultiplyandscreencolor.ts": {
+      "bytes": 31866,
+      "sha256": "478b4fb805e6d4b5c450a58f29eaebcf75d176f87421797e218b0e3542a3b4b3",
+      "upstream_sha256": "478b4fb805e6d4b5c450a58f29eaebcf75d176f87421797e218b0e3542a3b4b3"
+    },
+    "web_runtime/vendor/framework/src/model/cubismmodeluserdata.ts": {
+      "bytes": 4248,
+      "sha256": "d4aaf59e04f834de345e0f9f1cced1062c28c9b1203bf09da17a0a8c2dddb6c4",
+      "upstream_sha256": "d4aaf59e04f834de345e0f9f1cced1062c28c9b1203bf09da17a0a8c2dddb6c4"
+    },
+    "web_runtime/vendor/framework/src/model/cubismmodeluserdatajson.ts": {
+      "bytes": 3035,
+      "sha256": "4c8f546a393ac47bf8245dd8f7ae65e50eb61518578c33c3ad28ef23b2ffa4c1",
+      "upstream_sha256": "4c8f546a393ac47bf8245dd8f7ae65e50eb61518578c33c3ad28ef23b2ffa4c1"
+    },
+    "web_runtime/vendor/framework/src/model/cubismusermodel.ts": {
+      "bytes": 15104,
+      "sha256": "41707e75f0ab36808a3ba42d40a477d0b33e7c7da73cbce5a3de0771bd957a9c",
+      "upstream_sha256": "41707e75f0ab36808a3ba42d40a477d0b33e7c7da73cbce5a3de0771bd957a9c"
+    },
+    "web_runtime/vendor/framework/src/motion/acubismmotion.ts": {
+      "bytes": 14092,
+      "sha256": "649524b171f1a3ab8588a16dcb707a4f0da848f7fb87ad2b34148e0eea45ee08",
+      "upstream_sha256": "649524b171f1a3ab8588a16dcb707a4f0da848f7fb87ad2b34148e0eea45ee08"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismbreathupdater.ts": {
+      "bytes": 1698,
+      "sha256": "57acaadd41e6dac1ca31f69521166edf8366508e3dcf21ce9279687df72080df",
+      "upstream_sha256": "57acaadd41e6dac1ca31f69521166edf8366508e3dcf21ce9279687df72080df"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismexpressionmotion.ts": {
+      "bytes": 12157,
+      "sha256": "20a75e357391116974a589fe8a9e5da3234cd214a214df94407f29b0152e86c5",
+      "upstream_sha256": "20a75e357391116974a589fe8a9e5da3234cd214a214df94407f29b0152e86c5"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismexpressionmotionmanager.ts": {
+      "bytes": 9079,
+      "sha256": "17a12b23cf811cf8c7794b67beef53d47b10070ebd1d05a87becafe4a03fc403",
+      "upstream_sha256": "17a12b23cf811cf8c7794b67beef53d47b10070ebd1d05a87becafe4a03fc403"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismexpressionupdater.ts": {
+      "bytes": 1989,
+      "sha256": "75fcf716ce50acd81c4d5f3e1179c6557e32fa4b8960d373aa36fe2734ec0c1b",
+      "upstream_sha256": "75fcf716ce50acd81c4d5f3e1179c6557e32fa4b8960d373aa36fe2734ec0c1b"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismeyeblinkupdater.ts": {
+      "bytes": 2187,
+      "sha256": "a7e90b32cc8d47600ee0b2da44106efe4ea2a915556ccb28d6aa7f3ff93a5dcc",
+      "upstream_sha256": "a7e90b32cc8d47600ee0b2da44106efe4ea2a915556ccb28d6aa7f3ff93a5dcc"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismlipsyncupdater.ts": {
+      "bytes": 3003,
+      "sha256": "390bc6da44e9d2b38704b990cbbe31442b562eeb2b7d4bc1a17a1a94034958a3",
+      "upstream_sha256": "390bc6da44e9d2b38704b990cbbe31442b562eeb2b7d4bc1a17a1a94034958a3"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismlookupdater.ts": {
+      "bytes": 2155,
+      "sha256": "a8fc4734ae53fa0f1b65b38a5358e6e7a456429a2743fc20f5fad637659bae18",
+      "upstream_sha256": "a8fc4734ae53fa0f1b65b38a5358e6e7a456429a2743fc20f5fad637659bae18"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotion.ts": {
+      "bytes": 37913,
+      "sha256": "eb3e8862f60feedd12bc47300d8486b044c39a8af21e66f12613ce941c8fa5f6",
+      "upstream_sha256": "eb3e8862f60feedd12bc47300d8486b044c39a8af21e66f12613ce941c8fa5f6"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotioninternal.ts": {
+      "bytes": 4928,
+      "sha256": "ede0f46ebdd0f4e0c25f5ba1825f6bccf658a463e08c0bc72a8af26230865805",
+      "upstream_sha256": "ede0f46ebdd0f4e0c25f5ba1825f6bccf658a463e08c0bc72a8af26230865805"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotionjson.ts": {
+      "bytes": 12496,
+      "sha256": "92eb9dd6fbe6086e02952fec021cf0daa68a3fc335ae88dd19ee281591b34c64",
+      "upstream_sha256": "92eb9dd6fbe6086e02952fec021cf0daa68a3fc335ae88dd19ee281591b34c64"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotionmanager.ts": {
+      "bytes": 3821,
+      "sha256": "7e88b825f99e4cbc1fd13ae07a7f5063a20ef9d96bf86855e426fb221813e72d",
+      "upstream_sha256": "7e88b825f99e4cbc1fd13ae07a7f5063a20ef9d96bf86855e426fb221813e72d"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotionqueueentry.ts": {
+      "bytes": 7248,
+      "sha256": "4619da4891829c7f8f5741a4b7f711a6cc2beb9fa06075a2b8caefec20b2ea19",
+      "upstream_sha256": "4619da4891829c7f8f5741a4b7f711a6cc2beb9fa06075a2b8caefec20b2ea19"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismmotionqueuemanager.ts": {
+      "bytes": 10707,
+      "sha256": "1aa0f6a39ffe9d83e0e06217a9cf6ebdf3a6e593242ff84d08684bbd2f4a01bb",
+      "upstream_sha256": "1aa0f6a39ffe9d83e0e06217a9cf6ebdf3a6e593242ff84d08684bbd2f4a01bb"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismphysicsupdater.ts": {
+      "bytes": 1719,
+      "sha256": "003fda6b8a6537b75fff8f0cd4894d9f7f9ee0a1f668197d91d497adab3dbdd9",
+      "upstream_sha256": "003fda6b8a6537b75fff8f0cd4894d9f7f9ee0a1f668197d91d497adab3dbdd9"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismposeupdater.ts": {
+      "bytes": 1644,
+      "sha256": "58658839ea9aab83da69b91d6e54b9825ddb80cca47ee5c1cef615715e58c28e",
+      "upstream_sha256": "58658839ea9aab83da69b91d6e54b9825ddb80cca47ee5c1cef615715e58c28e"
+    },
+    "web_runtime/vendor/framework/src/motion/cubismupdatescheduler.ts": {
+      "bytes": 5149,
+      "sha256": "ab59717783d79bf3675e55cf2037683cced648bca4a47dcb438c78184c9b1b5e",
+      "upstream_sha256": "ab59717783d79bf3675e55cf2037683cced648bca4a47dcb438c78184c9b1b5e"
+    },
+    "web_runtime/vendor/framework/src/motion/icubismupdater.ts": {
+      "bytes": 3688,
+      "sha256": "ba937ffd59bc52f4de426aadac4269630e0267d36b5ba9acab788993f586feea",
+      "upstream_sha256": "ba937ffd59bc52f4de426aadac4269630e0267d36b5ba9acab788993f586feea"
+    },
+    "web_runtime/vendor/framework/src/motion/iparameterprovider.ts": {
+      "bytes": 1156,
+      "sha256": "c0b8c01f855dcf4e25a08ad19afb5136d8f92f3d6536ba125194c649df140b0b",
+      "upstream_sha256": "c0b8c01f855dcf4e25a08ad19afb5136d8f92f3d6536ba125194c649df140b0b"
+    },
+    "web_runtime/vendor/framework/src/physics/cubismphysics.ts": {
+      "bytes": 44141,
+      "sha256": "41457e7486d380825f30936e34951c0de5362769e8229b99c28702a5a398d734",
+      "upstream_sha256": "41457e7486d380825f30936e34951c0de5362769e8229b99c28702a5a398d734"
+    },
+    "web_runtime/vendor/framework/src/physics/cubismphysicsinternal.ts": {
+      "bytes": 8981,
+      "sha256": "db6ee02fe53f01f9575149d33ae44fc69876b32225da921b44bfc8a6d294082b",
+      "upstream_sha256": "db6ee02fe53f01f9575149d33ae44fc69876b32225da921b44bfc8a6d294082b"
+    },
+    "web_runtime/vendor/framework/src/physics/cubismphysicsjson.ts": {
+      "bytes": 17868,
+      "sha256": "cc52bf67990131e322626729a044640b016e57b42dde80c0dfd4054af815d9b2",
+      "upstream_sha256": "cc52bf67990131e322626729a044640b016e57b42dde80c0dfd4054af815d9b2"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismclippingmanager.ts": {
+      "bytes": 38519,
+      "sha256": "b38ca529a5bedac4eaa0d0ff04ae4ccaaaf3173d04250dc01af4e88e72730ec9",
+      "upstream_sha256": "b38ca529a5bedac4eaa0d0ff04ae4ccaaaf3173d04250dc01af4e88e72730ec9"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismoffscreenmanager.ts": {
+      "bytes": 18723,
+      "sha256": "06c8d8c7c7fcdafd126f5f01881a023f8a4158c6222cf54e4672bd35a0609ebc",
+      "upstream_sha256": "06c8d8c7c7fcdafd126f5f01881a023f8a4158c6222cf54e4672bd35a0609ebc"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismoffscreenrendertarget_webgl.ts": {
+      "bytes": 7489,
+      "sha256": "04ae8ccfa59c8dc1f43528ec0ceccd06b4180e582c802d14e38a1eaf14c0694c",
+      "upstream_sha256": "04ae8ccfa59c8dc1f43528ec0ceccd06b4180e582c802d14e38a1eaf14c0694c"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismrenderer_webgl.ts": {
+      "bytes": 62458,
+      "sha256": "f054aa514bf1ee4d162698de62bc3565d8e18ef348dd9234d6dab1e78bc0e678",
+      "upstream_sha256": "f054aa514bf1ee4d162698de62bc3565d8e18ef348dd9234d6dab1e78bc0e678"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismrenderer.ts": {
+      "bytes": 13697,
+      "sha256": "42f6fa6343effdb9085cd1cd49b62f06f6e172483583c3cf325e0859aee8f9c8",
+      "upstream_sha256": "42f6fa6343effdb9085cd1cd49b62f06f6e172483583c3cf325e0859aee8f9c8"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismrendertarget_webgl.ts": {
+      "bytes": 8511,
+      "sha256": "8948ac1fb66fd32a289d9e07929ef2d8e41c6deb103948e54faa6f45ebad8f21",
+      "upstream_sha256": "8948ac1fb66fd32a289d9e07929ef2d8e41c6deb103948e54faa6f45ebad8f21"
+    },
+    "web_runtime/vendor/framework/src/rendering/cubismshader_webgl.ts": {
+      "bytes": 70603,
+      "sha256": "daf9bfcbed82f4763e401fbc1ccf740e1da0a99943dbec6afb3cdfb6c3d94a32",
+      "upstream_sha256": "daf9bfcbed82f4763e401fbc1ccf740e1da0a99943dbec6afb3cdfb6c3d94a32"
+    },
+    "web_runtime/vendor/framework/src/type/csmrectf.ts": {
+      "bytes": 2019,
+      "sha256": "c199fdc276d2d66ed3abd140b137a3e127fc52b5735869849d450eacd5f416d8",
+      "upstream_sha256": "c199fdc276d2d66ed3abd140b137a3e127fc52b5735869849d450eacd5f416d8"
+    },
+    "web_runtime/vendor/framework/src/utils/cubismarrayutils.ts": {
+      "bytes": 1073,
+      "sha256": "0f63d3a9e6f25a097905503ccedfe21130b6b857238569341628f158d44afa60",
+      "upstream_sha256": "0f63d3a9e6f25a097905503ccedfe21130b6b857238569341628f158d44afa60"
+    },
+    "web_runtime/vendor/framework/src/utils/cubismdebug.ts": {
+      "bytes": 5369,
+      "sha256": "0a526141825d6a980d838e95fc6856a4362173674bb6469d8bd40d054e9e7520",
+      "upstream_sha256": "0a526141825d6a980d838e95fc6856a4362173674bb6469d8bd40d054e9e7520"
+    },
+    "web_runtime/vendor/framework/src/utils/cubismjson.ts": {
+      "bytes": 29319,
+      "sha256": "39d9f1806b7a6909098e1b8e2b7a1af567bbd0d6800b25beeaba4cb857c7b9f0",
+      "upstream_sha256": "39d9f1806b7a6909098e1b8e2b7a1af567bbd0d6800b25beeaba4cb857c7b9f0"
+    },
+    "web_runtime/vendor/framework/src/utils/cubismjsonextension.ts": {
+      "bytes": 3691,
+      "sha256": "31e7a859c82c05e869651538077bb784737c459f6408a7aa3d460ba2697f3ddd",
+      "upstream_sha256": "31e7a859c82c05e869651538077bb784737c459f6408a7aa3d460ba2697f3ddd"
+    },
+    "web_runtime/vendor/framework/src/utils/cubismstring.ts": {
+      "bytes": 3356,
+      "sha256": "746c4da878164ecb6444addf2934e9086897b08f0fb68fb1a5f85132f5f76a7c",
+      "upstream_sha256": "746c4da878164ecb6444addf2934e9086897b08f0fb68fb1a5f85132f5f76a7c"
+    },
+    "windows/CMakeLists.txt": {
+      "bytes": 3241,
+      "sha256": "7fd9eee25f2963a97d92c87c0edbbe2a6ee357c9baf02a4ef7d38e4bc0c83169",
+      "upstream_sha256": "7fd9eee25f2963a97d92c87c0edbbe2a6ee357c9baf02a4ef7d38e4bc0c83169"
+    },
+    "windows/flutter_live2d_plugin_c_api.cpp": {
+      "bytes": 437,
+      "sha256": "dbae593e2bf1b4ffe2167b458b8573542a3e849ccf9da398887ba9d9795a736f",
+      "upstream_sha256": "dbae593e2bf1b4ffe2167b458b8573542a3e849ccf9da398887ba9d9795a736f"
+    },
+    "windows/flutter_live2d_plugin.cpp": {
+      "bytes": 13758,
+      "sha256": "a728a02b8edc17c4bef015c80bde4deb29a98d02e96e80c6b877935bde7883d5",
+      "upstream_sha256": "49ab68f1f21ecf79942d50e9c145f596202f4b858efd7e16916de10142586963"
+    },
+    "windows/flutter_live2d_plugin.h": {
+      "bytes": 1644,
+      "sha256": "cb3bbef406e5d4517dea263f701244a09e708a0737206e94bfea2b09742a30cb",
+      "upstream_sha256": "cb3bbef406e5d4517dea263f701244a09e708a0737206e94bfea2b09742a30cb"
+    },
+    "windows/LICENSE.core.md": {
+      "bytes": 520,
+      "sha256": "b81e37048010ef1d336106151201a0323c3309cae44aecdedf57831fe88fa991",
+      "upstream_sha256": "b81e37048010ef1d336106151201a0323c3309cae44aecdedf57831fe88fa991"
+    },
+    "windows/Live2DAllocator.cpp": {
+      "bytes": 514,
+      "sha256": "21b4a8503562d89d6981ec2c251cea3aa36284f4a6855338569ac44007b8f3f2",
+      "upstream_sha256": "21b4a8503562d89d6981ec2c251cea3aa36284f4a6855338569ac44007b8f3f2"
+    },
+    "windows/Live2DAllocator.hpp": {
+      "bytes": 401,
+      "sha256": "ff2708aaccd5a39d05922cecaf68783f0ea9bd8fc403fd02bcc6a7ca610cf572",
+      "upstream_sha256": "ff2708aaccd5a39d05922cecaf68783f0ea9bd8fc403fd02bcc6a7ca610cf572"
+    },
+    "windows/Live2DModel.cpp": {
+      "bytes": 11071,
+      "sha256": "80aa1d97946570981850b13cb130782529b050d41aaeaa46c34e45b4b7cf50a0",
+      "upstream_sha256": "6567ee450a2b0b3ca456d3675e0ecd7496693e8b3d1072d088ca02f1dce6c6bf"
+    },
+    "windows/Live2DModel.hpp": {
+      "bytes": 2195,
+      "sha256": "3379cdbb27324b037d8d1f98c340435bee1396be626a364505f69106e0829d99",
+      "upstream_sha256": "0a3e4df74fac01dbcf6c2e9e358ab70f48ba915203108fbe270d0aceb57f0078"
+    },
+    "windows/Live2DPal.cpp": {
+      "bytes": 2729,
+      "sha256": "f88f9bda4208d02342c05a133176f6595cdb8e8f3b46d71ec9485f347afcd6fe",
+      "upstream_sha256": "f88f9bda4208d02342c05a133176f6595cdb8e8f3b46d71ec9485f347afcd6fe"
+    },
+    "windows/Live2DPal.hpp": {
+      "bytes": 427,
+      "sha256": "27973a63758eb7dafe580dd8dac1654e3e4f3d8e6f15b22a929dd25e4bf2ff21",
+      "upstream_sha256": "27973a63758eb7dafe580dd8dac1654e3e4f3d8e6f15b22a929dd25e4bf2ff21"
+    },
+    "windows/Live2DTextureManager.cpp": {
+      "bytes": 2117,
+      "sha256": "28f691d409d3dbd0127e539e217088f889c510917ab805bf6cd9f327ce399177",
+      "upstream_sha256": "28f691d409d3dbd0127e539e217088f889c510917ab805bf6cd9f327ce399177"
+    },
+    "windows/Live2DTextureManager.hpp": {
+      "bytes": 663,
+      "sha256": "0cddc0d804fefbd10185252b58ee90abe230bdf534240a93d3ec21898978bdf1",
+      "upstream_sha256": "0cddc0d804fefbd10185252b58ee90abe230bdf534240a93d3ec21898978bdf1"
+    },
+    "windows/Live2DWindowsView.cpp": {
+      "bytes": 8664,
+      "sha256": "72ce2eff0b0e45b610e92cacfb5f4ee227f53c18c076b1eddc2e826cfd62bb43",
+      "upstream_sha256": "e35ce9ea414d9c238f0d68e87f2a3ed06d7db73ce95942223fbee418e879d4b7"
+    },
+    "windows/Live2DWindowsView.hpp": {
+      "bytes": 2106,
+      "sha256": "5f2bcc5dcb503a549289c980f8479547fac8578d4a79f14ec405cb08aab209e5",
+      "upstream_sha256": "e9d6398569d65166c5b2fbb455e6dfdf14760e107dfec639b43bbbd37e46dd99"
+    },
+    "windows/include/live2d_flutter/flutter_live2d_plugin_c_api.h": {
+      "bytes": 504,
+      "sha256": "548d7bf232811ad8ba778664997a05e5fa3a915eee5e2cee101ec92068569a97",
+      "upstream_sha256": "548d7bf232811ad8ba778664997a05e5fa3a915eee5e2cee101ec92068569a97"
+    },
+    "android/src/main/kotlin/com/linh18nd/flutter_live2d/Live2DCommandQueue.kt": {
+      "bytes": 2799,
+      "sha256": "9a4a31db8e20322e3801bc65ffd5986c75412bb20e0ad0a23612a2b0d0d7ca02",
+      "upstream_sha256": null
+    },
+    "android/src/test/kotlin/com/linh18nd/flutter_live2d/Live2DCommandQueueTest.kt": {
+      "bytes": 4441,
+      "sha256": "1e7bcc08296480d42706d6977f1848c7c0eadd710503622af44fb87a61e4adc1",
+      "upstream_sha256": null
+    }
+  }
+}

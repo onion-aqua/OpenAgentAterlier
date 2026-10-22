@@ -1,0 +1,466 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ryza_chat_mvp/src/app_controller.dart';
+import 'package:ryza_chat_mvp/src/glass_ui.dart';
+import 'package:ryza_chat_mvp/src/settings_detail_page.dart';
+import 'package:ryza_chat_mvp/src/settings_screen.dart';
+import 'package:ryza_chat_mvp/src/memory_timeline.dart';
+
+void main() {
+  Future<AppController> setup(WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final controller = (await tester.runAsync(() => AppController.load()))!;
+    addTearDown(controller.dispose);
+    tester.view.physicalSize = const Size(320, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetViewInsets);
+    final messenger = tester.binding.defaultBinaryMessenger;
+    for (final name in [
+      'xyz.luan/audioplayers.global',
+      'xyz.luan/audioplayers.global/events',
+    ]) {
+      messenger.setMockMethodCallHandler(
+        MethodChannel(name),
+        (_) async => null,
+      );
+    }
+    messenger.setMockMethodCallHandler(
+      const MethodChannel('xyz.luan/audioplayers'),
+      (call) async {
+        if (call.method == 'create') {
+          final id = (call.arguments as Map)['playerId'];
+          messenger.setMockMethodCallHandler(
+            MethodChannel('xyz.luan/audioplayers/events/$id'),
+            (_) async => null,
+          );
+        }
+        return null;
+      },
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData.dark(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: const TextScaler.linear(1.3)),
+          child: child!,
+        ),
+        home: SettingsScreen(controller: controller, onMenuPressed: () {}),
+      ),
+    );
+    return controller;
+  }
+
+  Future<void> tapVisible(WidgetTester tester, Finder target) async {
+    // Settings retain each page's scroll position. This test visits categories
+    // out of their visual order, so search from the top before scrolling down.
+    final scrollable = find.byType(Scrollable).first;
+    final position = tester.state<ScrollableState>(scrollable).position;
+    position.jumpTo(position.minScrollExtent);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(target, 180, scrollable: scrollable);
+    await tester.pumpAndSettle();
+    await Scrollable.ensureVisible(tester.element(target), alignment: .5);
+    await tester.pumpAndSettle();
+    await tester.tap(target);
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets(
+    'every configuration opens a glass page and returns one level with keyboard',
+    (tester) async {
+      final controller = await setup(tester);
+      for (final category in {
+        'appearance': ['主题', '主题色', '语言'],
+        'profile': ['称呼与自画像'],
+        'ai': ['OpenAI 兼容接口', 'Google Gemini'],
+        'roleplay': ['编辑人物设定', '编辑世界书'],
+        'data': ['长期记忆'],
+        'audio': ['Fish Audio', '百炼 Qwen-TTS', '通用 OpenAI TTS', 'MiMo TTS'],
+      }.entries) {
+        await tapVisible(
+          tester,
+          find.byKey(ValueKey('settings-category-${category.key}')),
+        );
+        for (final title in category.value) {
+          await tapVisible(tester, find.text(title));
+          expect(
+            find.byType(SettingsDetailPage),
+            findsOneWidget,
+            reason: title,
+          );
+          expect(find.byType(AlertDialog), findsNothing, reason: title);
+          final surface = find.byKey(const ValueKey('settings-detail-glass'));
+          expect(tester.getSize(surface).width, 320);
+          expect(tester.widget<GlassSurface>(surface).liquidGlass, isFalse);
+          controller.setLiquidGlassChatUi(true);
+          await tester.pump();
+          expect(tester.widget<GlassSurface>(surface).liquidGlass, isTrue);
+          expect(tester.widget<GlassSurface>(surface).tone, GlassTone.dark);
+          tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+          await tester.pumpAndSettle();
+          expect(
+            tester.takeException(),
+            isNull,
+            reason: '$title with keyboard',
+          );
+          tester.view.resetViewInsets();
+          await tester.pumpAndSettle();
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(find.byType(SettingsDetailPage), findsNothing);
+          expect(find.text(title), findsOneWidget);
+          controller.setLiquidGlassChatUi(false);
+          await tester.pump();
+        }
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(ValueKey('settings-category-${category.key}')),
+          findsOneWidget,
+        );
+      }
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
+    'thinking UI reflects model capabilities without unsupported effort choices',
+    (tester) async {
+      final controller = await setup(tester);
+      controller.configureAi(
+        enabled: true,
+        baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        model: 'qwen3.5-plus',
+      );
+      await tapVisible(
+        tester,
+        find.byKey(const ValueKey('settings-category-ai')),
+      );
+      final toggle = find.widgetWithText(SwitchListTile, '模型思考');
+      await tapVisible(tester, toggle);
+      expect(controller.activeThinkingEnabled, isTrue);
+      expect(
+        find.byType(DropdownButtonFormField<ReasoningEffort>),
+        findsNothing,
+      );
+      controller.configureGemini(
+        enabled: true,
+        baseUrl:
+            'https://generativelanguage.googleapis.com/v1beta/interactions',
+        model: 'gemini-3.8-flash',
+      );
+      await tester.pumpAndSettle();
+      expect(tester.widget<SwitchListTile>(toggle).value, isTrue);
+      expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
+      final effort = tester.widget<DropdownButtonFormField<ReasoningEffort>>(
+        find.byType(DropdownButtonFormField<ReasoningEffort>),
+      );
+      expect(effort.initialValue, ReasoningEffort.medium);
+      controller.configureAi(
+        enabled: true,
+        baseUrl: 'https://example.test/v1',
+        model: 'custom-alias',
+      );
+      await tester.pumpAndSettle();
+      expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
+      expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
+      expect(
+        find.byType(DropdownButtonFormField<ReasoningEffort>),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('memory edit saves only on Save and back discards the draft', (
+    tester,
+  ) async {
+    final c = await setup(tester);
+    c.configureLongTermMemory(enabled: true, summary: '原记忆');
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+    await tester.enterText(find.byType(TextField), '新记忆');
+    await tester.tap(find.text('保存'));
+    await tester.pumpAndSettle();
+    expect(c.memorySummary, '新记忆');
+    await tapVisible(tester, find.text('长期记忆'));
+    await tester.enterText(find.byType(TextField), '不要保存');
+    await tester.tap(find.byKey(const ValueKey('settings-detail-back')));
+    await tester.pumpAndSettle();
+    expect(c.memorySummary, '新记忆');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('memory prompt can be customized and restored', (tester) async {
+    final controller = await setup(tester);
+    controller.recentMemories = ['与莱莎约定次日一起采集素材。'];
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+
+    await tester.tap(find.byKey(const ValueKey('memory-prompt-editor-open')));
+    await tester.pumpAndSettle();
+    final field = find.byKey(const ValueKey('memory-prompt-field'));
+    expect(
+      tester.widget<TextField>(field).controller!.text,
+      contains('从最近记忆中提炼'),
+    );
+    await tester.enterText(field, '只记录有后续影响的事实。');
+    await tester.tap(find.byKey(const ValueKey('memory-prompt-save')));
+    await tester.pumpAndSettle();
+    expect(controller.memoryConsolidationPrompt, '只记录有后续影响的事实。');
+
+    await tester.tap(find.byKey(const ValueKey('memory-prompt-editor-open')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(field).controller!.text, '只记录有后续影响的事实。');
+    await tester.tap(find.byKey(const ValueKey('memory-prompt-reset')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('memory-prompt-save')));
+    await tester.pumpAndSettle();
+    expect(controller.memoryConsolidationPrompt, isEmpty);
+
+    await tester.tap(find.text('最近记忆'));
+    await tester.pumpAndSettle();
+    expect(find.text('与莱莎约定次日一起采集素材。'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('editing a memory card protects its summary as a manual fact', (
+    tester,
+  ) async {
+    final controller = await setup(tester);
+    controller.configureLongTermMemory(
+      enabled: true,
+      summary: jsonEncode({
+        'entries': [
+          {
+            'summary': '双方约定明天采集素材',
+            'source': 'local_ledger',
+            'local_ledger_version': 2,
+            'category': 'promise',
+          },
+        ],
+      }),
+    );
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+    expect(find.text('本地事实记录'), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField).first, '用户修正的采集约定');
+    await tester.tap(find.byKey(const ValueKey('memory-save')));
+    await tester.pumpAndSettle();
+    final entry =
+        (MemoryTimeline.decode(controller.memorySummary)!['entries'] as List)
+                .single
+            as Map;
+    expect(entry['summary'], '用户修正的采集约定');
+    expect(entry['source'], 'manual');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('adding a missing translation preserves the fact provenance', (
+    tester,
+  ) async {
+    final controller = await setup(tester);
+    controller.configureLongTermMemory(
+      enabled: true,
+      summary: jsonEncode({
+        'entries': [
+          {
+            'summary': '明日、工房で会う約束をした',
+            'source': 'local_ledger',
+            'local_ledger_version': 2,
+            'category': 'promise',
+          },
+        ],
+      }),
+    );
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+    await tapVisible(tester, find.text('补写译文'));
+    await tester.enterText(find.byType(TextFormField).last, '双方约好明天在工坊见面');
+    await tester.tap(find.byKey(const ValueKey('memory-save')));
+    await tester.pumpAndSettle();
+    final entry =
+        (MemoryTimeline.decode(controller.memorySummary)!['entries'] as List)
+                .single
+            as Map;
+    expect(entry['summary'], '明日、工房で会う約束をした');
+    expect(entry['translation'], '双方约好明天在工坊见面');
+    expect(entry['source'], 'local_ledger');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('raw summary edits stay manual after returning to memory cards', (
+    tester,
+  ) async {
+    final controller = await setup(tester);
+    controller.configureLongTermMemory(
+      enabled: true,
+      summary: jsonEncode({
+        'entries': [
+          {
+            'summary': '双方约定明天采集素材',
+            'source': 'local_ledger',
+            'local_ledger_version': 2,
+            'category': 'promise',
+          },
+        ],
+      }),
+    );
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+    await tapVisible(tester, find.text('编辑原始内容'));
+    final edited = jsonDecode(controller.memorySummary) as Map;
+    ((edited['entries'] as List).single as Map)['summary'] =
+        '手动记忆中的[happy]是用户保留的标记';
+    await tester.enterText(find.byType(TextField), jsonEncode(edited));
+    await tapVisible(tester, find.text('记忆卡片'));
+    await tester.tap(find.byKey(const ValueKey('memory-save')));
+    await tester.pumpAndSettle();
+    final entry =
+        (MemoryTimeline.decode(controller.memorySummary)!['entries'] as List)
+                .single
+            as Map;
+    expect(entry['summary'], '手动记忆中的[happy]是用户保留的标记');
+    expect(entry['source'], 'manual');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('manual memory button checks LLM configuration before saving', (
+    tester,
+  ) async {
+    final controller = await setup(tester);
+    controller.setLongTermMemoryEnabled(true);
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('settings-category-data')),
+    );
+    await tapVisible(tester, find.text('长期记忆'));
+    final organize = find.byKey(const ValueKey('memory-organize-now'));
+    expect(organize, findsOneWidget);
+    expect(tester.getRect(organize).right, lessThanOrEqualTo(320));
+    expect(
+      tester
+          .getRect(find.byKey(const ValueKey('memory-prompt-editor-open')))
+          .right,
+      lessThanOrEqualTo(320),
+    );
+    await tester.tap(organize);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('请先启用并配置 LLM 服务'), findsOneWidget);
+    expect(controller.memorySummary, isEmpty);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets(
+    'appearance settings can pause character animation on full pages',
+    (tester) async {
+      final controller = await setup(tester);
+      await tapVisible(
+        tester,
+        find.byKey(const ValueKey('settings-category-appearance')),
+      );
+      final toggle = find.byKey(
+        const ValueKey('pause-character-animation-fullscreen'),
+      );
+      await tapVisible(tester, toggle);
+      expect(controller.pauseCharacterAnimationOnFullscreenPages, isFalse);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'detail route keeps backdrop ticking and uses translucent fallback',
+    (tester) async {
+      final c = await setup(tester);
+      final backdrop = GlobalKey<_BackdropState>();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Stack(
+            children: [
+              _Backdrop(key: backdrop),
+              SettingsScreen(controller: c, onMenuPressed: () {}),
+            ],
+          ),
+        ),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('settings-category-appearance')),
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.text('主题'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      final ticks = backdrop.currentState!.ticks;
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(backdrop.currentState!.ticks, greaterThan(ticks));
+      final glass = tester.widget<GlassSurface>(
+        find.byKey(const ValueKey('settings-detail-glass')),
+      );
+      expect(glass.fallbackColor.a, lessThan(1));
+      expect(glass.tone, GlassTone.light);
+      expect(
+        ModalRoute.of(tester.element(find.byType(SettingsDetailPage)))!.opaque,
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+}
+
+class _Backdrop extends StatefulWidget {
+  const _Backdrop({super.key});
+  @override
+  State<_Backdrop> createState() => _BackdropState();
+}
+
+class _BackdropState extends State<_Backdrop>
+    with SingleTickerProviderStateMixin {
+  int ticks = 0;
+  late final ticker = createTicker((_) => ticks++);
+  @override
+  void initState() {
+    super.initState();
+    ticker.start();
+  }
+
+  @override
+  void dispose() {
+    ticker.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      const ColoredBox(color: Colors.blue, child: SizedBox.expand());
+}

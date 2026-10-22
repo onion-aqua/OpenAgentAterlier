@@ -1,0 +1,103 @@
+group 'com.gdelataillade.alarm.alarm'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '2.2.20'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def builtInKotlin = providers.gradleProperty('android.builtInKotlin').map { it.toBoolean() }.orElse(true).get()
+def shouldApplyKotlinAndroidPlugin = agpMajor < 9 || !builtInKotlin
+
+// AGP 9 compiles Kotlin via its built-in Kotlin support unless the app opts out.
+if (shouldApplyKotlinAndroidPlugin) {
+    apply plugin: 'kotlin-android'
+}
+apply plugin: 'kotlinx-serialization'
+
+android {
+    namespace = 'com.gdelataillade.alarm.alarm'
+
+    compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    if (shouldApplyKotlinAndroidPlugin) {
+        kotlinOptions {
+            jvmTarget = '17'
+        }
+    }
+
+    defaultConfig {
+        minSdk = 19
+    }
+
+    buildTypes {
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    testOptions {
+        // The plugin logs through io.flutter.Log, which delegates to
+        // android.util.Log. Without this, every logging call in the code under
+        // test throws "not mocked" instead of doing nothing, which would force
+        // Robolectric on tests that otherwise need no Android framework at all.
+        unitTests.returnDefaultValues = true
+
+        unitTests.all { test ->
+            test.testLogging { exceptionFormat = 'full' }
+            test.afterSuite { descriptor, result ->
+                // Only the synthetic root suite has no parent.
+                if (descriptor.parent != null) return
+                logger.lifecycle("${test.name}: ${result.testCount} tests, " +
+                    "${result.failedTestCount} failed, ${result.skippedTestCount} skipped")
+                // A test task that finds nothing still succeeds, so a source set
+                // that silently stops being picked up -- an AGP upgrade, a moved
+                // directory -- would leave CI green while covering nothing.
+                if (result.testCount == 0) {
+                    throw new GradleException("${test.name} ran no tests. The test " +
+                        "source set is not being picked up.")
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    //noinspection v1.1.1 has a bug that prevents native_debug_symbol generation
+    //             see: https://issuetracker.google.com/u/0/issues/342671895
+    implementation 'androidx.datastore:datastore:1.0.0'
+    implementation 'androidx.datastore:datastore-preferences:1.0.0'
+    // Used for NotificationCompat and ServiceCompat; declared explicitly
+    // instead of relying on it transitively.
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
+
+    // Unit tests run on the JVM, so they never reach a device or an emulator.
+    // testImplementation is not visible to consumers, and is only resolved when
+    // this module's own tests are compiled.
+    testImplementation 'junit:junit:4.13.2'
+}

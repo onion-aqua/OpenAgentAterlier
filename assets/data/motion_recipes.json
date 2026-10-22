@@ -1,0 +1,3191 @@
+{
+  "version": 1,
+  "recipes": [
+    {
+      "id": "grp_recipe_01",
+      "name": "01_温柔打招呼",
+      "description": "左手挥手、右手自然放下，带浅腮红；比已有双手挥手更接近日常见面。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_051_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "01_gentle_hello.motion.json"
+    },
+    {
+      "id": "grp_recipe_02",
+      "name": "02_认真倾听",
+      "description": "一手放在腿上、一手靠近下巴，身体轻微偏侧，表现专注倾听。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 0.35,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_028_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "02_listening_response.motion.json"
+    },
+    {
+      "id": "grp_recipe_03",
+      "name": "03_认真解释",
+      "description": "左手指向重点，右手靠近身体，适合讲解和提醒。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "03_explain_a_point.motion.json"
+    },
+    {
+      "id": "grp_recipe_04",
+      "name": "04_伸手安慰",
+      "description": "左手向前靠近，右手放在胸前，表情柔和，像在安慰对方。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "04_reassuring_reach.motion.json"
+    },
+    {
+      "id": "grp_recipe_05",
+      "name": "05_请等一下",
+      "description": "左手示意暂停，右手自然放下，避免双手同时阻挡的僵硬感。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_051_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "05_wait_a_moment.motion.json"
+    },
+    {
+      "id": "grp_recipe_06",
+      "name": "06_欢迎靠近",
+      "description": "一手向前邀请、一手在胸前回应，适合欢迎和拉近距离。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "06_welcome_closer.motion.json"
+    },
+    {
+      "id": "grp_recipe_07",
+      "name": "07_害羞道谢",
+      "description": "双手靠近胸前，配闭眼、微笑和明显腮红，用于被夸奖或收到礼物。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_009_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "07_shy_thanks.motion.json"
+    },
+    {
+      "id": "grp_recipe_08",
+      "name": "08_不好意思地笑",
+      "description": "左手遮住嘴、右手轻托下巴，表现不好意思又忍不住笑。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_027_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "08_embarrassed_laugh.motion.json"
+    },
+    {
+      "id": "grp_recipe_09",
+      "name": "09_认真思考",
+      "description": "左手托腮、右手扶头，身体轻晃，适合长时间思考。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 0.25,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_027_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_040_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "09_deep_thought.motion.json"
+    },
+    {
+      "id": "grp_recipe_10",
+      "name": "10_想到办法了",
+      "description": "左手扶头、右手指向前方，从思考过渡到给出答案。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_040_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_047_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "10_got_an_idea.motion.json"
+    },
+    {
+      "id": "grp_recipe_11",
+      "name": "11_轻声提醒",
+      "description": "左手做安静手势，右手贴近胸口，适合秘密和轻声提醒。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_046_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "11_quiet_reminder.motion.json"
+    },
+    {
+      "id": "grp_recipe_12",
+      "name": "12_靠近说悄悄话",
+      "description": "一手贴近嘴边、一手向对方靠近，带轻微侧身。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_004_active",
+            "region": "E",
+            "alpha": 0.3,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_031_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "12_whisper_to_you.motion.json"
+    },
+    {
+      "id": "grp_recipe_13",
+      "name": "13_礼貌拒绝",
+      "description": "左手示意暂停、右手仍保持问候姿态，表达拒绝但不显得生硬。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_026_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "13_polite_refusal.motion.json"
+    },
+    {
+      "id": "grp_recipe_14",
+      "name": "14_无奈解释",
+      "description": "左手靠近嘴边、右手叉腰，配轻微侧身，像在耐心解释。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 0.35,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_031_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_008_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "14_helpless_explanation.motion.json"
+    },
+    {
+      "id": "grp_recipe_15",
+      "name": "15_兴奋分享",
+      "description": "左手指向内容、右手握拳，身体轻弹，像迫不及待分享好消息。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_007_active",
+            "region": "E",
+            "alpha": 0.45,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_018_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "15_excited_sharing.motion.json"
+    },
+    {
+      "id": "grp_recipe_16",
+      "name": "16_开心认可",
+      "description": "左手做出拍手动作、右手握拳，作为认可和鼓励的自然反应。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_050_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_018_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "16_happy_approval.motion.json"
+    },
+    {
+      "id": "grp_recipe_17",
+      "name": "17_紧张等待",
+      "description": "双手放在腿上，双腿轻微晃动，配腮红，适合等回复。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_054_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_I_001_active",
+            "region": "I",
+            "alpha": 0.45,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_J_002_active",
+            "region": "J",
+            "alpha": 0.45,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "17_nervous_waiting.motion.json"
+    },
+    {
+      "id": "grp_recipe_18",
+      "name": "18_闹别扭",
+      "description": "双臂交叉，脸转为克制的不满；加入轻微后倾减少木偶感。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 0.25,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_B_007_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "18_sulky_arms.motion.json"
+    },
+    {
+      "id": "grp_recipe_19",
+      "name": "19_自信介绍",
+      "description": "左手叉腰、右手指向介绍对象，适合自我介绍和展示。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_008_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_047_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "19_confident_intro.motion.json"
+    },
+    {
+      "id": "grp_recipe_20",
+      "name": "20_关心询问",
+      "description": "左手伸向对方、右手放在腿上，表情温和，像在询问是否还好。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "20_gentle_check_in.motion.json"
+    },
+    {
+      "id": "grp_recipe_21",
+      "name": "21_惊讶捂嘴",
+      "description": "左手遮嘴、右手示意停下，配明显腮红，表现突然吃惊。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_020_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "21_surprised_cover_mouth.motion.json"
+    },
+    {
+      "id": "grp_recipe_22",
+      "name": "22_为你加油",
+      "description": "左手握拳鼓劲、右手向前伸出，兼有鼓励和陪伴感。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_018_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_019_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "22_cheer_you_on.motion.json"
+    },
+    {
+      "id": "grp_recipe_23",
+      "name": "23_有点累了",
+      "description": "左手扶太阳穴、右手扶头，身体微倾，适合疲惫或苦恼。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 0.25,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_036_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_040_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "23_tired_forehead.motion.json"
+    },
+    {
+      "id": "grp_recipe_24",
+      "name": "24_温柔告别",
+      "description": "左手挥手、右手放在腿边，表情柔和，作为结束对话的日常告别。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "24_soft_goodbye.motion.json"
+    },
+    {
+      "id": "grp_recipe_25",
+      "name": "25_好奇地靠近",
+      "description": "身体轻轻前倾，一手靠近眼侧、一手托腮，像在认真看对方展示的东西。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 0.3,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_033_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_028_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "25_curious_lean_in.motion.json"
+    },
+    {
+      "id": "grp_recipe_26",
+      "name": "26_认真道歉",
+      "description": "一手放在胸前、一手自然垂下，身体稍微前倾，表情收敛。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 0.25,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "26_sincere_apology.motion.json"
+    },
+    {
+      "id": "grp_recipe_27",
+      "name": "27_害羞偷看",
+      "description": "双手自然放在腿边，身体稍微侧倾，配回避式表情和腮红。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 0.3,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_054_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "27_shy_side_glance.motion.json"
+    },
+    {
+      "id": "grp_recipe_28",
+      "name": "28_俏皮地保密",
+      "description": "左手比出胜利手势，右手做安静手势，像在分享一个小秘密。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_042_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_046_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "28_playful_secret.motion.json"
+    },
+    {
+      "id": "grp_recipe_29",
+      "name": "29_自信叉腰",
+      "description": "双手叉腰、身体轻微后倾，适合自信回答和完成任务后的得意。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 0.2,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_008_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_008_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "29_proud_stance.motion.json"
+    },
+    {
+      "id": "grp_recipe_30",
+      "name": "30_温和赞同",
+      "description": "双手自然落在腿边，表情放松，用作安静的点头式回应。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 0.18,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "30_calm_agreement.motion.json"
+    },
+    {
+      "id": "grp_recipe_31",
+      "name": "31_感动地回应",
+      "description": "双手靠近胸口，眼神柔和并带腮红，适合收到关心后的反应。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "31_touched_and_moved.motion.json"
+    },
+    {
+      "id": "grp_recipe_32",
+      "name": "32_突然被吓到",
+      "description": "双手同时挡在身前、身体微微后仰，适合突然发生的情况。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 0.25,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_020_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "32_startled_defense.motion.json"
+    },
+    {
+      "id": "grp_recipe_33",
+      "name": "33_困惑挠头",
+      "description": "左手扶头、右手自然落下，表情疑惑，适合没听懂或想不起来。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_040_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "33_confused_scratch_head.motion.json"
+    },
+    {
+      "id": "grp_recipe_34",
+      "name": "34_邀请一起走",
+      "description": "左手向前招呼、右手挥手示意，表达友好的邀请。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_026_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "34_come_with_me.motion.json"
+    },
+    {
+      "id": "grp_recipe_35",
+      "name": "35_我有个秘密",
+      "description": "左手做安静手势、右手指向重点，适合准备透露重要信息。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_046_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_047_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "35_i_have_a_secret.motion.json"
+    },
+    {
+      "id": "grp_recipe_36",
+      "name": "36_困倦伸懒腰",
+      "description": "使用伸展动作配闭眼与疲惫表情，适合作息提醒和长聊后的放松。",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_016_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 0.18,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "36_sleepy_stretch.motion.json"
+    },
+    {
+      "id": "grp_recipe_049",
+      "name": "刚刚回神",
+      "description": "49. 刚刚回神（motion_oneshot_D_001_active + motion_add_E_002_active + facial_eye_005_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_001_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_E_002_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "049_刚刚回神.motion.json"
+    },
+    {
+      "id": "grp_recipe_050",
+      "name": "轻轻歪头",
+      "description": "50. 轻轻歪头（motion_add_E_003_active + facial_eye_006_idle + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "050_轻轻歪头.motion.json"
+    },
+    {
+      "id": "grp_recipe_051",
+      "name": "听到熟悉声音",
+      "description": "51. 听到熟悉声音（motion_oneshot_D_005_active + facial_eye_005_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_005_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "051_听到熟悉声音.motion.json"
+    },
+    {
+      "id": "grp_recipe_052",
+      "name": "低头确认消息",
+      "description": "52. 低头确认消息（motion_add_F_053_active + facial_eye_006_idle + facial_mouth_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "052_低头确认消息.motion.json"
+    },
+    {
+      "id": "grp_recipe_053",
+      "name": "抬头看向对方",
+      "description": "53. 抬头看向对方（motion_add_G_040_active + facial_eye_005_idle + facial_eyebrow_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_G_040_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "053_抬头看向对方.motion.json"
+    },
+    {
+      "id": "grp_recipe_054",
+      "name": "慢半拍回应",
+      "description": "54. 慢半拍回应（motion_add_E_004_active + facial_eye_004_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_004_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "054_慢半拍回应.motion.json"
+    },
+    {
+      "id": "grp_recipe_055",
+      "name": "想说又停住",
+      "description": "55. 想说又停住（motion_add_F_044_active + facial_mouth_010_idle + facial_eyebrow_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "055_想说又停住.motion.json"
+    },
+    {
+      "id": "grp_recipe_056",
+      "name": "把话咽回去",
+      "description": "56. 把话咽回去（motion_add_F_030_active + facial_eye_006_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "056_把话咽回去.motion.json"
+    },
+    {
+      "id": "grp_recipe_057",
+      "name": "看到消息笑出来",
+      "description": "57. 看到消息笑出来（motion_add_E_001_active + facial_eye_005_idle + facial_mouth_006_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "057_看到消息笑出来.motion.json"
+    },
+    {
+      "id": "grp_recipe_058",
+      "name": "看完消息沉默",
+      "description": "58. 看完消息沉默（motion_add_E_006_active + facial_eye_004_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "058_看完消息沉默.motion.json"
+    },
+    {
+      "id": "grp_recipe_059",
+      "name": "轻轻叹气后振作",
+      "description": "59. 轻轻叹气后振作（motion_oneshot_D_004_active + motion_add_E_007_active + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_004_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_E_007_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "059_轻轻叹气后振作.motion.json"
+    },
+    {
+      "id": "grp_recipe_060",
+      "name": "不确定地回头",
+      "description": "60. 不确定地回头（motion_oneshot_D_002_active + facial_eye_006_idle + facial_eyebrow_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_002_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "060_不确定地回头.motion.json"
+    },
+    {
+      "id": "grp_recipe_061",
+      "name": "先看一眼再靠近",
+      "description": "61. 先看一眼再靠近（motion_add_E_003_active + motion_add_F_045_active + facial_eye_005_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "061_先看一眼再靠近.motion.json"
+    },
+    {
+      "id": "grp_recipe_062",
+      "name": "伸手拿回物品",
+      "description": "62. 伸手拿回物品（motion_add_F_019_active + motion_add_G_053_active + facial_eye_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "062_伸手拿回物品.motion.json"
+    },
+    {
+      "id": "grp_recipe_063",
+      "name": "物品递到面前",
+      "description": "63. 物品递到面前（motion_add_F_045_active + motion_add_G_045_active + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "063_物品递到面前.motion.json"
+    },
+    {
+      "id": "grp_recipe_064",
+      "name": "接过东西道谢",
+      "description": "64. 接过东西道谢（motion_add_F_053_active + motion_add_G_053_active + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "064_接过东西道谢.motion.json"
+    },
+    {
+      "id": "grp_recipe_065",
+      "name": "小心靠在肩边",
+      "description": "65. 小心靠在肩边（motion_add_E_004_active + motion_add_F_053_active + motion_add_G_044_active + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_004_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "065_小心靠在肩边.motion.json"
+    },
+    {
+      "id": "grp_recipe_066",
+      "name": "轻轻碰一下手",
+      "description": "66. 轻轻碰一下手（motion_add_F_045_active + motion_add_G_045_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "066_轻轻碰一下手.motion.json"
+    },
+    {
+      "id": "grp_recipe_067",
+      "name": "把手伸过来邀请",
+      "description": "67. 把手伸过来邀请（motion_add_F_019_active + motion_add_G_051_active + facial_eye_005_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_051_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "067_把手伸过来邀请.motion.json"
+    },
+    {
+      "id": "grp_recipe_068",
+      "name": "把对方拉近一点",
+      "description": "68. 把对方拉近一点（motion_add_F_019_active + motion_add_G_019_active + motion_add_E_005_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_019_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "068_把对方拉近一点.motion.json"
+    },
+    {
+      "id": "grp_recipe_069",
+      "name": "替对方整理衣服",
+      "description": "69. 替对方整理衣服（motion_add_F_033_active + motion_add_G_045_active + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_033_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "069_替对方整理衣服.motion.json"
+    },
+    {
+      "id": "grp_recipe_070",
+      "name": "伸手挡住风",
+      "description": "70. 伸手挡住风（motion_add_F_020_active + motion_add_G_020_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_020_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "070_伸手挡住风.motion.json"
+    },
+    {
+      "id": "grp_recipe_071",
+      "name": "轻轻拍拍对方",
+      "description": "71. 轻轻拍拍对方（motion_add_F_045_active + motion_add_G_045_active + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "071_轻轻拍拍对方.motion.json"
+    },
+    {
+      "id": "grp_recipe_072",
+      "name": "小声叫对方过来",
+      "description": "72. 小声叫对方过来（motion_add_F_026_active + motion_add_G_045_active + facial_mouth_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "072_小声叫对方过来.motion.json"
+    },
+    {
+      "id": "grp_recipe_073",
+      "name": "看着对方发呆",
+      "description": "73. 看着对方发呆（motion_add_E_001_active + facial_eye_005_idle + facial_mouth_003_idle + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "073_看着对方发呆.motion.json"
+    },
+    {
+      "id": "grp_recipe_074",
+      "name": "被盯着后躲开",
+      "description": "74. 被盯着后躲开（motion_add_E_003_active + motion_add_F_053_active + facial_eye_006_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "074_被盯着后躲开.motion.json"
+    },
+    {
+      "id": "grp_recipe_075",
+      "name": "偷偷靠近观察",
+      "description": "75. 偷偷靠近观察（motion_add_E_005_active + motion_add_F_033_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_033_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "075_偷偷靠近观察.motion.json"
+    },
+    {
+      "id": "grp_recipe_076",
+      "name": "轻轻碰额头",
+      "description": "76. 轻轻碰额头（motion_add_F_044_active + motion_add_G_044_active + facial_eye_004_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "076_轻轻碰额头.motion.json"
+    },
+    {
+      "id": "grp_recipe_077",
+      "name": "收到礼物捧在胸前",
+      "description": "77. 收到礼物捧在胸前（motion_add_B_009_active + facial_eye_005_idle + facial_mouth_006_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_009_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "077_收到礼物捧在胸前.motion.json"
+    },
+    {
+      "id": "grp_recipe_078",
+      "name": "不舍得松手",
+      "description": "78. 不舍得松手（motion_add_F_019_active + motion_add_G_019_active + facial_eye_004_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_019_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "078_不舍得松手.motion.json"
+    },
+    {
+      "id": "grp_recipe_079",
+      "name": "被叫昵称后害羞",
+      "description": "79. 被叫昵称后害羞（motion_add_E_003_active + facial_eye_004_idle + facial_mouth_003_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "079_被叫昵称后害羞.motion.json"
+    },
+    {
+      "id": "grp_recipe_080",
+      "name": "温柔看着对方笑",
+      "description": "80. 温柔看着对方笑（motion_add_E_001_active + facial_eye_005_idle + facial_mouth_006_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "080_温柔看着对方笑.motion.json"
+    },
+    {
+      "id": "grp_recipe_081",
+      "name": "认真听完再回答",
+      "description": "81. 认真听完再回答（motion_add_E_003_active + motion_add_F_053_active + facial_eye_006_idle + facial_mouth_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "081_认真听完再回答.motion.json"
+    },
+    {
+      "id": "grp_recipe_082",
+      "name": "说到一半想起重点",
+      "description": "82. 说到一半想起重点（motion_add_F_047_active + motion_add_E_002_active + facial_eyebrow_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_002_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "082_说到一半想起重点.motion.json"
+    },
+    {
+      "id": "grp_recipe_083",
+      "name": "解释后等待确认",
+      "description": "83. 解释后等待确认（motion_add_F_044_active + motion_add_G_053_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "083_解释后等待确认.motion.json"
+    },
+    {
+      "id": "grp_recipe_084",
+      "name": "先否定再补充",
+      "description": "84. 先否定再补充（motion_add_F_020_active + motion_add_G_020_active + facial_mouth_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_020_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "084_先否定再补充.motion.json"
+    },
+    {
+      "id": "grp_recipe_085",
+      "name": "讲完后有点得意",
+      "description": "85. 讲完后有点得意（motion_add_F_047_active + motion_add_G_008_active + facial_mouth_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_008_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "085_讲完后有点得意.motion.json"
+    },
+    {
+      "id": "grp_recipe_086",
+      "name": "说错后马上改口",
+      "description": "86. 说错后马上改口（motion_add_F_030_active + motion_add_G_053_active + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "086_说错后马上改口.motion.json"
+    },
+    {
+      "id": "grp_recipe_087",
+      "name": "不好意思打断一下",
+      "description": "87. 不好意思打断一下（motion_add_F_046_active + motion_add_G_051_active + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_046_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_051_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "087_不好意思打断一下.motion.json"
+    },
+    {
+      "id": "grp_recipe_088",
+      "name": "等对方说完",
+      "description": "88. 等对方说完（motion_add_F_053_active + motion_add_G_053_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "088_等对方说完.motion.json"
+    },
+    {
+      "id": "grp_recipe_089",
+      "name": "听到重点睁大眼",
+      "description": "89. 听到重点睁大眼（motion_oneshot_D_003_active + facial_eye_005_idle + facial_eyebrow_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_003_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "089_听到重点睁大眼.motion.json"
+    },
+    {
+      "id": "grp_recipe_090",
+      "name": "认真记住了",
+      "description": "90. 认真记住了（motion_add_F_031_active + motion_add_G_053_active + facial_eye_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_031_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "090_认真记住了.motion.json"
+    },
+    {
+      "id": "grp_recipe_091",
+      "name": "反复确认一遍",
+      "description": "91. 反复确认一遍（motion_add_F_047_active + motion_add_G_047_active + facial_eyebrow_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_047_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "091_反复确认一遍.motion.json"
+    },
+    {
+      "id": "grp_recipe_092",
+      "name": "轻声提醒对方",
+      "description": "92. 轻声提醒对方（motion_add_F_046_active + motion_add_G_053_active + facial_mouth_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_046_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "092_轻声提醒对方.motion.json"
+    },
+    {
+      "id": "grp_recipe_093",
+      "name": "给出明确答案",
+      "description": "93. 给出明确答案（motion_add_F_047_active + motion_add_G_018_active + facial_mouth_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_018_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "093_给出明确答案.motion.json"
+    },
+    {
+      "id": "grp_recipe_094",
+      "name": "不敢确定地回答",
+      "description": "94. 不敢确定地回答（motion_add_F_053_active + motion_add_G_053_active + facial_eye_006_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "094_不敢确定地回答.motion.json"
+    },
+    {
+      "id": "grp_recipe_095",
+      "name": "突然理解了",
+      "description": "95. 突然理解了（motion_oneshot_D_001_active + motion_add_F_047_active + facial_eye_005_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_001_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "095_突然理解了.motion.json"
+    },
+    {
+      "id": "grp_recipe_096",
+      "name": "说完等夸奖",
+      "description": "96. 说完等夸奖（motion_add_F_018_active + motion_add_G_053_active + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_018_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "096_说完等夸奖.motion.json"
+    },
+    {
+      "id": "grp_recipe_097",
+      "name": "小小吃醋",
+      "description": "97. 小小吃醋（motion_add_B_007_active + facial_eye_006_idle + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_007_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "097_小小吃醋.motion.json"
+    },
+    {
+      "id": "grp_recipe_098",
+      "name": "假装不在意",
+      "description": "98. 假装不在意（motion_add_E_006_active + motion_add_F_053_active + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "098_假装不在意.motion.json"
+    },
+    {
+      "id": "grp_recipe_099",
+      "name": "悄悄松气",
+      "description": "99. 悄悄松气（motion_add_E_002_active + facial_eye_004_idle + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_002_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "099_悄悄松气.motion.json"
+    },
+    {
+      "id": "grp_recipe_100",
+      "name": "被误会后委屈",
+      "description": "100. 被误会后委屈（motion_add_F_020_active + facial_eye_004_idle + facial_eyebrow_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "100_被误会后委屈.motion.json"
+    },
+    {
+      "id": "grp_recipe_101",
+      "name": "忍住不笑",
+      "description": "101. 忍住不笑（motion_add_F_030_active + facial_eye_004_idle + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "101_忍住不笑.motion.json"
+    },
+    {
+      "id": "grp_recipe_102",
+      "name": "笑到停不下来",
+      "description": "102. 笑到停不下来（motion_add_E_007_active + facial_eye_004_idle + facial_mouth_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_007_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "102_笑到停不下来.motion.json"
+    },
+    {
+      "id": "grp_recipe_103",
+      "name": "紧张到脸红",
+      "description": "103. 紧张到脸红（motion_add_E_006_active + facial_eye_004_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "103_紧张到脸红.motion.json"
+    },
+    {
+      "id": "grp_recipe_104",
+      "name": "期待落空",
+      "description": "104. 期待落空（motion_add_E_006_active + facial_eye_006_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "104_期待落空.motion.json"
+    },
+    {
+      "id": "grp_recipe_105",
+      "name": "被夸得飘飘然",
+      "description": "105. 被夸得飘飘然（motion_add_E_001_active + motion_add_F_018_active + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_018_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "105_被夸得飘飘然.motion.json"
+    },
+    {
+      "id": "grp_recipe_106",
+      "name": "受宠若惊",
+      "description": "106. 受宠若惊（motion_add_F_044_active + motion_add_G_044_active + facial_eye_005_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_044_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "106_受宠若惊.motion.json"
+    },
+    {
+      "id": "grp_recipe_107",
+      "name": "明明开心却嘴硬",
+      "description": "107. 明明开心却嘴硬（motion_add_B_007_active + facial_eye_005_idle + facial_mouth_006_idle + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_007_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "107_明明开心却嘴硬.motion.json"
+    },
+    {
+      "id": "grp_recipe_108",
+      "name": "闹完别扭后和好",
+      "description": "108. 闹完别扭后和好（motion_add_E_003_active + motion_add_F_045_active + facial_mouth_003_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "108_闹完别扭后和好.motion.json"
+    },
+    {
+      "id": "grp_recipe_109",
+      "name": "担心对方生气",
+      "description": "109. 担心对方生气（motion_add_F_045_active + motion_add_G_053_active + facial_eye_004_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "109_担心对方生气.motion.json"
+    },
+    {
+      "id": "grp_recipe_110",
+      "name": "想安慰又紧张",
+      "description": "110. 想安慰又紧张（motion_add_F_044_active + motion_add_G_045_active + facial_eye_006_idle + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "110_想安慰又紧张.motion.json"
+    },
+    {
+      "id": "grp_recipe_111",
+      "name": "终于放心了",
+      "description": "111. 终于放心了（motion_add_E_001_active + motion_add_F_053_active + facial_eye_005_idle + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "111_终于放心了.motion.json"
+    },
+    {
+      "id": "grp_recipe_112",
+      "name": "认真忍住眼泪",
+      "description": "112. 认真忍住眼泪（motion_add_F_044_active + facial_eye_004_idle + facial_eyebrow_010_idle + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "112_认真忍住眼泪.motion.json"
+    },
+    {
+      "id": "grp_recipe_113",
+      "name": "看见对方到挥手微笑",
+      "description": "113. 看见对方到挥手微笑（motion_oneshot_D_005_active + motion_add_F_026_active + facial_mouth_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_005_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "113_看见对方到挥手微笑.motion.json"
+    },
+    {
+      "id": "grp_recipe_114",
+      "name": "迟疑到伸手再收回",
+      "description": "114. 迟疑到伸手再收回（motion_add_E_004_active + motion_add_F_045_active + motion_add_F_053_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_004_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "114_迟疑到伸手再收回.motion.json"
+    },
+    {
+      "id": "grp_recipe_115",
+      "name": "思考到想到办法再指向重点",
+      "description": "115. 思考到想到办法再指向重点（motion_add_F_027_active + motion_add_E_002_active + motion_add_F_047_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_027_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_002_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "115_思考到想到办法再指向重点.motion.json"
+    },
+    {
+      "id": "grp_recipe_116",
+      "name": "紧张到深呼吸再放松",
+      "description": "116. 紧张到深呼吸再放松（motion_add_E_006_active + motion_add_E_002_active + facial_eye_004_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_E_002_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "116_紧张到深呼吸再放松.motion.json"
+    },
+    {
+      "id": "grp_recipe_117",
+      "name": "听到夸奖后害羞道谢",
+      "description": "117. 听到夸奖后害羞道谢（motion_oneshot_D_005_active + facial_add_blush_003_on + motion_add_B_009_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_005_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_B_009_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "117_听到夸奖后害羞道谢.motion.json"
+    },
+    {
+      "id": "grp_recipe_118",
+      "name": "误会后摇头解释",
+      "description": "118. 误会后摇头解释（motion_add_F_020_active + motion_add_G_020_active + motion_add_F_031_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_020_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_031_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "118_误会后摇头解释.motion.json"
+    },
+    {
+      "id": "grp_recipe_119",
+      "name": "惊讶后捂嘴确认",
+      "description": "119. 惊讶后捂嘴确认（motion_oneshot_D_003_active + motion_add_F_030_active + motion_add_E_005_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_003_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_030_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "119_惊讶后捂嘴确认.motion.json"
+    },
+    {
+      "id": "grp_recipe_120",
+      "name": "期待到握拳欢呼",
+      "description": "120. 期待到握拳欢呼（motion_add_E_007_active + motion_add_F_018_active + motion_add_G_018_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_007_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_018_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_018_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "120_期待到握拳欢呼.motion.json"
+    },
+    {
+      "id": "grp_recipe_121",
+      "name": "道歉低头后伸手和好",
+      "description": "121. 道歉低头后伸手和好（motion_add_E_005_active + motion_add_F_044_active + motion_add_G_045_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_044_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "121_道歉低头后伸手和好.motion.json"
+    },
+    {
+      "id": "grp_recipe_122",
+      "name": "困惑挠头后无奈摊手",
+      "description": "122. 困惑挠头后无奈摊手（motion_add_F_040_active + motion_add_E_003_active + motion_add_F_020_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_040_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_020_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "122_困惑挠头后无奈摊手.motion.json"
+    },
+    {
+      "id": "grp_recipe_123",
+      "name": "关心伸手后安静陪伴",
+      "description": "123. 关心伸手后安静陪伴（motion_add_F_045_active + motion_add_G_045_active + motion_add_F_053_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "123_关心伸手后安静陪伴.motion.json"
+    },
+    {
+      "id": "grp_recipe_124",
+      "name": "告别回头再挥一次手",
+      "description": "124. 告别回头再挥一次手（motion_add_F_026_active + motion_oneshot_D_002_active + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_oneshot_D_002_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "124_告别回头再挥一次手.motion.json"
+    },
+    {
+      "id": "grp_recipe_125",
+      "name": "被叫住后回头询问",
+      "description": "125. 被叫住后回头询问（motion_oneshot_D_005_active + motion_oneshot_D_002_active + motion_add_F_045_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_005_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_oneshot_D_002_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "125_被叫住后回头询问.motion.json"
+    },
+    {
+      "id": "grp_recipe_126",
+      "name": "讲解指向后等待反应",
+      "description": "126. 讲解指向后等待反应（motion_add_F_047_active + motion_add_G_047_active + motion_add_F_053_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_047_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_047_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "126_讲解指向后等待反应.motion.json"
+    },
+    {
+      "id": "grp_recipe_127",
+      "name": "开心拍手再双拳庆祝",
+      "description": "127. 开心拍手再双拳庆祝（motion_add_E_007_active + motion_add_F_050_active + motion_add_G_018_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_007_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_050_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_018_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "127_开心拍手再双拳庆祝.motion.json"
+    },
+    {
+      "id": "grp_recipe_128",
+      "name": "休息后伸懒腰打哈欠",
+      "description": "128. 休息后伸懒腰打哈欠（motion_add_F_053_active + motion_add_B_017_active + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_B_017_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "128_休息后伸懒腰打哈欠.motion.json"
+    },
+    {
+      "id": "grp_recipe_129",
+      "name": "早上刚醒",
+      "description": "129. 早上刚醒（motion_add_B_016_active + facial_eye_004_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_016_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "129_早上刚醒.motion.json"
+    },
+    {
+      "id": "grp_recipe_130",
+      "name": "午后犯困",
+      "description": "130. 午后犯困（motion_add_E_006_active + motion_add_F_053_active + facial_eye_004_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "130_午后犯困.motion.json"
+    },
+    {
+      "id": "grp_recipe_131",
+      "name": "睡前道晚安",
+      "description": "131. 睡前道晚安（motion_add_F_026_active + motion_add_G_053_active + facial_mouth_003_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "131_睡前道晚安.motion.json"
+    },
+    {
+      "id": "grp_recipe_132",
+      "name": "雨天靠近避雨",
+      "description": "132. 雨天靠近避雨（motion_add_E_005_active + motion_add_F_045_active + facial_eye_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_005_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "132_雨天靠近避雨.motion.json"
+    },
+    {
+      "id": "grp_recipe_133",
+      "name": "天冷抱住自己",
+      "description": "133. 天冷抱住自己（motion_add_B_009_active + motion_add_E_006_active + facial_add_blush_002_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_009_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_E_006_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "133_天冷抱住自己.motion.json"
+    },
+    {
+      "id": "grp_recipe_134",
+      "name": "天气热扇一扇",
+      "description": "134. 天气热扇一扇（motion_add_F_026_active + motion_add_G_026_active + facial_eye_004_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_026_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_026_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "134_天气热扇一扇.motion.json"
+    },
+    {
+      "id": "grp_recipe_135",
+      "name": "等车时左右张望",
+      "description": "135. 等车时左右张望（motion_add_E_003_active + facial_eye_006_idle + motion_add_F_053_active）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "135_等车时左右张望.motion.json"
+    },
+    {
+      "id": "grp_recipe_136",
+      "name": "找不到东西",
+      "description": "136. 找不到东西（motion_add_F_040_active + motion_add_G_040_active + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_040_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_040_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "136_找不到东西.motion.json"
+    },
+    {
+      "id": "grp_recipe_137",
+      "name": "发现东西在手边",
+      "description": "137. 发现东西在手边（motion_oneshot_D_001_active + facial_eye_005_idle + facial_mouth_006_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_001_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "137_发现东西在手边.motion.json"
+    },
+    {
+      "id": "grp_recipe_138",
+      "name": "端来一杯饮料",
+      "description": "138. 端来一杯饮料（motion_add_F_045_active + motion_add_G_045_active + facial_eye_001_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_045_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_045_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "138_端来一杯饮料.motion.json"
+    },
+    {
+      "id": "grp_recipe_139",
+      "name": "小心递出礼物",
+      "description": "139. 小心递出礼物（motion_add_B_009_active + motion_add_F_019_active + facial_add_blush_003_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_B_009_active",
+            "region": "B",
+            "alpha": 1,
+            "speed": 1
+          }
+        ],
+        [
+          {
+            "name": "motion_add_F_019_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "139_小心递出礼物.motion.json"
+    },
+    {
+      "id": "grp_recipe_140",
+      "name": "收到饮料道谢",
+      "description": "140. 收到饮料道谢（motion_add_F_053_active + motion_add_G_053_active + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_G_053_active",
+            "region": "G",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "140_收到饮料道谢.motion.json"
+    },
+    {
+      "id": "grp_recipe_141",
+      "name": "看到可爱东西",
+      "description": "141. 看到可爱东西（motion_add_E_001_active + facial_eye_005_idle + facial_add_blush_001_on）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_001_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "141_看到可爱东西.motion.json"
+    },
+    {
+      "id": "grp_recipe_142",
+      "name": "发现不对劲",
+      "description": "142. 发现不对劲（motion_add_E_003_active + facial_eye_006_idle + facial_eyebrow_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_E_003_active",
+            "region": "E",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "142_发现不对劲.motion.json"
+    },
+    {
+      "id": "grp_recipe_143",
+      "name": "听见奇怪声音",
+      "description": "143. 听见奇怪声音（motion_oneshot_D_002_active + facial_eye_005_idle + facial_mouth_010_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_oneshot_D_002_active",
+            "region": "D",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "143_听见奇怪声音.motion.json"
+    },
+    {
+      "id": "grp_recipe_144",
+      "name": "事情解决后坐下",
+      "description": "144. 事情解决后坐下（motion_add_C_002_active + motion_add_F_053_active + facial_mouth_003_idle）",
+      "base": "motion_A_001_idle",
+      "stages": [
+        [
+          {
+            "name": "motion_add_C_002_active",
+            "region": "C",
+            "alpha": 1,
+            "speed": 1
+          },
+          {
+            "name": "motion_add_F_053_active",
+            "region": "F",
+            "alpha": 1,
+            "speed": 1
+          }
+        ]
+      ],
+      "validation": "structural_only",
+      "source": "144_事情解决后坐下.motion.json"
+    }
+  ]
+}

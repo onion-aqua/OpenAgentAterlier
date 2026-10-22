@@ -1,0 +1,23 @@
+{
+  "name": "text_to_speech",
+  "description": "Generate speech audio from text with a Fish Audio voice and return a permanent audio URL. Costs 1 package credit per UTF-8 byte of text (audio tags included; a professional voice cloned by another team costs double). If a call fails or times out, one identical retry within 5 minutes is free.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "description": "The text to speak. You can add inline audio tags in square brackets to control emotion and delivery, e.g. [excited], [whispering], [angry], [sad], [laughing], [chuckling], [sighing], [emphasis], [soft], [pause], [long pause]. Tags are open-domain (any short descriptor works, localized tags like [强调] are fine) and are performed, never spoken aloud. Keep each call under ~2000 characters for reliable latency; per-call plan limits: 500 UTF-8 bytes (free), 15000 (lite/plus), 30000 (other paid).",
+        "type": "string"
+      },
+      "voice_id": {
+        "description": "Voice id from search_voices; omit to use a curated default voice for `language`",
+        "type": "string"
+      },
+      "language": {
+        "description": "Only used to pick the default voice when voice_id is omitted, e.g. en, ja, zh",
+        "type": "string"
+      }
+    },
+    "required": ["text"],
+    "additionalProperties": false
+  }
+}

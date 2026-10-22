@@ -1,0 +1,135 @@
+# Flutter/Dart generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+/dist/
+coverage/
+*.iml
+.idea/
+.vscode/
+**/.cxx/
+
+# Local machine configuration and secrets
+android/local.properties
+*.jks
+*.keystore
+key.properties
+.env
+.env.*
+secrets.*
+
+# IDE/OS noise
+*.log
+*.class
+.DS_Store
+Thumbs.db
+.kotlin/
+
+# Compiled packages and archives
+*.apk
+*.aab
+*.ipa
+*.zip
+*.rar
+*.7z
+*.aarpack
+*.aarpreview
+.asset_protection/
+# Private PC Agent endpoints and generated encrypted build definitions stay local.
+**/relay_server.local.json
+**/relay_server.defines.json
+*.key
+*.symbols
+*.map.json
+
+# Media, animation, and model files are local-only, regardless of location.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.ico
+*.m4a
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.skel
+*.atlas
+*.spine
+*.fbx
+*.obj
+*.glb
+*.gltf
+*.onnx
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Copyrighted/proprietary resources are intentionally never committed.
+assets/**/*
+!assets/README.md
+!assets/**/
+!assets/**/.gitkeep
+
+# Generated motion catalogue is code data consumed by the runtime and must be
+# shipped with the application even though other proprietary assets stay out.
+!assets/data/
+!assets/data/motion_recipes_extra.json
+
+# User-provided branding explicitly approved for public distribution.
+!assets/branding/
+!assets/branding/agent_atelier_logo.png
+!assets/branding/app_icon_source.png
+!assets/branding/loading/
+!assets/branding/loading/frame_0[0-5].png
+!assets/images/shop/gift-box.png
+!assets/images/shop/energy-potion.png
+!assets/images/shop/reconciliation-voucher.png
+!assets/images/shop/iphone-18-pro-max.png
+!assets/images/character_switch/ryza.png
+!assets/images/character_switch/sophie.png
+!assets/images/virtual_phone/
+!assets/images/virtual_phone/signal_[0-4].png
+!assets/images/virtual_phone/battery_[0-5].png
+!assets/images/virtual_phone/dynamic_island.png
+!assets/images/virtual_phone/bg[1-3].png
+!android/app/src/main/res/drawable-*/launch_logo.png
+!android/app/src/main/res/drawable-*/ic_launcher_foreground.png
+!android/app/src/main/res/drawable-nodpi/launch_logo_android12.png
+!android/app/src/main/res/mipmap-*/ic_launcher.png
+
+# Keep acquired character runtimes local; only the licensed alarm fork is shared.
+packages/*
+!packages/alarm_android/
+!packages/alarm_android/**
+downloaded_skin_resources/
+/windows.__codex_build_backup/
+/windows/flutter/ephemeral/
+/windows/flutter/generated_*
+*.dex
+*.arsc
+
+# Local-only downloaded outfits: all revisions, textures, skeletons and gestures.
+**/crf_skn_002_000[2-6]_01*
+**/firebase_distribution_test_*/
+
+# Local source snapshots kept outside release commits.
+lib/src/app_controller.dart.pre_action_fix
+lib/src/chat_screen.dart.backup
+# User-import control templates contain mapping data, never model textures/rigs.
+!assets/data/spine_templates/
+!assets/data/spine_templates/*.json
+!assets/data/motion_recipes.json
+
+# Preserved pre-migration build caches; never publish machine state.
+/.migration-cache/
+/evidence/
+# Historical manuals include local screenshots and old project data.
+/docs/user_manual_2026-10-08/
