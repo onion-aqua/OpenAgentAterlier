@@ -1,6 +1,5 @@
 # OpenAgentAtelier
 
-当前开发目录为 `D:\OpenAgentAtelier`，内容来自“提纯版本”对话对应的独立项目。目录与旧副本说明见 [项目文件与删除清单](项目文件与删除清单.md)。
 
 基于 Flutter 的 AI 角色互动框架。用户自行导入模型，将对话、记忆、语音、动作和表情接到同一角色档案。应用名称为 **OpenAgentAtelier**，Android 包名为 `com.ateleragent.studio`；Dart 包名 `ryza_chat_mvp` 为兼容已有代码暂时保留。
 
@@ -57,18 +56,7 @@ Dart 约束为 `^3.13.2`。Android 需要相匹配的 Flutter、JDK、Android SD
 
 统一使用项目脚本构建，脚本负责运行库准备和可选的本地私有配置：
 
-```powershell
-# Android Debug
-pwsh -File .\tool\build_protected.ps1 -Target apk -Mode debug
 
-# Android Release
-pwsh -File .\tool\build_protected.ps1 -Target apk -Mode release
-
-# Windows Release
-pwsh -File .\tool\build_protected.ps1 -Target windows -Mode release
-```
-
-APK 输出在 `build/app/outputs/flutter-apk/`。`-Offline` 使用已准备好的本地依赖；默认不安装设备应用。调试签名仅用于当前测试，不是应用商店发布签名。
 
 ## 文档
 
