@@ -1090,12 +1090,9 @@ void main() {
           density: TtsCueDensity.everySentence,
           asmr: true,
         );
-        final primary = RegExp(r'^\[([^\]]+)\]')
-            .firstMatch(processed)!
-            .group(1)!;
-        expect(primary, contains(emotion));
-        expect(primary, contains('whisper'));
-        expect(processed, contains('[unvoiced whispering]'));
+        expect(processed, contains(emotion));
+        expect(processed, contains('[whispering]'));
+        expect(RegExp(r'\[whispering\]').allMatches(processed), hasLength(1));
         expect(processed, isNot(contains('no gentle breathiness')));
         expect(processed, isNot(contains('shouting')));
       }
@@ -1121,7 +1118,8 @@ void main() {
         density: TtsCueDensity.everySentence,
         asmr: true,
       );
-      expect(noEmotion, '[unvoiced whispering] 先让我静一静。');
+      expect(noEmotion, startsWith('[whispering]'));
+      expect(noEmotion.replaceAll(RegExp(r'\[[^\]]+\]'), '').trim(), '先让我静一静。');
 
       final neither = applyFishEmotionIntensityPerSentence(
         sample,

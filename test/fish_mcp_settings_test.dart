@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:ryza_chat_mvp/src/app_controller.dart';
-import 'package:ryza_chat_mvp/src/chat_segments.dart';
 import 'package:ryza_chat_mvp/src/fish_mcp_service.dart';
 import 'package:ryza_chat_mvp/src/settings_screen.dart';
 
@@ -79,7 +78,10 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<AppController> openSettings(WidgetTester tester) async {
+  Future<AppController> openSettings(
+    WidgetTester tester, {
+    bool expandAdvanced = true,
+  }) async {
     final controller = (await tester.runAsync(AppController.load))!;
     addTearDown(controller.dispose);
     tester.view.physicalSize = const Size(360, 850);
@@ -96,6 +98,15 @@ void main() {
       ),
     );
     await openMcpPage(tester);
+    if (!expandAdvanced) return controller;
+    final advanced = find.text('高级选项与连接诊断');
+    await tester.ensureVisible(advanced);
+    await tester.tap(advanced);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.byKey(const ValueKey('fish-mcp-normal-voice')),
+    );
+    await tester.pumpAndSettle();
     return controller;
   }
 
@@ -159,6 +170,50 @@ void main() {
     service.lastDiscoveryAt = DateTime.utc(2026, 10, 15);
   }
 
+  testWidgets('advanced diagnostics are folded and drafts survive toggling', (
+    tester,
+  ) async {
+    await openSettings(tester, expandAdvanced: false);
+    expect(find.text('退出授权'), findsNothing);
+    final field = find.byKey(const ValueKey('fish-mcp-normal-voice'));
+    await tester.enterText(field, 'draft-voice');
+    final advanced = find.text('高级选项与连接诊断');
+    await tester.ensureVisible(advanced);
+    await tester.tap(advanced);
+    await tester.pumpAndSettle();
+    expect(find.text('退出授权'), findsOneWidget);
+    await tester.ensureVisible(advanced);
+    await tester.tap(advanced);
+    await tester.pumpAndSettle();
+    expect(find.text('退出授权'), findsNothing);
+    expect(tester.widget<TextField>(field).controller!.text, 'draft-voice');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'MCP speed is a draft until saved and shares the speech setting',
+    (tester) async {
+      final controller = await openSettings(tester, expandAdvanced: false);
+      final slider = find.byKey(const ValueKey('fish-mcp-speed'));
+      expect(tester.widget<Slider>(slider).value, .9);
+      tester.widget<Slider>(slider).onChanged!(.85);
+      await tester.pump();
+      expect(controller.fishAudioSpeed, .9);
+      await tester.tap(find.text('取消'));
+      await tester.pumpAndSettle();
+      expect(controller.fishAudioSpeed, .9);
+      await openMcpPage(tester);
+      expect(tester.widget<Slider>(slider).value, .9);
+      tester.widget<Slider>(slider).onChanged!(.85);
+      await tester.pump();
+      await tester.tap(find.text('保存并使用 MCP'));
+      await tester.pumpAndSettle();
+      expect(controller.fishAudioSpeed, .85);
+      expect(controller.ttsProvider, TtsProvider.fishAudioMcp);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('OAuth state changes refresh MCP settings without another tap', (
     tester,
   ) async {
@@ -169,7 +224,7 @@ void main() {
     await tester.runAsync(() => service.beginAuthorization(launchLogin: false));
     await tester.pump();
     expect(find.text('状态：等待 Fish Audio 授权'), findsOneWidget);
-    expect(find.text('等待浏览器授权（完成后自动刷新）'), findsOneWidget);
+    expect(find.text('等待浏览器授权…'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -380,10 +435,7 @@ void main() {
     (tester) async {
       SharedPreferences.setMockInitialValues({'fish_mcp_model': 's2.1-pro'});
       final controller = await openSettings(tester);
-      expect(
-        find.text('当前选择仅为草稿，点击“保存并使用 MCP”后下次请求才生效；返回或取消不会保存。'),
-        findsOneWidget,
-      );
+      expect(find.text('保存后，下次语音请求生效。'), findsOneWidget);
       expect(find.text('云端返回模型：未返回模型标识，无法确认已切换'), findsOneWidget);
 
       Future<void> selectModel(String current, String next) async {
@@ -444,7 +496,8 @@ void main() {
     final controller = await openSettings(tester);
     final voice = find.byKey(const ValueKey('fish-mcp-normal-voice'));
     expect(tester.widget<TextField>(voice).enabled, isNot(false));
-    expect(tester.widget<TextField>(voice).controller!.text, 'stored-voice-id');
+    expect(tester.widget<TextField>(voice).controller!.text, isEmpty);
+    expect(find.text('stored-voice-id'), findsNothing);
     expect(find.text('清空未受支持的模型设置'), findsNothing);
     await tester.enterText(voice, 'updated-voice-id');
     await tester.tap(find.text('保存并使用 MCP'));
@@ -455,15 +508,15 @@ void main() {
   });
 
   testWidgets(
-    'MCP saves independent normal and ASMR voices and shows Klaudia',
+    'MCP saves independent model voices without advertising fixed characters',
     (tester) async {
       final controller = await openSettings(tester);
       final voice = find.byKey(const ValueKey('fish-mcp-normal-voice'));
       final asmrVoice = find.byKey(const ValueKey('fish-mcp-asmr-voice'));
       expect(tester.widget<TextField>(voice).enabled, isNot(false));
       expect(tester.widget<TextField>(asmrVoice).enabled, isNot(false));
-      expect(find.text(klaudiaFishAudioReferenceId), findsOneWidget);
-      expect(find.text('ASMR 音色留空时沿用普通音色。'), findsOneWidget);
+      expect(find.textContaining('科洛蒂娅'), findsNothing);
+      expect(find.text('已内置，无需填写'), findsNothing);
       await tester.enterText(voice, 'normal-voice-id');
       await tester.enterText(asmrVoice, 'asmr-voice-id');
       await tester.tap(find.text('保存并使用 MCP'));
@@ -483,10 +536,8 @@ void main() {
     });
     final controller = await openSettings(tester);
     final asmrVoice = find.byKey(const ValueKey('fish-mcp-asmr-voice'));
-    expect(
-      tester.widget<TextField>(asmrVoice).controller!.text,
-      'stored-asmr-id',
-    );
+    expect(tester.widget<TextField>(asmrVoice).controller!.text, isEmpty);
+    expect(find.text('stored-asmr-id'), findsNothing);
     await tester.tap(find.text('保存并使用 MCP'));
     await tester.pumpAndSettle();
     expect(controller.fishMcpVoice, 'normal-voice-id');

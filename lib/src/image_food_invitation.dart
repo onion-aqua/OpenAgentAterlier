@@ -4,19 +4,51 @@
 bool hasCurrentImageFoodInvitation(
   String message, {
   required bool hasReadableImage,
-}) => hasReadableImage && isExplicitImageFoodInvitation(message);
+  String? characterName,
+}) =>
+    hasReadableImage &&
+    isExplicitImageFoodInvitation(message, characterName: characterName);
 
-bool isExplicitImageFoodInvitation(String message) {
+bool isExplicitImageFoodInvitation(String message, {String? characterName}) {
+  // Legacy aliases are accepted only by callers without an active identity.
+  // A model name is escaped as data, never treated as a regex or an alias for
+  // another character when authorizing this turn's state change.
+  const legacyAliases = ['莱莎', '莱沙', 'ryza', 'ライザ'];
+  final currentName = characterName?.trim() ?? '';
+  final addressedCharacter =
+      (currentName.isEmpty ? legacyAliases : [currentName])
+          .map(RegExp.escape)
+          .join('|');
+  final otherLegacyNames = legacyAliases
+      .where((name) => name.toLowerCase() != currentName.toLowerCase())
+      .map(RegExp.escape)
+      .join('|');
   final text = message.toLowerCase().replaceAll(
     RegExp(r'“[^”]*”|‘[^’]*’|"[^"]*"'),
     '',
   );
   if (text.trim().isEmpty) return false;
 
-  final sentences = RegExp(r'[^。.!！?？\n；;]+[。.!！?？]?')
-      .allMatches(text)
-      .map((match) => match.group(0)!.trim());
+  final sentenceContent = [
+    if (characterName?.trim().isNotEmpty == true)
+      RegExp.escape(characterName!.trim()),
+    r'[^。.!！?？\n；;]',
+  ].join('|');
+  final sentences = RegExp(
+    '(?:$sentenceContent)+'
+    r'[。.!！?？]?',
+    caseSensitive: false,
+  ).allMatches(text).map((match) => match.group(0)!.trim());
   for (final sentence in sentences) {
+    if (currentName.isNotEmpty &&
+        RegExp(
+          '(?:^|[:：])\\s*(?:$otherLegacyNames)'
+          '[，,、:：\\s]|(?:请|請|邀请|邀請|让|讓|给|給|喂|餵)\\s*'
+          '(?:$otherLegacyNames)',
+          caseSensitive: false,
+        ).hasMatch(sentence)) {
+      continue;
+    }
     if (RegExp(
       r'别|不要|不准|不能|禁止|勿|别让|不让|拒绝|don\x27t|do not|never|not to|食べない|食べるな|食べてはいけない',
       caseSensitive: false,
@@ -35,21 +67,29 @@ bool isExplicitImageFoodInvitation(String message) {
       continue;
     }
     final explicitRequest = RegExp(
-      r'(?:请|請)[，,:：\s]*(?:莱莎|莱沙|你|妳)?[，,:：\s]*(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)|(?:邀请|邀請|让|讓|给|給|喂|餵)(?:莱莎|莱沙|你|妳)[^。.!！?？\n；;]{0,6}(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)',
-    ).hasMatch(sentence);
-    final directCommand = RegExp(
-      r'(?:莱莎|莱沙|你|妳|来|來|一起)[，,:：\s]*(?:请|請|快|来|來|也|一起)?[，,:：\s]*(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)(?:尝|嚐|这个|這個|这张|這張|这份|這份|这块|這塊|这道|這道|一口|一点|一點|一些|点|點|它|吧|呀|啦|啊|哦|喔)',
-    ).hasMatch(sentence);
-    final invitationQuestion = RegExp(
-      r'(?:莱莎|莱沙|你|妳)[^。.!！?？\n；;]{0,8}(?:要不要|愿不愿意|願不願意)[^。.!！?？\n；;]{0,8}(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)',
-    ).hasMatch(sentence);
-    final englishRequest = RegExp(
-      r'(?:ryza[,:\s]+|please\s+|would you\s+|let\x27s\s+)(?:please\s+)?(?:eat|taste|try|have|take a bite)\s+(?:this|it|some|a bite|the food)',
+      r'(?:请|請)[，,:：\s]*(?:' +
+          addressedCharacter +
+          r'|你|妳)?[，,:：\s]*(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)|(?:邀请|邀請|让|讓|给|給|喂|餵)(?:' +
+          addressedCharacter +
+          r'|你|妳)[^。.!！?？\n；;]{0,6}(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)',
       caseSensitive: false,
     ).hasMatch(sentence);
-    final japaneseRequest = RegExp(
-      r'(?:ライザ[^。.!！?？\n；;]{0,12})?(?:食べて|食べよう|味見して)',
+    final directCommand = RegExp(
+      '(?:$addressedCharacter'
+      r'|你|妳|来|來|一起)[，,:：\s]*(?:请|請|快|来|來|也|一起)?[，,:：\s]*(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)(?:尝|嚐|这个|這個|这张|這張|这份|這份|这块|這塊|这道|這道|一口|一点|一點|一些|点|點|它|吧|呀|啦|啊|哦|喔)',
+      caseSensitive: false,
     ).hasMatch(sentence);
+    final invitationQuestion = RegExp(
+      '(?:$addressedCharacter'
+      r'|你|妳)[^。.!！?？\n；;]{0,8}(?:要不要|愿不愿意|願不願意)[^。.!！?？\n；;]{0,8}(?:吃|尝|嚐|品尝|品嚐|试吃|試吃)',
+      caseSensitive: false,
+    ).hasMatch(sentence);
+    final englishRequest = RegExp(
+      '(?:(?:$addressedCharacter)'
+      r'[,:\s]+|please\s+|would you\s+|let\x27s\s+)(?:please\s+)?(?:eat|taste|try|have|take a bite)\s+(?:this|it|some|a bite|the food)',
+      caseSensitive: false,
+    ).hasMatch(sentence);
+    final japaneseRequest = RegExp(r'食べて|食べよう|味見して').hasMatch(sentence);
     final command =
         explicitRequest || directCommand || englishRequest || japaneseRequest;
     if ((sentence.endsWith('?') || sentence.endsWith('？')) &&

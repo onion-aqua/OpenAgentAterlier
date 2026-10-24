@@ -62,7 +62,13 @@ void main() {
         final content = find.descendant(
           of: dialog,
           matching: find.textContaining(
-            precious ? gift.descriptionZh : '消耗 1 份',
+            precious
+                ? gift.description(
+                    controller.interfaceLanguage,
+                    characterName:
+                        controller.activeCharacterProfile.names.chinese,
+                  )
+                : '消耗 1 份',
           ),
         );
         expect(content, findsOneWidget);

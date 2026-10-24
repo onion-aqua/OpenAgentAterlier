@@ -43,6 +43,7 @@ void main() {
     final preferences = await SharedPreferences.getInstance();
     directory = await Directory.systemTemp.createTemp('phone_wallpaper_page_');
     store = VirtualPhoneWallpaperStore(
+      catalogProvider: () async => const [],
       preferences: preferences,
       directoryProvider: () async => directory,
     );
@@ -416,10 +417,22 @@ void main() {
       );
       await mount(tester, glass: glass);
       final pageState = tester.state(find.byType(VirtualPhoneWallpaperPage));
-      expect(find.byType(BackdropFilter), findsNothing);
+      // Disabled BackdropFilter nodes preserve the page subtree across toggles;
+      // only an enabled node actually samples and blurs the wallpaper.
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is BackdropFilter && widget.enabled,
+        ),
+        findsNothing,
+      );
       glass.value = true;
       await tester.pumpAndSettle();
-      expect(find.byType(BackdropFilter), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is BackdropFilter && widget.enabled,
+        ),
+        findsOneWidget,
+      );
       expect(
         tester.state(find.byType(VirtualPhoneWallpaperPage)),
         same(pageState),
@@ -428,7 +441,9 @@ void main() {
       expect(
         find.descendant(
           of: _card(imported.id),
-          matching: find.byType(BackdropFilter),
+          matching: find.byWidgetPredicate(
+            (widget) => widget is BackdropFilter && widget.enabled,
+          ),
         ),
         findsNothing,
       );
@@ -447,7 +462,12 @@ void main() {
       glass.value = false;
       await tester.pumpAndSettle();
       expect(dialogColor().a, greaterThan(glassAlpha));
-      expect(find.byType(BackdropFilter), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is BackdropFilter && widget.enabled,
+        ),
+        findsNothing,
+      );
       expect(find.text('已选 1'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('wallpaper-delete-cancel')));
       await tester.pumpAndSettle();

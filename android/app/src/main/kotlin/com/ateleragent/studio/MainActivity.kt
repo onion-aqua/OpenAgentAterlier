@@ -26,15 +26,24 @@ class MainActivity : FlutterActivity() {
     private var hasFrameRateRequest = false
     private var cosyVoiceBridge: CosyVoiceFlutterBridge? = null
     private var companionRuntimeBridge: CompanionRuntimeBridge? = null
+    private var apkUpdateBridge: ApkUpdateBridge? = null
+    private var realtimePcmBridge: RealtimePcmBridge? = null
     private var companionStartedForActivity = false
     private var spine36Bridge: Spine36Bridge? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        realtimePcmBridge?.dispose()
+        realtimePcmBridge = RealtimePcmBridge(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         spine36Bridge?.dispose()
         spine36Bridge = Spine36Bridge(this, flutterEngine)
         companionRuntimeBridge?.dispose()
         companionRuntimeBridge = CompanionRuntimeBridge(
+            this,
+            flutterEngine.dartExecutor.binaryMessenger,
+        )
+        apkUpdateBridge?.dispose()
+        apkUpdateBridge = ApkUpdateBridge(
             this,
             flutterEngine.dartExecutor.binaryMessenger,
         )
@@ -90,6 +99,10 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
+        realtimePcmBridge?.dispose()
+        realtimePcmBridge = null
+        apkUpdateBridge?.dispose()
+        apkUpdateBridge = null
         spine36Bridge?.dispose()
         spine36Bridge = null
         companionRuntimeBridge?.dispose()

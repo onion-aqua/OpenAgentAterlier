@@ -1,8 +1,10 @@
 # OpenAgentAtelier
 
-基于 Flutter 的 AI 角色互动框架。用户自行导入模型，将对话、记忆、语音、动作和表情接到同一角色档案。应用名称为 **AgentAtelier**，Android 包名为 `com.ateleragent.studio`；Dart 包名 `ryza_chat_mvp` 为兼容已有代码暂时保留。
+当前开发目录为 `D:\OpenAgentAtelier`，内容来自“提纯版本”对话对应的独立项目。目录与旧副本说明见 [项目文件与删除清单](项目文件与删除清单.md)。
 
-**当前为早期开发测试版，版本 `1.0.0+1`。** 下载见 [Releases](https://github.com/onion-aqua/OpenAgentAterlier/releases)。本次提供 Android Debug APK，调试模式可能造成运行不流畅、耗电增加或不稳定，请先备份数据。Windows 共用源码仍在适配，本次没有提供新的 Windows 安装包。
+基于 Flutter 的 AI 角色互动框架。用户自行导入模型，将对话、记忆、语音、动作和表情接到同一角色档案。应用名称为 **OpenAgentAtelier**，Android 包名为 `com.ateleragent.studio`；Dart 包名 `ryza_chat_mvp` 为兼容已有代码暂时保留。
+
+**当前为早期开发测试版，版本 `1.0.0+1`。** 已发布安装包见 [Releases](https://github.com/onion-aqua/OpenAgentAterlier/releases)，发布包可能滞后于最新源码。2026-10-24 的当前源码已通过 Android Debug 构建、签名与覆盖安装校验；调试模式可能造成运行不流畅、耗电增加或不稳定，请先备份数据。Windows 共用源码仍在适配，暂无本轮 Windows 安装包。
 
 ## 当前功能
 
@@ -10,9 +12,15 @@
 - 每个导入模型独立保存人物设定、用户设定、世界设定、对话、记忆、状态、音色和存档；切换模型会同步名称、头像、提示词与陪伴通知。
 - 导入前扫描模型资源目录，使用用户配置的 LLM 生成动作与表情语义映射，经审阅和校验后接入播放器。映射只能使用模型已有能力，不能创造不存在的动作。
 - 本地追加式记忆、召回和手动整理；模型与档案可导出为 ZIP，普通聊天备份不包含模型资源。
-- 虚拟手机承载模型、状态、存档、设置与 PC Agent 等入口。没有配置世界内容时，不自动套用旧地图、商店、天气或 NPC。
+- 虚拟手机承载模型、状态、背包、存档、设置与 PC Agent 等入口。背包显示当前模型独立库存；没有配置世界内容时，不自动套用旧地图、商店、天气或 NPC。
 - 可选在线 TTS、普通/ASMR 独立音色、固定位置立体声与持续 ASMR。Fish Audio 支持 REST 和 OAuth MCP；Drama 3 通过 Story Studio 路径配置。Android arm64 另有 CosyVoice 3 本地语音入口。
 - PC Agent 扫码配对、问题审批、回答、任务和离线补拉；需自行配置受信任 HTTPS 中继及兼容的桌面端。后台推送还需要真实平台配置。
+- 每模型人格配置：11 种预设、可编辑雷达图、情境规则和持续扮演指令，接入台词与独立语音/动作规划。
+- 可配置图片生成接口、当前人物场景提示、任务管理与结果展示；任务及图片按模型隔离，接口密钥留在设备。
+- Android 实时语音电话与主聊天麦克风，本地 ASR、字幕、插话、静音与挂断；需另行配置识别模型和当前人物音色。云 TTS 最多两路有序预取，支持 Fish S2/S2.1 和整段 ASMR 耳语。
+- 冷启动唤醒入口、轻量玻璃界面和手机场景暂停；通用模型按真实映射能力播放演出。背包新增誓约戒指及丢失/和好状态联动。
+- 按模型选择本地闹钟音频，提供全局停止层和 Android 锁屏停止页；PC Agent 支持兼容的加密 QR v2。
+- 独立 Android 签名更新、断点下载及资源校验/回滚框架。默认关闭，需配置 OpenAgentAtelier 自己的更新来源与信任公钥。
 
 ## 模型支持范围
 
@@ -27,7 +35,7 @@
 
 ## 开始使用
 
-1. 从 Releases 下载 Debug APK，安装后打开 AgentAtelier。建议先备份已有模型和数据。
+1. 从 Releases 下载 Debug APK，安装后打开应用。当前源码显示名为 OpenAgentAtelier，公开历史安装包的名称与图标可能不同。建议先备份已有模型和数据。
 2. 在设置中填写 LLM 地址、模型和密钥，先测试文字对话。
 3. 通过主界面导入入口、模型库或「设置 → 模型档案与数据」选择模型 ZIP。检查目录，生成并审阅语义映射，再确认导入。
 4. 编辑该模型的人物、用户与世界设定。需要语音时自行配置 TTS 和音色，先用短句试听。
@@ -64,6 +72,11 @@ APK 输出在 `build/app/outputs/flutter-apk/`。`-Offline` 使用已准备好�
 
 ## 文档
 
+- [各功能开发方法与接入规范](docs/development/功能开发与接入规范.md)
+- [本次主项目功能移植说明与验证结果](docs/development/主项目新增功能移植说明.md)
+- [实时通话、ASR、TTS 与 ASMR 接入](docs/development/实时通话与语音接入.md)
+- [独立更新配置与模型闹钟接入](docs/development/更新与闹钟接入.md)
+- [应用名称、图标与平台数据兼容](docs/APP_ICON.md)
 - [模型导入与格式限制](docs/model_imports.md)
 - [LLM 语义映射](docs/model_mapping.md)
 - [模型独立档案与备份范围](docs/model_workspaces.md)

@@ -291,9 +291,9 @@ void main() {
         'studio_generate',
       ]);
       final create = calls[1].arguments;
-      expect(create['name'], startsWith('AgentAtelier'));
+      expect(create['name'], startsWith('OpenAgentAtelier'));
       expect(create['roster'], [
-        {'name': 'AgentAtelier', 'voice_id': 'ordinary-voice'},
+        {'name': 'OpenAgentAtelier', 'voice_id': 'ordinary-voice'},
       ]);
       expect(create['default_voice_id'], 'ordinary-voice');
       expect(create['chapters'], isEmpty);

@@ -15,11 +15,15 @@ param(
 
     [string]$RelayServerConfig = '',
 
+    [string]$UpdateConfigDefinesPath = '',
+
     [string]$EntryPoint = ''
 )
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'update_config_defines.ps1')
+$updateConfigDefines = Resolve-OpenAgentUpdateConfigDefines -Path $UpdateConfigDefinesPath
 
 Push-Location $projectRoot
 try {
@@ -91,6 +95,9 @@ try {
     }
     if ($privateRelayDefines) {
         $flutterArgs += "--dart-define-from-file=$privateRelayDefines"
+    }
+    if ($updateConfigDefines) {
+        $flutterArgs += "--dart-define-from-file=$updateConfigDefines"
     }
     if ($RelayPushConfig) {
         $resolvedPushConfig = (Resolve-Path -LiteralPath $RelayPushConfig).Path

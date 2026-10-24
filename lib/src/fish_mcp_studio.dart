@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mcp_dart/mcp_dart.dart';
 
 import 'fish_mcp_protocol.dart';
+import 'app_identity.dart';
 
 const fishMcpStudioTools = <String>[
   'studio_help',
@@ -516,9 +517,9 @@ class FishMcpStudioSession {
   }) async {
     final created = _object(
       await _call('studio_create_project', {
-        'name': 'AgentAtelier ${fishMcpModelDiagnosticLabel(model)}',
+        'name': '$appDisplayName ${fishMcpModelDiagnosticLabel(model)}',
         'roster': [
-          {'name': 'AgentAtelier', 'voice_id': voice},
+          {'name': appDisplayName, 'voice_id': voice},
         ],
         'default_voice_id': voice,
         'chapters': <Object>[],

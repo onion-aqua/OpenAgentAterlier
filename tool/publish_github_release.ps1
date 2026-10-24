@@ -12,7 +12,7 @@
     [ValidateNotNullOrEmpty()]
     [string]$NotesPath,
     [string]$ApkPath = 'build/app/outputs/flutter-apk/app-release.apk',
-    [string]$AssetName = 'AgentAtelier-1.0.0-release.apk',
+    [string]$AssetName = 'OpenAgentAtelier-1.0.0-release.apk',
     [string]$AdditionalAssetPath = '',
     [string]$AdditionalAssetName = '',
     [switch]$Prerelease,
@@ -236,7 +236,7 @@ try {
     $script:githubClient.Timeout = [TimeSpan]::FromHours(2)
     $script:githubClient.DefaultRequestHeaders.Authorization =
         [System.Net.Http.Headers.AuthenticationHeaderValue]::new('Bearer', $accessToken)
-    $script:githubClient.DefaultRequestHeaders.UserAgent.ParseAdd('AgentAtelierR-release-script/1.0')
+    $script:githubClient.DefaultRequestHeaders.UserAgent.ParseAdd('OpenAgentAtelier-release-script/1.0')
     $script:githubClient.DefaultRequestHeaders.Accept.ParseAdd('application/vnd.github+json')
     $script:githubClient.DefaultRequestHeaders.Add('X-GitHub-Api-Version', '2022-11-28')
 

@@ -10,9 +10,7 @@ import 'package:ryza_chat_mvp/src/independent_performance_tools.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final groups = parseCharacterMotionGroups(
-    File(
-      'assets/character/ryza/crf_skn_002_0001_01/crf_skn_002_0001_01_gesture.json',
-    ).readAsStringSync(),
+    File('assets/data/spine_templates/seated_01.json').readAsStringSync(),
   );
   String description(String id) => characterMotionPromptDescription(
     groups.firstWhere((group) => group.id == id),

@@ -46,8 +46,14 @@ class StoryQuestDefinition {
   String title(AppLanguage language) =>
       language.text(titleZh, titleEn, titleJa);
 
-  String description(AppLanguage language) =>
-      language.text(descriptionZh, descriptionEn, descriptionJa);
+  String description(AppLanguage language, {String? characterName}) => language
+      .text(descriptionZh, descriptionEn, descriptionJa)
+      .replaceAll(
+        '{character}',
+        characterName?.trim().isNotEmpty == true
+            ? characterName!.trim()
+            : language.text('当前角色', 'the current character', '現在のキャラクター'),
+      );
 }
 
 /// A compact, original retelling of the first game's broad story progression.
@@ -71,9 +77,9 @@ const builtInStoryQuests = <StoryQuestDefinition>[
     titleZh: '陌生旅人的教导',
     titleEn: 'Lessons from Travelers',
     titleJa: '旅人たちの教え',
-    descriptionZh: '和莱莎交流两次，梳理旅途中见到的新知识。',
-    descriptionEn: 'Talk with Ryza twice and sort through what you learned on the journey.',
-    descriptionJa: 'ライザと二度話し、旅で得た新しい知識を整理する。',
+    descriptionZh: '和{character}交流两次，梳理旅途中见到的新知识。',
+    descriptionEn: 'Talk with {character} twice and sort through what you learned on the journey.',
+    descriptionJa: '{character}と二度話し、旅で得た新しい知識を整理する。',
     objectiveType: QuestObjectiveType.chat,
     target: 2,
     reward: 10,
@@ -186,9 +192,8 @@ const builtInStoryQuests = <StoryQuestDefinition>[
     titleZh: '岛上居民的委托',
     titleEn: 'Requests from the Island',
     titleJa: '島の人々の依頼',
-    descriptionZh: '和莱莎交流三次，商量如何用炼金术帮助岛上的居民。',
-    descriptionEn:
-        'Talk with Ryza three times about helping the island through alchemy.',
+    descriptionZh: '和{character}交流三次，商量如何用炼金术帮助岛上的居民。',
+    descriptionEn: 'Talk with {character} three times about helping the island through alchemy.',
     descriptionJa: '三度話し、錬金術で島の人々を助ける方法を相談する。',
     objectiveType: QuestObjectiveType.chat,
     target: 3,
@@ -263,9 +268,8 @@ const builtInStoryQuests = <StoryQuestDefinition>[
     titleZh: '敌人与故乡的真相',
     titleEn: 'Truth of the Enemy',
     titleJa: '敵と故郷の真実',
-    descriptionZh: '和莱莎交流三次，整理旅途中发现的真相与选择。',
-    descriptionEn:
-        'Talk with Ryza three times about the truths and choices you found.',
+    descriptionZh: '和{character}交流三次，整理旅途中发现的真相与选择。',
+    descriptionEn: 'Talk with {character} three times about the truths and choices you found.',
     descriptionJa: '三度話し、旅で知った真実と選択を整理する。',
     objectiveType: QuestObjectiveType.chat,
     target: 3,
@@ -302,9 +306,8 @@ const builtInStoryQuests = <StoryQuestDefinition>[
     titleZh: '未完的夏日与新旅程',
     titleEn: 'A Summer Still Unfolding',
     titleJa: '続いていく夏と新しい旅',
-    descriptionZh: '和莱莎交流四次，谈谈一路的成长以及下一次冒险。',
-    descriptionEn:
-        'Talk with Ryza four times about your growth and the next adventure.',
+    descriptionZh: '和{character}交流四次，谈谈一路的成长以及下一次冒险。',
+    descriptionEn: 'Talk with {character} four times about your growth and the next adventure.',
     descriptionJa: '四度話し、これまでの成長と次の冒険について語り合う。',
     objectiveType: QuestObjectiveType.chat,
     target: 4,

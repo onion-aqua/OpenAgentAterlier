@@ -644,6 +644,9 @@ class WorldMapScreenState extends State<WorldMapScreen>
       id: stage.id,
       fallback: stage.name,
       language: language,
+      characterName: widget.controller.activeCharacterProfile.displayNameFor(
+        language.name,
+      ),
     );
     widget.controller.selectLocation(
       areaId: area.id,
@@ -842,6 +845,7 @@ class WorldMapScreenState extends State<WorldMapScreen>
                 currentStageId: widget.controller.selectedStageId,
                 npcs: data.npcs,
                 language: widget.controller.interfaceLanguage,
+                characterName: widget.controller.activeModelDisplayName,
                 onDismiss: () => _leaveField(area, focusedField),
                 onStageSelected: (stage) {
                   setState(() => _previewStageId = stage.id);
@@ -1072,6 +1076,7 @@ class _FieldFocusOverlay extends StatelessWidget {
     required this.currentStageId,
     required this.npcs,
     required this.language,
+    required this.characterName,
     required this.onDismiss,
     required this.onStageSelected,
   });
@@ -1082,6 +1087,7 @@ class _FieldFocusOverlay extends StatelessWidget {
   final String currentStageId;
   final List<MapNpc> npcs;
   final AppLanguage language;
+  final String characterName;
   final VoidCallback onDismiss;
   final ValueChanged<WorldStage> onStageSelected;
 
@@ -1250,6 +1256,7 @@ class _FieldFocusOverlay extends StatelessWidget {
                       _StagePin(
                         stage: field.stages[index],
                         language: language,
+                        characterName: characterName,
                         position: positions[index],
                         selected: field.stages[index].id == previewStageId,
                         current: field.stages[index].id == currentStageId,
@@ -1299,6 +1306,7 @@ class _StagePin extends StatelessWidget {
   const _StagePin({
     required this.stage,
     required this.language,
+    required this.characterName,
     required this.position,
     required this.selected,
     required this.current,
@@ -1307,6 +1315,7 @@ class _StagePin extends StatelessWidget {
 
   final WorldStage stage;
   final AppLanguage language;
+  final String characterName;
   final Offset position;
   final bool selected;
   final bool current;
@@ -1324,6 +1333,7 @@ class _StagePin extends StatelessWidget {
           id: stage.id,
           fallback: stage.name,
           language: language,
+          characterName: characterName,
         ),
         onTap: onTap,
         child: IgnorePointer(
@@ -1389,6 +1399,7 @@ class _StagePin extends StatelessWidget {
                     id: stage.id,
                     fallback: stage.name,
                     language: language,
+                    characterName: characterName,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

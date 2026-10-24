@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_controller.dart';
+import 'app_identity.dart';
 import 'settings_detail_page.dart';
 import 'app_localization.dart';
 import 'glass_ui.dart';
@@ -209,9 +210,9 @@ class _CharacterPromptEditorState extends State<CharacterPromptEditor> {
                                   Text(
                                     widget.world
                                         ? language.text(
-                                            'AgentAtelier 世界书',
-                                            'AgentAtelier World Book',
-                                            'AgentAtelier ワールドブック',
+                                            '$appDisplayName 世界书',
+                                            '$appDisplayName World Book',
+                                            '$appDisplayName ワールドブック',
                                           )
                                         : language.text(
                                             '${widget.controller.activeCharacterProfile.names.chinese}人物卡',

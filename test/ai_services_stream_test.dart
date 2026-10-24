@@ -484,30 +484,22 @@ void main() {
     expect(requests, 1);
   });
 
-  test(
-    'Fish Audio retries a transient response and returns audio bytes',
-    () async {
-      var requests = 0;
-      final client = MockClient((_) async {
-        requests++;
-        if (requests == 1) return http.Response('busy', 429);
-        return http.Response.bytes(
-          Uint8List.fromList(const [0x49, 0x44, 0x33, 0x04]),
-          200,
-          headers: {'content-type': 'audio/mpeg'},
-        );
-      });
-
-      final bytes = await FishAudioClient(client: client).synthesizeBytes(
+  test('Fish Audio does not retry rate limited paid generations', () async {
+    var requests = 0;
+    final client = MockClient((_) async {
+      requests++;
+      return http.Response('busy', 429);
+    });
+    await expectLater(
+      FishAudioClient(client: client).synthesizeBytes(
         apiKey: 'test-key',
         referenceId: 'voice-id',
         text: 'hello',
-      );
-
-      expect(bytes, isNotEmpty);
-      expect(requests, 2);
-    },
-  );
+      ),
+      throwsA(isA<AiServiceException>()),
+    );
+    expect(requests, 1);
+  });
 
   test('Fish Audio request cleans breathing tags and standalone ellipsis-small-tsu', () async {
     final client = MockClient((request) async {

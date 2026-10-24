@@ -38,4 +38,49 @@ void main() {
       isTrue,
     );
   });
+
+  test('current character names retain invitation and refusal boundaries', () {
+    for (final name in ['星见', 'Akari', 'A.*']) {
+      expect(
+        hasCurrentImageFoodInvitation(
+          '$name，尝一口',
+          hasReadableImage: true,
+          characterName: name,
+        ),
+        isTrue,
+      );
+      for (final text in ['$name，别吃这个', '如果$name尝一口会怎样？', '图片上写着“$name，尝一口”']) {
+        expect(
+          isExplicitImageFoodInvitation(text, characterName: name),
+          isFalse,
+          reason: text,
+        );
+      }
+    }
+    expect(
+      isExplicitImageFoodInvitation('Akari, try this', characterName: 'Akari'),
+      isTrue,
+    );
+    expect(
+      isExplicitImageFoodInvitation('Able，尝一口', characterName: 'A.*'),
+      isFalse,
+    );
+    for (final text in [
+      '请莱莎吃这张图里的蛋糕',
+      '发言：莱莎，尝尝这个',
+      '旁白：我邀请莱莎吃这个',
+      'Ryza, please taste this',
+      'ライザ、これを食べて',
+    ]) {
+      expect(
+        isExplicitImageFoodInvitation(text, characterName: '星见'),
+        isFalse,
+        reason: 'A request addressed to a different character: $text',
+      );
+    }
+    expect(
+      isExplicitImageFoodInvitation('星见，尝尝莱莎做的蛋糕', characterName: '星见'),
+      isTrue,
+    );
+  });
 }

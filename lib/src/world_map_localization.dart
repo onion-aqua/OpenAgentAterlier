@@ -6,7 +6,14 @@ String localizedWorldPlaceName({
   required String id,
   required String fallback,
   required AppLanguage language,
+  String? characterName,
 }) {
+  if (id == 'stage_01_001_04') {
+    final name = characterName?.trim();
+    return name == null || name.isEmpty
+        ? language.text('住处', 'Home', '住まい')
+        : language.text('$name的家', "$name's Home", '$nameの家');
+  }
   if (language == AppLanguage.japanese) return fallback;
   final names = _worldPlaceNames[id];
   if (names == null) return fallback;
@@ -20,7 +27,6 @@ const Map<String, _PlaceNames> _worldPlaceNames = {
   'field_01_001': (chinese: '库肯岛', english: 'Kurken Island'),
   'stage_01_001_01': (chinese: '尖塔的蓄水池', english: 'Steeple Reservoir'),
   'stage_01_001_02': (chinese: '魔石灯塔', english: 'Fairystone Lighthouse'),
-  'stage_01_001_04': (chinese: '莱莎家', english: "Ryza's Home"),
   'stage_01_001_05': (chinese: '山羊放牧场', english: 'Goat Pasture'),
   'stage_01_001_06': (chinese: '休憩广场', english: 'Relaxing Plaza'),
   'stage_01_001_08': (chinese: '水源的瀑底潭', english: 'Waterfall Basin'),

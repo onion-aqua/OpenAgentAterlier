@@ -16,7 +16,7 @@ void RegisterFishMcpProtocol() {
                       nullptr) != ERROR_SUCCESS) {
     return;
   }
-  const wchar_t url_protocol[] = L"URL:AgentAtelier Fish MCP";
+  const wchar_t url_protocol[] = L"URL:OpenAgentAtelier Fish MCP";
   RegSetValueExW(scheme_key, nullptr, 0, REG_SZ,
                  reinterpret_cast<const BYTE*>(url_protocol),
                  sizeof(url_protocol));
@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   Win32Window::Point origin(10, 10);
   // Keep the desktop window in the same portrait ratio as the mobile UI.
   Win32Window::Size size(540, 960);
-  if (!window.Create(L"AgentAtelier", origin, size)) {
+  if (!window.Create(L"OpenAgentAtelier", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

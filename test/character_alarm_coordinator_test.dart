@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:alarm/alarm.dart';
@@ -6,217 +6,172 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ryza_chat_mvp/src/app_controller.dart';
 import 'package:ryza_chat_mvp/src/character_alarm_coordinator.dart';
-import 'package:ryza_chat_mvp/src/character_runtime_profile.dart';
+import 'package:ryza_chat_mvp/src/character_appearance.dart';
+import 'package:ryza_chat_mvp/src/model_package_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _FakeAlarmAccess implements CharacterAlarmAccess {
+class _AlarmAccess implements CharacterAlarmAccess {
   final alarms = <int, AlarmSettings>{};
   final stopped = <int>[];
   final restored = <int>[];
-  final stopFailures = <int>{};
-  Completer<void>? stopEntered;
-  Completer<void>? allowStop;
-
   @override
   Future<List<AlarmSettings>> getAlarms() async => alarms.values.toList();
-
   @override
-  Future<bool> set(AlarmSettings settings) async {
-    restored.add(settings.id);
-    alarms[settings.id] = settings;
+  Future<bool> set(AlarmSettings alarm) async {
+    restored.add(alarm.id);
+    alarms[alarm.id] = alarm;
     return true;
   }
 
   @override
   Future<bool> stop(int id) async {
     stopped.add(id);
-    stopEntered?.complete();
-    await allowStop?.future;
-    if (stopFailures.contains(id)) return false;
     alarms.remove(id);
     return true;
   }
 }
 
-AlarmSettings _alarm(
-  int id,
-  DateTime dateTime, {
-  String? path,
-  String? payload,
-}) => AlarmSettings(
+AlarmSettings _alarm(int id, String? payload, {String? path}) => AlarmSettings(
   id: id,
-  dateTime: dateTime,
-  assetAudioPath: path,
+  dateTime: DateTime.now().add(const Duration(hours: 2)),
+  assetAudioPath: path ?? 'C:/reminders/$id.wav',
   payload: payload,
-  volumeSettings: const VolumeSettings.fixed(volume: 0.8),
+  volumeSettings: const VolumeSettings.fixed(volume: .8),
   notificationSettings: const NotificationSettings(
-    title: 'Voice alarm',
-    body: 'Wake up',
+    title: 'Reminder',
+    body: 'Time',
   ),
 );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const pathProviderChannel = MethodChannel('plugins.flutter.io/path_provider');
-  late Directory supportDirectory;
+  const channel = MethodChannel('plugins.flutter.io/path_provider');
+  const a = CharacterAppearance(
+    id: 'alarm_model_a',
+    label: 'Model A',
+    description: '',
+    promptDescription: '',
+    assetName: 'alarm_model_a',
+    animated: true,
+    idleAnimations: [],
+    live2dModelDirectory: 'test/a',
+    live2dModelFileName: 'a.model3.json',
+  );
+  const b = CharacterAppearance(
+    id: 'alarm_model_b',
+    label: 'Model B',
+    description: '',
+    promptDescription: '',
+    assetName: 'alarm_model_b',
+    animated: true,
+    idleAnimations: [],
+    live2dModelDirectory: 'test/b',
+    live2dModelFileName: 'b.model3.json',
+  );
+  late Directory directory;
+  late ModelPackageStore packages;
 
-  setUpAll(() async {
-    supportDirectory = await Directory.systemTemp.createTemp('alarm_switch_');
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    directory = await Directory.systemTemp.createTemp('imported-model-alarms-');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(pathProviderChannel, (call) async {
-          if (call.method == 'getApplicationSupportDirectory') {
-            return supportDirectory.path;
-          }
-          return null;
-        });
-  });
-
-  tearDownAll(() async {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(pathProviderChannel, null);
-    await supportDirectory.delete(recursive: true);
-  });
-
-  test('pauses only Ryza voice alarms and restores future alarms', () async {
-    SharedPreferences.setMockInitialValues({});
-    final preferences = await SharedPreferences.getInstance();
-    final access = _FakeAlarmAccess();
-    final future = DateTime.now().add(const Duration(hours: 2));
-    final legacy = _alarm(
-      101,
-      future,
-      path: 'assets/audio/alarm/voices/ja_normal_task_morning_1.m4a',
-    );
-    final tagged = _alarm(
-      102,
-      future.add(const Duration(minutes: 1)),
-      payload: CharacterAlarmCoordinator.ryzaVoicePayload,
-    );
-    final unrelated = _alarm(103, future, path: 'assets/audio/alarm/other.m4a');
-    access.alarms.addAll({101: legacy, 102: tagged, 103: unrelated});
-    final coordinator = CharacterAlarmCoordinator(preferences, access: access);
-
-    await coordinator.syncForCharacter(CharacterRuntimeIds.sophie);
-    expect(access.stopped, [101, 102]);
-    expect(access.alarms.keys, [103]);
-
-    final afterRestart = CharacterAlarmCoordinator(preferences, access: access);
-    await afterRestart.syncForCharacter(CharacterRuntimeIds.ryza);
-    expect(access.restored, [101, 102]);
-    expect(
-      access.alarms[101],
-      legacy.copyWith(allowSameSecondScheduling: true),
-    );
-    expect(
-      access.alarms[102],
-      tagged.copyWith(allowSameSecondScheduling: true),
-    );
-    expect(access.alarms[103], unrelated);
-
-    await afterRestart.syncForCharacter(CharacterRuntimeIds.ryza);
-    expect(access.restored, [101, 102]);
-  });
-
-  test('expired alarms are not rescheduled after Sophie mode', () async {
-    SharedPreferences.setMockInitialValues({});
-    final preferences = await SharedPreferences.getInstance();
-    final access = _FakeAlarmAccess();
-    access.alarms[104] = _alarm(
-      104,
-      DateTime.now().subtract(const Duration(minutes: 1)),
-      path: 'assets/audio/alarm/voices/en_normal_task_daytime_1.m4a',
-    );
-    final coordinator = CharacterAlarmCoordinator(preferences, access: access);
-    await coordinator.syncForCharacter(CharacterRuntimeIds.sophie);
-    await coordinator.syncForCharacter(CharacterRuntimeIds.ryza);
-    expect(access.restored, isEmpty);
-    expect(access.alarms, isEmpty);
-  });
-
-  test('failed pause restores already stopped alarms', () async {
-    SharedPreferences.setMockInitialValues({});
-    final preferences = await SharedPreferences.getInstance();
-    final access = _FakeAlarmAccess()..stopFailures.add(108);
-    final future = DateTime.now().add(const Duration(hours: 1));
-    for (final id in [107, 108]) {
-      access.alarms[id] = _alarm(
-        id,
-        future.add(Duration(minutes: id - 107)),
-        path: 'assets/audio/alarm/voices/en_normal_task_morning_$id.m4a',
+        .setMockMethodCallHandler(
+          channel,
+          (call) async => call.method == 'getApplicationSupportDirectory'
+              ? directory.path
+              : null,
+        );
+    packages = ModelPackageStore.forTesting();
+    await packages.initialize(storageDirectory: directory);
+    characterAppearances.addAll([a, b]);
+    for (final model in [a, b]) {
+      await packages.ensureModel(
+        modelId: model.id,
+        format: 'live2d',
+        label: model.label,
+        ownerCharacterId: model.characterId,
+        files: {'model.json': Uint8List.fromList(utf8.encode('{}'))},
       );
     }
-    final coordinator = CharacterAlarmCoordinator(preferences, access: access);
-    await expectLater(
-      coordinator.syncForCharacter(CharacterRuntimeIds.sophie),
-      throwsStateError,
+  });
+  tearDown(() async {
+    characterAppearances.removeWhere(
+      (model) => [a.id, b.id].contains(model.id),
     );
-    expect(access.alarms.keys, containsAll([107, 108]));
-    await coordinator.syncForCharacter(CharacterRuntimeIds.ryza);
-    expect(access.alarms.keys, containsAll([107, 108]));
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
+    await packages.flush();
+    await directory.delete(recursive: true);
   });
 
-  test('controller switches suspend and resume Ryza alarms', () async {
-    SharedPreferences.setMockInitialValues({});
-    final controller = await AppController.load();
+  test('empty framework pauses old bundled voices without restoring a legacy identity', () async {
+    final controller = await AppController.load(modelPackages: packages);
     addTearDown(controller.dispose);
-    final access = _FakeAlarmAccess();
-    access.alarms[105] = _alarm(
-      105,
-      DateTime.now().add(const Duration(hours: 1)),
-      path: 'assets/audio/alarm/voices/ja_normal_task_morning_2.m4a',
+    final access = _AlarmAccess();
+    access.alarms[1] = _alarm(
+      1,
+      null,
+      path: 'assets/audio/alarm/voices/legacy.m4a',
     );
+    access.alarms[2] = _alarm(2, CharacterAlarmCoordinator.ryzaVoicePayload);
+    access.alarms[3] = _alarm(3, 'unrelated');
     await controller.initializeAlarmRuntime(access: access);
-
-    await controller.setActiveCharacter(CharacterRuntimeIds.sophie);
-    expect(access.alarms, isEmpty);
-    await controller.setActiveCharacter(CharacterRuntimeIds.ryza);
-    expect(access.alarms.keys, [105]);
+    expect(access.stopped, [1, 2]);
+    expect(access.alarms.keys, [3]);
+    await controller.setActiveCharacter('ryza');
+    expect(controller.activeModelId, isNull);
+    expect(access.restored, isEmpty);
   });
 
-  test('startup with Sophie pauses legacy Ryza alarms', () async {
-    SharedPreferences.setMockInitialValues({
-      'active_character_id_v1': CharacterRuntimeIds.sophie,
-    });
-    final controller = await AppController.load();
-    addTearDown(controller.dispose);
-    final access = _FakeAlarmAccess();
-    access.alarms[109] = _alarm(
-      109,
-      DateTime.now().add(const Duration(hours: 1)),
-      path: 'assets/audio/alarm/voices/ja_normal_task_morning_4.m4a',
-    );
+  test(
+    'controller switches suspend and restore independent imported model alarms',
+    () async {
+      final controller = await AppController.load(modelPackages: packages);
+      addTearDown(controller.dispose);
+      await controller.setCharacterAppearance(a.id);
+      final access = _AlarmAccess();
+      access.alarms[1] = _alarm(
+        1,
+        CharacterAlarmCoordinator.payloadForModel(a.id),
+      );
+      await controller.initializeAlarmRuntime(access: access);
+      await controller.setCharacterAppearance(b.id);
+      expect(controller.activeModelId, b.id);
+      expect(access.alarms, isEmpty);
+      access.alarms[2] = _alarm(
+        2,
+        CharacterAlarmCoordinator.payloadForModel(b.id),
+      );
+      await controller.setCharacterAppearance(a.id);
+      expect(access.alarms.keys, [1]);
+      expect(access.restored, [1]);
+      await controller.setCharacterAppearance(b.id);
+      expect(access.alarms.keys, [2]);
+      expect(access.restored, [1, 2]);
+    },
+  );
 
-    await controller.initializeAlarmRuntime(access: access);
-    expect(controller.activeCharacterId, CharacterRuntimeIds.sophie);
-    expect(access.stopped, [109]);
-    expect(access.alarms, isEmpty);
-  });
-
-  test('reselecting Ryza cancels an in-flight switch to Sophie', () async {
-    SharedPreferences.setMockInitialValues({});
-    final controller = await AppController.load();
-    addTearDown(controller.dispose);
-    final access = _FakeAlarmAccess()
-      ..stopEntered = Completer<void>()
-      ..allowStop = Completer<void>();
-    access.alarms[106] = _alarm(
-      106,
-      DateTime.now().add(const Duration(hours: 1)),
-      path: 'assets/audio/alarm/voices/ja_normal_task_morning_3.m4a',
-    );
-    await controller.initializeAlarmRuntime(access: access);
-
-    final switchToSophie = controller.setActiveCharacter(
-      CharacterRuntimeIds.sophie,
-    );
-    await access.stopEntered!.future;
-    final stayWithRyza = controller.setActiveCharacter(
-      CharacterRuntimeIds.ryza,
-    );
-    access.allowStop!.complete();
-    await Future.wait([switchToSophie, stayWithRyza]);
-
-    expect(controller.activeCharacterId, CharacterRuntimeIds.ryza);
-    expect(access.alarms.keys, [106]);
-  });
+  test(
+    'restart keeps a paused model isolated until the same model is selected',
+    () async {
+      final controller = await AppController.load(modelPackages: packages);
+      await controller.setCharacterAppearance(a.id);
+      final access = _AlarmAccess();
+      access.alarms[1] = _alarm(
+        1,
+        CharacterAlarmCoordinator.payloadForModel(a.id),
+      );
+      await controller.initializeAlarmRuntime(access: access);
+      await controller.setCharacterAppearance(b.id);
+      await controller.flushModelSession();
+      controller.dispose();
+      final restarted = await AppController.load(modelPackages: packages);
+      addTearDown(restarted.dispose);
+      await restarted.initializeAlarmRuntime(access: access);
+      expect(restarted.activeModelId, b.id);
+      expect(access.alarms, isEmpty);
+      await restarted.setCharacterAppearance(a.id);
+      expect(access.alarms.keys, [1]);
+    },
+  );
 }

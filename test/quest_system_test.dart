@@ -248,7 +248,7 @@ void main() {
     expect(imported.storyQuestIndex, 1);
   });
 
-  testWidgets('quest page separates the built-in story and Ryza quests', (
+  testWidgets('quest page isolates unconfigured models from preset stories', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -256,11 +256,15 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(home: MissionScreen(controller: controller)),
     );
-    expect(find.text('越过湖面'), findsOneWidget);
-    expect(find.text('主线进度 0 / 20'), findsOneWidget);
-    await tester.tap(find.text('莱莎委托'));
+    expect(find.text('越过湖面'), findsNothing);
+    expect(find.text('主线进度 0 / 20'), findsNothing);
+    expect(find.textContaining('尚未配置主线任务'), findsOneWidget);
+    await tester.tap(find.text('${controller.activeModelDisplayName}委托'));
     await tester.pumpAndSettle();
-    expect(find.text('还没有莱莎委托'), findsOneWidget);
+    expect(
+      find.text('还没有${controller.activeModelDisplayName}委托'),
+      findsOneWidget,
+    );
 
     controller.createDynamicQuest(
       title: '聊聊炼金术',
@@ -271,7 +275,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(home: MissionScreen(controller: controller)),
     );
-    await tester.tap(find.text('莱莎委托'));
+    await tester.tap(find.text('${controller.activeModelDisplayName}委托'));
     await tester.pumpAndSettle();
     expect(find.text('聊聊炼金术'), findsOneWidget);
     expect(find.textContaining('0 / 1'), findsOneWidget);

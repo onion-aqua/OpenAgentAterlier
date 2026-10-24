@@ -454,9 +454,9 @@ void main() {
       MaterialApp(home: AlchemyScreen(controller: controller)),
     );
 
-    expect(find.text('炼金工房'), findsOneWidget);
+    expect(find.text('炼金工房'), findsNothing);
     expect(find.text('配方'), findsNothing);
-    expect(find.text('背包'), findsOneWidget);
+    expect(find.text('背包'), findsNWidgets(2));
     expect(find.text('记录'), findsOneWidget);
     expect(find.text('爆裂海胆'), findsNothing);
     expect(find.textContaining('背包是空的'), findsOneWidget);

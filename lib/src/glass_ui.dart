@@ -1,8 +1,35 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 
+import 'liquid_glass_optics.dart';
+
 enum GlassTone { dark, light }
+
+/// A page/route has already sampled its backdrop. Descendant cards only need
+/// their tint and sheen; sampling the same full screen again is expensive.
+class GlassBackdropScope extends InheritedWidget {
+  const GlassBackdropScope({
+    super.key,
+    required this.active,
+    this.persistentRouteBackdrop = false,
+    required super.child,
+  });
+  final bool active;
+  final bool persistentRouteBackdrop;
+  static bool persistsAcrossRoutes(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<GlassBackdropScope>()
+          ?.persistentRouteBackdrop ??
+      false;
+  static bool of(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<GlassBackdropScope>()
+          ?.active ??
+      false;
+  @override
+  bool updateShouldNotify(GlassBackdropScope oldWidget) =>
+      active != oldWidget.active ||
+      persistentRouteBackdrop != oldWidget.persistentRouteBackdrop;
+}
 
 /// Keeps surfaces in open routes and dialogs in sync with the global switch.
 /// Placing the scope above the Navigator avoids capturing a stale preference
@@ -90,10 +117,11 @@ class GlassSurface extends StatelessWidget {
     this.borderRadius = const BorderRadius.all(Radius.circular(18)),
     this.fallbackColor = const Color(0xCC201D1B),
     this.boxShadow = const [],
-    this.tone = GlassTone.dark,
+    this.tone,
     this.blurSigma = 16,
     this.backdropBlur = true,
     this.transparentFill = false,
+    this.readableText = false,
     this.fillOpacity = 1,
   });
 
@@ -102,10 +130,16 @@ class GlassSurface extends StatelessWidget {
   final BorderRadius borderRadius;
   final Color fallbackColor;
   final List<BoxShadow> boxShadow;
-  final GlassTone tone;
+
+  /// Null follows the theme; scene controls with white labels opt into dark.
+  final GlassTone? tone;
   final double blurSigma;
   final bool backdropBlur;
   final bool transparentFill;
+
+  /// Text panels over arbitrary scene images need a contrast tint. Optical
+  /// refraction stays enabled; decorative glass can keep the lighter tint.
+  final bool readableText;
   final double fillOpacity;
 
   @override
@@ -115,11 +149,17 @@ class GlassSurface extends StatelessWidget {
       fallback: this.liquidGlass,
     );
     final accent = Theme.of(context).colorScheme.primary;
-    final darkMode = Theme.of(context).brightness == Brightness.dark;
+    final inheritedBackdrop = GlassBackdropScope.of(context);
+    final needsBackdrop = backdropBlur && blurSigma > 0 && !inheritedBackdrop;
+    final darkMode = tone == null
+        ? Theme.of(context).brightness == Brightness.dark
+        : tone == GlassTone.dark;
     final surfaceTint = Color.lerp(
-      darkMode ? const Color(0xFF111518) : Colors.white,
+      darkMode
+          ? (readableText ? const Color(0xFF111518) : const Color(0xFF384348))
+          : Colors.white,
       accent,
-      darkMode ? .08 : .045,
+      .035,
     )!;
     final material = DecoratedBox(
       decoration: BoxDecoration(
@@ -127,65 +167,68 @@ class GlassSurface extends StatelessWidget {
             ? Colors.transparent
             : liquidGlass
             ? surfaceTint.withValues(
-                alpha: (darkMode ? .42 : .34) * fillOpacity,
+                alpha:
+                    (readableText
+                        ? (darkMode ? .80 : .78)
+                        : (darkMode ? .16 : .14)) *
+                    fillOpacity,
               )
             : fallbackColor.withValues(alpha: fallbackColor.a * fillOpacity),
-        gradient: liquidGlass && !transparentFill
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors:
-                    (tone == GlassTone.dark
-                            ? [
-                                Colors.white.withValues(alpha: 0.24),
-                                Color.lerp(
-                                  const Color(0xFF303536),
-                                  accent,
-                                  0.10,
-                                )!.withValues(alpha: 0.46),
-                                const Color(0xFF171B1C).withValues(alpha: 0.54),
-                              ]
-                            : [
-                                Colors.white.withValues(alpha: 0.82),
-                                Color.lerp(
-                                  const Color(0xFFF1F3F2),
-                                  accent,
-                                  0.06,
-                                )!.withValues(alpha: 0.72),
-                                Color.lerp(
-                                  const Color(0xFFE3E8E6),
-                                  accent,
-                                  0.08,
-                                )!.withValues(alpha: 0.66),
-                              ])
-                        .map(
-                          (color) =>
-                              color.withValues(alpha: color.a * fillOpacity),
-                        )
-                        .toList(),
-              )
-            : null,
         borderRadius: borderRadius,
+        // Flutter paints a zero-width solid border as a one-physical-pixel line.
         border: Border.all(
-          color: Colors.white.withValues(alpha: liquidGlass ? 0.42 : 0.20),
-          width: liquidGlass ? 1.1 : 1,
+          color: liquidGlass
+              ? Colors.white.withValues(alpha: darkMode ? .16 : .30)
+              : Colors.white.withValues(alpha: .20),
+          width: 0,
         ),
-        boxShadow: liquidGlass
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: darkMode ? .25 : .10),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-                BoxShadow(
-                  color: Colors.white.withValues(alpha: darkMode ? .08 : .22),
-                  blurRadius: 1,
-                  spreadRadius: .5,
-                ),
-              ]
-            : null,
+        // Keep scrolling surfaces flat: no per-card shadow blur passes.
+        boxShadow: null,
       ),
-      child: Material(type: MaterialType.transparency, child: child),
+      // Colour and gradient in one BoxDecoration multiply their alphas. Draw
+      // the sheen separately so the tint keeps its intended contrast.
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          gradient: liquidGlass && !transparentFill
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors:
+                      (darkMode
+                              ? [
+                                  Colors.white.withValues(alpha: 0.10),
+                                  Color.lerp(
+                                    const Color(0xFF65747A),
+                                    accent,
+                                    0.10,
+                                  )!.withValues(alpha: 0.045),
+                                  const Color(0xFF364249)
+                                      .withValues(alpha: 0.12),
+                                ]
+                              : [
+                                  Colors.white.withValues(alpha: 0.26),
+                                  Color.lerp(
+                                    const Color(0xFFF1F3F2),
+                                    accent,
+                                    0.06,
+                                  )!.withValues(alpha: 0.08),
+                                  Color.lerp(
+                                    const Color(0xFFE3E8E6),
+                                    accent,
+                                    0.08,
+                                  )!.withValues(alpha: 0.14),
+                                ])
+                          .map(
+                            (color) =>
+                                color.withValues(alpha: color.a * fillOpacity),
+                          )
+                          .toList(),
+                )
+              : null,
+        ),
+        child: Material(type: MaterialType.transparency, child: child),
+      ),
     );
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -194,37 +237,22 @@ class GlassSurface extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: borderRadius,
-        child: liquidGlass && backdropBlur && blurSigma > 0
-            ? BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-                child: Stack(
-                  fit: StackFit.passthrough,
-                  children: [
-                    material,
-                    IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.white.withValues(
-                                alpha: darkMode ? .10 : .28,
-                              ),
-                              Colors.transparent,
-                              Colors.black.withValues(
-                                alpha: darkMode ? .10 : .04,
-                              ),
-                            ],
-                            stops: const [0, .22, 1],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : material,
+        // Keep the content at the same element path when the preference
+        // changes. Replacing this wrapper discards forms, focus and scrolls.
+        child: LiquidGlassOptics(
+          enabled: liquidGlass,
+          borderRadius: borderRadius,
+          dark: darkMode,
+          blurSigma: blurSigma,
+          filterBackdrop: needsBackdrop,
+          child: GlassBackdropScope(
+            active: inheritedBackdrop || (liquidGlass && needsBackdrop),
+            persistentRouteBackdrop: GlassBackdropScope.persistsAcrossRoutes(
+              context,
+            ),
+            child: material,
+          ),
+        ),
       ),
     );
   }
@@ -254,6 +282,7 @@ class GlassIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       liquidGlass: liquidGlass,
+      tone: GlassTone.dark,
       blurSigma: 10,
       borderRadius: BorderRadius.circular(size / 2),
       fallbackColor: Colors.black.withValues(alpha: 0.38),

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:alarm/alarm.dart';
 import 'package:alarm/service/alarm_storage.dart';
@@ -9,14 +11,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ryza_chat_mvp/src/alarm_screen.dart';
+import 'package:ryza_chat_mvp/src/alarm_audio.dart';
 import 'package:ryza_chat_mvp/src/app_controller.dart';
-import 'package:ryza_chat_mvp/src/character_runtime_profile.dart';
+import 'package:ryza_chat_mvp/src/character_appearance.dart';
+import 'package:ryza_chat_mvp/src/model_package_store.dart';
 import 'package:ryza_chat_mvp/src/glass_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   var nativeSetCalls = 0;
+  const model = CharacterAppearance(
+    id: 'alarm_ui_model',
+    label: 'Imported Model',
+    description: '',
+    promptDescription: '',
+    assetName: 'alarm_ui_model',
+    animated: true,
+    idleAnimations: [],
+    live2dModelDirectory: 'test/a',
+    live2dModelFileName: 'a.model3.json',
+  );
+
+  Future<AppController> importedController(WidgetTester tester) async {
+    return (await tester.runAsync(() async {
+      final directory = await Directory.systemTemp.createTemp('alarm-ui-');
+      const channel = MethodChannel('plugins.flutter.io/path_provider');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            channel,
+            (call) async => call.method == 'getApplicationSupportDirectory'
+                ? directory.path
+                : null,
+          );
+      final packages = ModelPackageStore.forTesting();
+      await packages.initialize(storageDirectory: directory);
+      characterAppearances.add(model);
+      await packages.ensureModel(
+        modelId: model.id,
+        format: 'live2d',
+        label: model.label,
+        ownerCharacterId: model.characterId,
+        files: {'model.json': Uint8List.fromList(utf8.encode('{}'))},
+      );
+      final controller = await AppController.load(modelPackages: packages);
+      await controller.setCharacterAppearance(model.id);
+      await ModelAlarmAudioStore.instance.importBytes(model.id, [
+        1,
+        2,
+        3,
+        4,
+      ], 'wav');
+      addTearDown(() async {
+        controller.dispose();
+        characterAppearances.removeWhere((item) => item.id == model.id);
+        await packages.flush();
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null);
+        await directory.delete(recursive: true);
+      });
+      return controller;
+    }))!;
+  }
+
   const nativeSetChannel = BasicMessageChannel<Object?>(
     'dev.flutter.pigeon.alarm.AlarmApi.setAlarm',
     AlarmApi.pigeonChannelCodec,
@@ -77,8 +134,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final controller = (await tester.runAsync(() => AppController.load()))!;
-    addTearDown(controller.dispose);
+    final controller = await importedController(tester);
     await tester.pumpWidget(
       MaterialApp(
         home: AlarmScreen(
@@ -87,6 +143,9 @@ void main() {
           onMenuPressed: () {},
         ),
       ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
     await tester.pumpAndSettle();
   }
@@ -107,9 +166,9 @@ void main() {
     );
   });
 
-  for (final sophie in [false, true]) {
+  for (final legacySelection in [false, true]) {
     testWidgets(
-      'Windows alarm page disables unsupported scheduling${sophie ? ' and keeps Sophie resource notice' : ''}',
+      'Windows disables scheduling and keeps neutral empty model notice $legacySelection',
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.windows;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
@@ -126,11 +185,13 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
+        if (legacySelection) {
+          SharedPreferences.setMockInitialValues({
+            'active_character_id_v1': 'sophie',
+          });
+        }
         final controller = (await tester.runAsync(() => AppController.load()))!;
         addTearDown(controller.dispose);
-        if (sophie) {
-          await controller.setActiveCharacter(CharacterRuntimeIds.sophie);
-        }
         await tester.pumpWidget(
           MaterialApp(
             builder: (context, child) => MediaQuery(
@@ -152,10 +213,8 @@ void main() {
         expect(tester.getBottomLeft(notice).dy, lessThanOrEqualTo(480));
         expect(find.byTooltip('添加闹钟'), findsNothing);
         expect(find.byType(GlassIconButton), findsNothing);
-        expect(
-          find.text('苏菲的语音闹钟资源尚未提供'),
-          sophie ? findsOneWidget : findsNothing,
-        );
+        expect(find.text('苏菲的语音闹钟资源尚未提供'), findsNothing);
+        expect(find.text('请先导入并选择模型'), findsOneWidget);
         expect(permissionCalls, 0);
         expect(nativeSetCalls, 0);
         expect(tester.takeException(), isNull);
@@ -256,8 +315,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final controller = (await tester.runAsync(() => AppController.load()))!;
-      addTearDown(controller.dispose);
+      final controller = await importedController(tester);
       await tester.pumpWidget(
         MaterialApp(
           builder: (context, child) => MediaQuery(
@@ -271,6 +329,9 @@ void main() {
             onMenuPressed: () {},
           ),
         ),
+      );
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('添加闹钟'));

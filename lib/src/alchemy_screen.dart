@@ -96,9 +96,15 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
       context: context,
       builder: (context) => AlertDialog(
         scrollable: true,
-        title: Text(item.name(language)),
+        title: Text(
+          item.name(
+            language,
+            characterName: widget.controller.activeCharacterProfile
+                .displayNameFor(language.name),
+          ),
+        ),
         content: Text(
-          '${item.description(language)}\n\n${item.effect(language)}',
+          '${item.description(language, characterName: widget.controller.activeCharacterProfile.displayNameFor(language.name))}\n\n${item.effect(language)}',
         ),
         actions: [
           TextButton(
@@ -119,14 +125,69 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
         content: Text(
           used
               ? language.text(
-                  '已使用 ${item.name(language)}',
-                  'Used ${item.name(language)}',
-                  '${item.name(language)}を使用しました',
+                  '已使用 ${item.name(language, characterName: widget.controller.activeCharacterProfile.displayNameFor(language.name))}',
+                  'Used ${item.name(language, characterName: widget.controller.activeCharacterProfile.displayNameFor(language.name))}',
+                  '${item.name(language, characterName: widget.controller.activeCharacterProfile.displayNameFor(language.name))}を使用しました',
                 )
               : language.text(
                   '无法使用：库存已变化，或没有需要归零的负值',
                   'Cannot use: inventory changed or there are no negative stats',
                   '使用できません：所持数が変わったか、マイナスの数値がありません',
+                ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _loseRing(AppLanguage language) async {
+    final revision = widget.controller.dataRevision;
+    final confirmed = await showDialog<bool>(
+      useRootNavigator: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: Text(
+          language.text(
+            '确认丢失誓约之戒？',
+            'Confirm the ring is lost?',
+            '指輪の紛失を確定しますか？',
+          ),
+        ),
+        content: Text(
+          language.text(
+            '将从「珍贵的东西」中移除 1 枚誓约之戒，${widget.controller.activeModelDisplayName}的心情降低 500。心情恢复到 −250（含）以上前，不能购买和好券。此操作不可撤销。',
+            'One Ring of Vows will be removed from Precious things and ${widget.controller.activeModelDisplayName}’s mood will decrease by 500. Make-Up Vouchers cannot be purchased until mood reaches −250 or higher. This cannot be undone.',
+            '「大切なもの」から指輪を1個失い、${widget.controller.activeModelDisplayName}の気分が500下がります。−250以上に回復するまで仲直り券は購入できません。この操作は取り消せません。',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(language.text('取消', 'Cancel', 'キャンセル')),
+          ),
+          FilledButton(
+            key: const ValueKey('confirm-lose-oath-ring'),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(language.text('确认丢失', 'Confirm loss', '紛失を確定')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final lost = widget.controller.loseOathRing(expectedRevision: revision);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          lost
+              ? language.text(
+                  '誓约之戒已丢失，心情 −500',
+                  'Ring lost. Mood −500',
+                  '指輪を失いました。気分 −500',
+                )
+              : language.text(
+                  '存档或库存已变化，请重新查看',
+                  'Save or inventory changed. Please check again.',
+                  'セーブまたは所持品が変更されました。確認してください。',
                 ),
         ),
       ),
@@ -145,7 +206,7 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
           automaticallyImplyLeading: false,
           title: Padding(
             padding: EdgeInsets.only(left: widget.embedded ? 40 : 58),
-            child: Text(language.text('炼金工房', 'Atelier', 'アトリエ')),
+            child: Text(language.text('背包', 'Inventory', 'バッグ')),
           ),
           bottom: TabBar(
             tabs: [
@@ -200,13 +261,22 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
               cacheWidth: 192,
             ),
             title: Text(
-              '${item.name(language)} × ${widget.controller.preciousItems[item.id]}',
+              '${item.name(language, characterName: widget.controller.activeCharacterProfile.displayNameFor(language.name))} × ${widget.controller.preciousItems[item.id]}',
             ),
             subtitle: Text(item.effect(language)),
             trailing: IconButton(
-              tooltip: language.text('使用', 'Use', '使う'),
-              icon: const Icon(Icons.play_circle_outline),
-              onPressed: () => _usePreciousItem(item, language),
+              key: ValueKey('precious-item-action-${item.id}'),
+              tooltip: item.isKeepsake
+                  ? language.text('丢失誓约之戒', 'Lost Ring of Vows', '指輪の紛失')
+                  : language.text('使用', 'Use', '使う'),
+              icon: Icon(
+                item.isKeepsake
+                    ? Icons.remove_circle_outline
+                    : Icons.play_circle_outline,
+              ),
+              onPressed: () => item.isKeepsake
+                  ? _loseRing(language)
+                  : _usePreciousItem(item, language),
             ),
           ),
         const Divider(),
@@ -214,11 +284,17 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
           leading: const Icon(Icons.inventory_2_outlined),
           title: Text(language.text('当前库存', 'Inventory', 'コンテナ')),
           subtitle: Text(
-            language.text(
-              '开启Agent后，可在聊天中让莱莎把食物、书本或生活用品放入背包，也可根据库存调合。',
-              'With Agent enabled, ask Ryza to store food, books or everyday items in chat, or synthesize from real inventory.',
-              'Agentを有効にすると、チャットで食べ物や本、日用品を入れたり、実際の在庫から調合できます。',
-            ),
+            widget.controller.usesBuiltInCharacterWorld
+                ? language.text(
+                    '开启 Agent 后，可在聊天中让${widget.controller.activeModelDisplayName}把食物、书本或生活用品放入背包，也可根据库存调合。',
+                    'With Agent enabled, ask ${widget.controller.activeModelDisplayName} to store food, books or everyday items, or synthesize from inventory.',
+                    'Agentを有効にすると、${widget.controller.activeModelDisplayName}に食べ物や本、日用品の収納や調合を頼めます。',
+                  )
+                : language.text(
+                    '${widget.controller.activeModelDisplayName}的物品与使用记录保存在当前模型中。',
+                    'Items and usage records belong to ${widget.controller.activeModelDisplayName} and are saved with this model.',
+                    '${widget.controller.activeModelDisplayName}のアイテムと使用履歴は、現在のモデルに保存されます。',
+                  ),
           ),
           trailing: Text(
             '${items.fold<int>(0, (sum, item) => sum + item.quantity)}',
@@ -230,6 +306,7 @@ class _AlchemyScreenState extends State<AlchemyScreen> {
             child: _EmptyInventoryNotice(
               language: language,
               liquidGlass: widget.controller.liquidGlassChatUi,
+              worldToolsAvailable: widget.controller.usesBuiltInCharacterWorld,
             ),
           ),
         for (final item in items)
@@ -300,10 +377,12 @@ class _EmptyInventoryNotice extends StatelessWidget {
   const _EmptyInventoryNotice({
     required this.language,
     required this.liquidGlass,
+    required this.worldToolsAvailable,
   });
 
   final AppLanguage language;
   final bool liquidGlass;
+  final bool worldToolsAvailable;
 
   @override
   Widget build(BuildContext context) => GlassContentCard(
@@ -312,15 +391,21 @@ class _EmptyInventoryNotice extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(Icons.map_outlined),
+          const Icon(Icons.inventory_2_outlined),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              language.text(
-                '背包是空的。开启Agent后，可说“把一个苹果放入背包”；也可进入地图场景采集素材，再让莱莎调合。',
-                'The inventory is empty. Enable Agent and ask to put an apple in the bag, or enter a map location to gather materials for synthesis.',
-                'コンテナは空です。Agentを有効にして「リンゴを入れて」と頼むか、マップで素材を採取してライザに調合してもらえます。',
-              ),
+              worldToolsAvailable
+                  ? language.text(
+                      '背包是空的。开启 Agent 后，可说“把一个苹果放入背包”；也可进入地图采集素材，再进行调合。',
+                      'The inventory is empty. Enable Agent and ask to store an apple, or gather materials on the map for synthesis.',
+                      'バッグは空です。Agentを有効にして「リンゴを入れて」と頼むか、マップで素材を採取して調合できます。',
+                    )
+                  : language.text(
+                      '背包是空的。可在商店购买物品；当前模型尚未配置聊天入包、地图采集或调合能力。',
+                      'The inventory is empty. Buy items in the shop; chat inventory tools, map gathering and synthesis are not configured for this model.',
+                      'バッグは空です。ショップでアイテムを購入できます。このモデルには会話での収納・マップ採取・調合はまだ設定されていません。',
+                    ),
             ),
           ),
         ],

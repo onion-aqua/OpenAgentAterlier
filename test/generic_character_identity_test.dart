@@ -289,4 +289,74 @@ void main() {
       expectNoPresetIdentity(prompt);
     },
   );
+
+  test('imported ASMR prompt keeps delivery scope and disabled cues', () async {
+    final controller = await AppController.load(modelPackages: packages);
+    addTearDown(() async {
+      await controller.flushModelSession();
+      controller.dispose();
+    });
+    await controller.setCharacterAppearance(appearances.first.id);
+    controller.fishTtsEnabled = true;
+    controller.independentSpeechPerformance = false;
+    controller.ttsVoiceMode = TtsVoiceMode.asmr;
+    controller.ttsProvider = TtsProvider.fishAudio;
+    controller.ttsCueDensity = TtsCueDensity.normal;
+    var prompt = controller.buildCharacterPrompt();
+    expect(prompt, contains('整段清晰连贯的耳语'));
+    expect(prompt, contains('使用whispering'));
+    expectNoPresetIdentity(prompt);
+    controller.ttsProvider = TtsProvider.fishAudioMcp;
+    controller.fishMcpModel = 'drama-3';
+    prompt = controller.buildCharacterPrompt();
+    expect(prompt, contains('使用whisper，'));
+    controller.ttsCueDensity = TtsCueDensity.off;
+    prompt = controller.buildCharacterPrompt();
+    expect(prompt, contains('不输出句内耳语、停顿或气声控制标签'));
+    expect(prompt, isNot(contains('使用whisper，')));
+    controller.ttsCueDensity = TtsCueDensity.normal;
+    controller.independentSpeechPerformance = true;
+    prompt = controller.buildCharacterPrompt();
+    expect(prompt, contains('不输出句内耳语、停顿或气声控制标签'));
+  });
+
+  test(
+    'imported prompt respects inactive profile drafts and on-demand memory',
+    () async {
+      final controller = await AppController.load(modelPackages: packages);
+      addTearDown(() async {
+        await controller.flushModelSession();
+        controller.dispose();
+      });
+      await controller.setCharacterAppearance(appearances.first.id);
+      controller.configureUserProfile(
+        address: '伙伴',
+        portrait: '',
+        relationshipRole: UserRelationshipRole.familiarPartner,
+        interactionStyle: UserInteractionStyle.balanced,
+        boundaries: '',
+        relationshipCustom: '尚未启用的关系草稿',
+        interactionCustom: '尚未启用的互动草稿',
+        preferCustom: false,
+      );
+      expect(controller.buildCharacterPrompt(), isNot(contains('尚未启用')));
+      controller.setPreferCustomUserProfile(true);
+      expect(controller.buildCharacterPrompt(), contains('尚未启用的关系草稿'));
+      controller.longTermMemoryEnabled = true;
+      controller.memorySummary = '模型专属历史事实';
+      controller.setAgentEnabled(true);
+      final prompt = controller.buildCharacterPrompt();
+      expect(prompt, isNot(contains('模型专属历史事实')));
+      expect(prompt, contains('search_memory'));
+      expect(
+        controller.queryContextTool('search_memory', {'query': '历史事实'}),
+        contains('模型专属历史事实'),
+      );
+      controller.setLongTermMemoryEnabled(false);
+      expect(
+        controller.queryContextTool('search_memory', {'query': '历史事实'}),
+        isNot(contains('模型专属历史事实')),
+      );
+    },
+  );
 }

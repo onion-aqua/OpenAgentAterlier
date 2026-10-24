@@ -16,7 +16,7 @@ void main() {
         ),
       );
       expect(
-        find.text(language.text('加载中...', 'Loading...', '読み込み中...')),
+        find.text(language.text('加载中…', 'Loading…', '読み込み中…')),
         findsOneWidget,
       );
       expect(
@@ -27,7 +27,7 @@ void main() {
     }
   });
 
-  testWidgets('Ryza loading indicator advances through transparent frames', (
+  testWidgets('legacy loading wrapper uses a neutral progress indicator', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -36,16 +36,18 @@ void main() {
       ),
     );
 
-    expect(find.byKey(const ValueKey('ryza-loading-frame-0')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
     expect(find.bySemanticsLabel('正在加载'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 170));
 
-    expect(find.byKey(const ValueKey('ryza-loading-frame-1')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Ryza loading indicator honors reduced motion', (tester) async {
+  testWidgets('legacy loading wrapper honors reduced motion', (tester) async {
     await tester.pumpWidget(
       const MediaQuery(
         data: MediaQueryData(disableAnimations: true),
@@ -55,6 +57,7 @@ void main() {
 
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.byKey(const ValueKey('ryza-loading-frame-0')), findsOneWidget);
+    expect(find.byIcon(Icons.hourglass_top_rounded), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 }

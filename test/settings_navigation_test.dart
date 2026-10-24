@@ -116,7 +116,7 @@ void main() {
         'ai': 'OpenAI 兼容接口',
         'roleplay': '人物设定注入',
         'data': '导出本地数据',
-        'about': 'AgentAtelier',
+        'about': 'OpenAgentAtelier',
       }.entries) {
         final tile = find.byKey(ValueKey('settings-category-${entry.key}'));
         await tester.scrollUntilVisible(
@@ -132,6 +132,11 @@ void main() {
           controller.setShowMicrophoneButton(true);
           controller.setUnlockInputWhileReplying(true);
           await tester.pump();
+          await tester.scrollUntilVisible(
+            find.widgetWithText(SwitchListTile, '显示麦克风按钮'),
+            140,
+            scrollable: find.byType(Scrollable).first,
+          );
           expect(
             tester
                 .widget<SwitchListTile>(
@@ -139,6 +144,11 @@ void main() {
                 )
                 .value,
             isTrue,
+          );
+          await tester.scrollUntilVisible(
+            find.widgetWithText(SwitchListTile, '回复时解锁输入框'),
+            140,
+            scrollable: find.byType(Scrollable).first,
           );
           expect(
             tester

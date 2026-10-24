@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ryza_chat_mvp/src/app_controller.dart';
+import 'package:ryza_chat_mvp/src/alchemy_models.dart';
 import 'package:ryza_chat_mvp/src/alchemy_screen.dart';
 import 'package:ryza_chat_mvp/src/appearance_picker_page.dart';
 import 'package:ryza_chat_mvp/src/character_appearance.dart';
@@ -283,7 +284,6 @@ void main() {
     for (final app in [
       VirtualPhoneApp.shop,
       VirtualPhoneApp.worldMap,
-      VirtualPhoneApp.alchemy,
       VirtualPhoneApp.missions,
     ]) {
       await tester.tap(find.byKey(ValueKey('virtual-phone-app-${app.name}')));
@@ -408,6 +408,54 @@ void main() {
     expect(controller.usesBuiltInCharacterWorld, isFalse);
     await expectWorldAppsUnconfigured(tester, '橘');
   });
+
+  testWidgets(
+    'phone inventory opens for imported models and follows their data',
+    (tester) async {
+      final first = await staticModel(tester, name: '橘');
+      final second = await staticModel(tester, name: '星见');
+      final (controller, _) = await mount(tester, modelId: first);
+      controller.alchemyState = AlchemyState(
+        inventory: [
+          AlchemyItem(
+            instanceId: 'orange-apple',
+            templateId: 'uni',
+            customName: '橘的苹果',
+            quality: 50,
+            quantity: 2,
+            tagIds: const [],
+            acquiredAt: DateTime(2026),
+          ),
+        ],
+        history: const [],
+      );
+      await tester.runAsync(controller.flushModelSession);
+      await openPhone(tester);
+      expect(find.text('背包'), findsOneWidget);
+      expect(find.text('炼金工房'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('virtual-phone-app-alchemy')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 550));
+      await tester.pump();
+      expect(find.byType(AlchemyScreen), findsOneWidget);
+      expect(find.textContaining('橘的苹果'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('model-world-unconfigured-alchemy')),
+        findsNothing,
+      );
+      await tester.runAsync(() => controller.setCharacterAppearance(second));
+      await tester.pump();
+      expect(find.textContaining('橘的苹果'), findsNothing);
+      expect(find.byType(AlchemyScreen), findsOneWidget);
+      await tester.runAsync(() => controller.setCharacterAppearance(first));
+      await tester.pump();
+      expect(find.textContaining('橘的苹果'), findsOneWidget);
+      for (final name in ['莱莎', '苏菲']) {
+        expect(find.textContaining(name), findsNothing);
+      }
+      expectNoModelRuntime(tester);
+    },
+  );
 
   testWidgets(
     'same-owner model switches and rename refresh historical speaker names',

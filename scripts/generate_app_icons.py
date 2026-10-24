@@ -1,12 +1,21 @@
-"""Generate launcher icons from assets/branding/app_icon_source.png (Pillow)."""
+"""Opt-in icon generation from an explicitly supplied new image (Pillow).
+
+The app currently has no custom launcher icon. This helper does not enable
+Manifest/resource references; those must be reviewed separately if needed.
+"""
+import argparse
 from pathlib import Path
 
 from PIL import Image, ImageOps
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source', type=Path, required=True,
+                        help='New authorized image; no historical character default')
+    args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    source = Image.open(root / "assets/branding/app_icon_source.png").convert("RGB")
+    source = Image.open(args.source).convert("RGB")
     square = ImageOps.fit(source, (1024, 1024), Image.Resampling.LANCZOS)
     res = root / "android/app/src/main/res"
     for density, size, foreground in (

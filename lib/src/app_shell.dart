@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app_controller.dart';
+import 'app_identity.dart';
 import 'android_companion_runtime.dart';
 import 'app_localization.dart';
 import 'alarm_screen.dart';
 import 'alchemy_screen.dart';
 import 'chat_screen.dart';
+import 'fish_mcp_restore_coordinator.dart';
+import 'fish_mcp_service.dart';
 import 'frame_rate_controller.dart';
+import 'foreground_dialog_coordinator.dart';
 import 'glass_ui.dart';
 import 'mission_screen.dart';
 import 'page_navigation.dart';
@@ -23,6 +27,9 @@ import 'shop_catalog.dart';
 import 'shop_screen.dart';
 import 'soundscape_controller.dart';
 import 'world_map_screen.dart';
+import 'update/update_dialog.dart';
+import 'update/update_runtime.dart';
+import 'update/update_models.dart';
 
 enum AppDestination {
   chat,
@@ -39,7 +46,7 @@ extension AppDestinationData on AppDestination {
   String label(AppLanguage language) => switch (this) {
     AppDestination.chat => language.text('角色聊天', 'Character chat', 'キャラクター会話'),
     AppDestination.worldMap => language.text('世界地图', 'World map', 'ワールドマップ'),
-    AppDestination.alchemy => language.text('炼金工房', 'Atelier', 'アトリエ'),
+    AppDestination.alchemy => language.text('背包', 'Inventory', '持ち物'),
     AppDestination.missions => language.text('任务', 'Quests', 'クエスト'),
     AppDestination.alarms => language.text('语音闹钟', 'Voice alarms', 'ボイスアラーム'),
     AppDestination.settings => language.text('设置', 'Settings', '設定'),
@@ -50,7 +57,7 @@ extension AppDestinationData on AppDestination {
   IconData get icon => switch (this) {
     AppDestination.chat => Icons.chat_bubble_outline,
     AppDestination.worldMap => Icons.map_outlined,
-    AppDestination.alchemy => Icons.science_outlined,
+    AppDestination.alchemy => Icons.inventory_2_outlined,
     AppDestination.missions => Icons.assignment_outlined,
     AppDestination.alarms => Icons.alarm_outlined,
     AppDestination.settings => Icons.settings_outlined,
@@ -66,12 +73,16 @@ class AppShell extends StatefulWidget {
     this.onCharacterReady,
     this.relayService,
     this.onCharacterLoadFailed,
+    this.updateRuntime,
+    this.startupUpdateCheckReady = true,
   });
 
   final AppController controller;
   final RelayService? relayService;
   final VoidCallback? onCharacterReady;
   final VoidCallback? onCharacterLoadFailed;
+  final UpdateRuntime? updateRuntime;
+  final bool startupUpdateCheckReady;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -80,6 +91,12 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   late final RelayService _relay;
+  late final ForegroundDialogCoordinator _dialogCoordinator;
+  FishMcpRestoreCoordinator? _fishMcpRestore;
+  UpdateRuntime? _updates;
+  bool _ownsUpdates = false;
+  bool _startupUpdateCheckScheduled = false;
+  bool _disposed = false;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _soundscape = SoundscapeController();
   final _companionRuntime = AndroidCompanionRuntime.instance;
@@ -107,6 +124,8 @@ class _AppShellState extends State<AppShell>
   @override
   void initState() {
     super.initState();
+    _dialogCoordinator = ForegroundDialogCoordinator();
+    _updates = widget.updateRuntime;
     _pageTransition = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 220),
@@ -116,6 +135,7 @@ class _AppShellState extends State<AppShell>
       duration: const Duration(milliseconds: 280),
     );
     WidgetsBinding.instance.addObserver(this);
+    _initializeFishMcpRestore();
     _companionStopped = _companionRuntime.stopRequested;
     _companionRuntime.addListener(_handleCompanionRuntimeChange);
     widget.controller.addListener(_syncCompanionIdentity);
@@ -130,16 +150,70 @@ class _AppShellState extends State<AppShell>
         ),
       ),
     );
+    if (_updates == null) {
+      unawaited(_initializeUpdates());
+    } else {
+      _maybeScheduleStartupUpdateCheck();
+    }
   }
 
   @override
-  void didUpdateWidget(covariant AppShell oldWidget) {
+  void didUpdateWidget(AppShell oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_syncCompanionIdentity);
       widget.controller.addListener(_syncCompanionIdentity);
       _syncCompanionIdentity();
+      _fishMcpRestore?.dispose();
+      _initializeFishMcpRestore();
     }
+    if (!oldWidget.startupUpdateCheckReady && widget.startupUpdateCheckReady) {
+      _maybeScheduleStartupUpdateCheck();
+    }
+  }
+
+  void _initializeFishMcpRestore() {
+    final controller = widget.controller;
+    final coordinator = FishMcpRestoreCoordinator(
+      settings: controller,
+      isEligible: () =>
+          controller.fishTtsEnabled &&
+          controller.ttsProvider == TtsProvider.fishAudioMcp,
+      restoreConnection: () => FishMcpService.instance.restoreConnection(),
+      initiallyForeground:
+          WidgetsBinding.instance.lifecycleState == null ||
+          WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed,
+      onError: (_, _) =>
+          RuntimeLog.instance.warning('Fish MCP', '已有授权自动恢复未完成，可在语音设置重新连接'),
+    );
+    _fishMcpRestore = coordinator;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_disposed && _fishMcpRestore == coordinator) coordinator.start();
+    });
+  }
+
+  Future<void> _initializeUpdates() async {
+    final runtime = await UpdateRuntime.production();
+    if (_disposed) {
+      runtime.dispose();
+      return;
+    }
+    _ownsUpdates = true;
+    setState(() => _updates = runtime);
+    _maybeScheduleStartupUpdateCheck();
+  }
+
+  void _maybeScheduleStartupUpdateCheck() {
+    if (!widget.startupUpdateCheckReady ||
+        _updates == null ||
+        _startupUpdateCheckScheduled) {
+      return;
+    }
+    _startupUpdateCheckScheduled = true;
+    Future<void>.delayed(const Duration(milliseconds: 700), () async {
+      if (_disposed || !widget.startupUpdateCheckReady) return;
+      await _updates?.check(trigger: UpdateCheckTrigger.startup);
+    });
   }
 
   String? _companionName;
@@ -155,6 +229,7 @@ class _AppShellState extends State<AppShell>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _fishMcpRestore?.setForeground(state == AppLifecycleState.resumed);
     unawaited(_relay.setForeground(state == AppLifecycleState.resumed));
     if (state != AppLifecycleState.resumed) {
       unawaited(
@@ -170,6 +245,9 @@ class _AppShellState extends State<AppShell>
       return;
     }
     _syncCompanionIdentity(force: true);
+    if (widget.startupUpdateCheckReady) {
+      unawaited(_updates?.check(trigger: UpdateCheckTrigger.foreground));
+    }
     widget.controller.frameRate.setMode(
       widget.controller.frameRateMode,
       force: true,
@@ -194,6 +272,8 @@ class _AppShellState extends State<AppShell>
   @override
   void dispose() {
     widget.controller.removeListener(_syncCompanionIdentity);
+    _disposed = true;
+    _fishMcpRestore?.dispose();
     _companionRuntime.removeListener(_handleCompanionRuntimeChange);
     WidgetsBinding.instance.removeObserver(this);
     if (widget.relayService == null) _relay.dispose();
@@ -201,6 +281,8 @@ class _AppShellState extends State<AppShell>
     _pageReveal.dispose();
     widget.controller.frameRate.setActivity(FrameRateActivity.touch, false);
     unawaited(_soundscape.dispose());
+    if (_ownsUpdates) _updates?.dispose();
+    _dialogCoordinator.dispose();
     super.dispose();
   }
 
@@ -244,8 +326,9 @@ class _AppShellState extends State<AppShell>
     }
     if (destination == AppDestination.worldMap) {
       await WorldMapScreen.preload(context, widget.controller);
-    } else if (destination == AppDestination.shop ||
-        destination == AppDestination.alchemy) {
+    } else if (widget.controller.usesBuiltInCharacterWorld &&
+        (destination == AppDestination.shop ||
+            destination == AppDestination.alchemy)) {
       final items = destination == AppDestination.shop
           ? ShopCatalog.items
           : ShopCatalog.items
@@ -348,7 +431,6 @@ class _AppShellState extends State<AppShell>
   Widget _buildDestinationPage(AppDestination destination) {
     if (!widget.controller.usesBuiltInCharacterWorld &&
         (destination == AppDestination.worldMap ||
-            destination == AppDestination.alchemy ||
             destination == AppDestination.missions ||
             destination == AppDestination.shop)) {
       return _buildUnconfiguredCharacterPage(destination);
@@ -378,6 +460,7 @@ class _AppShellState extends State<AppShell>
         backHandledByShell: true,
         controller: widget.controller,
         onMenuPressed: _openMenu,
+        updateRuntime: _updates,
       ),
       AppDestination.alchemy => AlchemyScreen(
         key: _alchemyKey,
@@ -474,6 +557,7 @@ class _AppShellState extends State<AppShell>
           pauseCharacterAnimation: pauseCharacterAnimation,
           controller: widget.controller,
           relayService: _relay,
+          updateRuntime: _updates,
           onMenuPressed: _openMenu,
           onShopPressed: () => _selectDestination(AppDestination.shop),
           onCharacterReady: widget.onCharacterReady,
@@ -492,7 +576,16 @@ class _AppShellState extends State<AppShell>
         final content = Stack(
           children: [
             chat,
-            RelayForegroundHost(service: _relay),
+            RelayForegroundHost(
+              service: _relay,
+              dialogCoordinator: _dialogCoordinator,
+            ),
+            if (_updates case final updates?)
+              UpdateForegroundHost(
+                runtime: updates,
+                dialogCoordinator: _dialogCoordinator,
+                language: widget.controller.interfaceLanguage,
+              ),
             if (displayedDestination != AppDestination.chat)
               Positioned.fill(
                 child: _outgoingDestination != null
@@ -628,7 +721,7 @@ class _AppShellState extends State<AppShell>
               behavior: HitTestBehavior.opaque,
               onPanStart: (_) => _windowCommand('startDrag'),
               child: const Center(
-                child: Text('AgentAtelier', style: TextStyle(fontSize: 12)),
+                child: Text(appDisplayName, style: TextStyle(fontSize: 12)),
               ),
             ),
           ),

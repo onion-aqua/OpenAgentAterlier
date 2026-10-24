@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:alarm/alarm.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,37 +48,123 @@ class _AlarmScreenState extends State<AlarmScreen> {
   List<AlarmSettings> _alarms = const [];
   StreamSubscription<dynamic>? _subscription;
   bool _addingAlarm = false;
+  bool _choosingAudio = false;
+  String? _audioPath;
+  String? _modelId;
+  final _deletingAlarms = <int>{};
   bool get _supportsVoiceAlarms =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
-  bool get _hasVoiceResources => widget.controller.usesBuiltInCharacterWorld;
+  bool get _hasVoiceResources => _modelId != null && _audioPath != null;
 
   @override
   void initState() {
     super.initState();
-    _refresh();
+    widget.controller.addListener(_modelChanged);
+    _modelChanged();
     _subscription = Alarm.scheduled.listen((_) => _refresh());
   }
 
   @override
   void dispose() {
+    widget.controller.removeListener(_modelChanged);
     _subscription?.cancel();
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(AlarmScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_modelChanged);
+      widget.controller.addListener(_modelChanged);
+      _modelChanged();
+    }
+  }
+
+  void _modelChanged() {
+    final modelId = widget.controller.activeModelId;
+    if (_modelId == modelId) return;
+    _modelId = modelId;
+    _audioPath = null;
+    _alarms = const [];
+    if (mounted) setState(() {});
+    if (modelId != null) unawaited(_loadAudio(modelId));
+  }
+
+  Future<void> _loadAudio(String modelId) async {
+    try {
+      final path = await ModelAlarmAudioStore.instance.audioPath(modelId);
+      if (!mounted || _modelId != modelId) return;
+      setState(() => _audioPath = path);
+      await _refresh();
+    } on Object catch (error, stack) {
+      RuntimeLog.instance.error('Alarm', error, stack);
+    }
+  }
+
+  Future<void> _selectAudio() async {
+    final modelId = _modelId;
+    if (modelId == null || _choosingAudio) return;
+    setState(() => _choosingAudio = true);
+    try {
+      final selection = await FilePicker.pickFile(
+        type: FileType.custom,
+        allowedExtensions: ModelAlarmAudioStore.allowedExtensions.toList(),
+      );
+      if (selection == null || !mounted || _modelId != modelId) return;
+      final byteLength = await selection.length();
+      if (byteLength <= 0 || byteLength > ModelAlarmAudioStore.maxBytes) {
+        throw const FormatException('提醒音频必须大于 0 且不超过 64 MB');
+      }
+      final copied = await ModelAlarmAudioStore.instance.importBytes(
+        modelId,
+        await selection.readAsBytes(),
+        selection.extension ?? '',
+      );
+      if (!mounted || _modelId != modelId) return;
+      setState(() => _audioPath = copied);
+      await _refresh();
+    } on Object catch (error, stack) {
+      RuntimeLog.instance.error('Alarm', error, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.controller.interfaceLanguage.text(
+                '无法导入提醒音频，请选择不超过 64 MB 的有效音频文件',
+                'Could not import reminder audio. Choose a valid file up to 64 MB.',
+                '音声を読み込めません。64 MB以下の有効な音声を選択してください。',
+              ),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _choosingAudio = false);
+    }
+  }
+
   Future<void> _refresh() async {
-    if (!_supportsVoiceAlarms || !_hasVoiceResources) {
+    final modelId = _modelId;
+    if (!_supportsVoiceAlarms || modelId == null) {
       if (mounted && _alarms.isNotEmpty) setState(() => _alarms = const []);
       return;
     }
-    final alarms = await Alarm.getAlarms();
+    final alarms = (await Alarm.getAlarms())
+        .where(
+          (alarm) => CharacterAlarmCoordinator.isAlarmForModel(alarm, modelId),
+        )
+        .toList();
     alarms.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-    if (mounted && _hasVoiceResources) setState(() => _alarms = alarms);
+    if (mounted && _modelId == modelId) setState(() => _alarms = alarms);
   }
 
   Future<void> _addAlarm() async {
     if (_addingAlarm || !_supportsVoiceAlarms || !_hasVoiceResources) return;
+    final modelId = _modelId!;
+    final audioPath = _audioPath!;
     setState(() => _addingAlarm = true);
     final language = widget.controller.interfaceLanguage;
     int? attemptedAlarmId;
@@ -107,29 +194,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
       final selectedDuration = await _pickAlarmTime(DateTime.now(), language);
       if (selectedDuration == null || !mounted) return;
       final reminderType = await _selectReminderType(language);
-      if (reminderType == null || !mounted || !_hasVoiceResources) return;
+      if (reminderType == null || !mounted || _modelId != modelId) return;
       final dateTime = nextVoiceAlarmTime(selectedDuration, DateTime.now());
-      final selected = TimeOfDay(
-        hour: selectedDuration.inHours,
-        minute: selectedDuration.inMinutes.remainder(60),
-      );
       var alarmId = DateTime.now().microsecondsSinceEpoch.remainder(1000000000);
       while (alarmId == 0 || _alarms.any((alarm) => alarm.id == alarmId)) {
         alarmId = (alarmId + 1).remainder(1000000000);
       }
-      final audioAsset = alarmVoiceAsset(
-        language: widget.controller.characterReplyLanguage,
-        type: reminderType,
-        asmr: widget.controller.asmrModeEnabled,
-        hour: selected.hour,
-        variantSeed: alarmId,
-      );
+      final audioAsset = audioPath;
 
       final settings = AlarmSettings(
         id: alarmId,
         dateTime: dateTime,
         assetAudioPath: audioAsset,
-        payload: CharacterAlarmCoordinator.ryzaVoicePayload,
+        payload: CharacterAlarmCoordinator.payloadForModel(modelId),
         loopAudio: true,
         allowSameSecondScheduling: true,
         vibrate: true,
@@ -281,9 +358,32 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   Future<void> _deleteAlarm(AlarmSettings settings) async {
-    await Alarm.stop(settings.id);
-    RuntimeLog.instance.info('Alarm', '闹钟已删除，id=${settings.id}');
-    await _refresh();
+    if (!_deletingAlarms.add(settings.id)) return;
+    setState(() {});
+    try {
+      if (!await Alarm.stop(settings.id)) {
+        throw StateError('Alarm.stop returned false');
+      }
+      RuntimeLog.instance.info('Alarm', '闹钟已删除，id=${settings.id}');
+      await _refresh();
+    } on Object catch (error, stack) {
+      RuntimeLog.instance.error('Alarm', error, stack);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.controller.interfaceLanguage.text(
+              '未能停止或删除闹钟，请重试',
+              'Could not stop or delete the alarm. Try again.',
+              'アラームを停止・削除できませんでした。再試行してください',
+            ),
+          ),
+        ),
+      );
+    } finally {
+      _deletingAlarms.remove(settings.id);
+      if (mounted) setState(() {});
+    }
   }
 
   Future<AlarmReminderType?> _selectReminderType(AppLanguage language) {
@@ -357,7 +457,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
     final language = widget.controller.interfaceLanguage;
-    if (!_supportsVoiceAlarms || !_hasVoiceResources) {
+    if (!_supportsVoiceAlarms ||
+        _modelId == null ||
+        (!_hasVoiceResources && _alarms.isEmpty)) {
       return Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -390,12 +492,31 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   if (!_hasVoiceResources)
                     Text(
                       language.text(
-                        '当前模型尚未提供闹钟语音',
-                        'This model has no alarm voice resources yet',
-                        'このモデルのアラーム音声はまだありません',
+                        _modelId == null ? '请先导入并选择模型' : '为当前模型选择本地提醒音频',
+                        _modelId == null
+                            ? 'Import and select a model first'
+                            : 'Choose local reminder audio for this model',
+                        _modelId == null
+                            ? 'モデルを読み込み、選択してください'
+                            : 'このモデルの通知音声を選択してください',
                       ),
                       textAlign: TextAlign.center,
                     ),
+                  if (_supportsVoiceAlarms && _modelId != null) ...[
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      key: const ValueKey('alarm-select-audio'),
+                      onPressed: _choosingAudio ? null : _selectAudio,
+                      icon: const Icon(Icons.audio_file_outlined),
+                      label: Text(
+                        language.text(
+                          '选择提醒音频',
+                          'Choose reminder audio',
+                          '通知音声を選択',
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -412,10 +533,21 @@ class _AlarmScreenState extends State<AlarmScreen> {
           padding: EdgeInsets.only(left: widget.embedded ? 40 : 58),
           child: Text(language.text('语音闹钟', 'Voice alarms', 'ボイスアラーム')),
         ),
+        actions: [
+          IconButton(
+            onPressed: _choosingAudio ? null : _selectAudio,
+            tooltip: language.text(
+              '更换提醒音频',
+              'Change reminder audio',
+              '通知音声を変更',
+            ),
+            icon: const Icon(Icons.audio_file_outlined),
+          ),
+        ],
       ),
       floatingActionButton: GlassIconButton(
         liquidGlass: widget.controller.liquidGlassChatUi,
-        onPressed: _addingAlarm ? null : _addAlarm,
+        onPressed: _addingAlarm || !_hasVoiceResources ? null : _addAlarm,
         tooltip: language.text('添加闹钟', 'Add alarm', 'アラームを追加'),
         icon: Icons.add_alarm_outlined,
         size: 52,
@@ -471,12 +603,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        '${reminderType.label(language)} · '
-                        '${alarmAssetUsesWhisper(audioAsset) ? language.text('耳语', 'Whisper', 'ささやき') : language.text('普通', 'Normal', '通常')}\n'
+                        '${alarm.notificationSettings.title}\n'
                         '${_dateLabel(alarm.dateTime, language)}',
                       ),
                       trailing: IconButton(
-                        onPressed: () => _deleteAlarm(alarm),
+                        onPressed: _deletingAlarms.contains(alarm.id)
+                            ? null
+                            : () => _deleteAlarm(alarm),
                         tooltip: language.text(
                           '删除闹钟',
                           'Delete alarm',

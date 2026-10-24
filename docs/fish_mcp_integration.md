@@ -1,5 +1,7 @@
 # Fish Audio MCP 接入与 StateError 诊断
 
+本文包含项目演进期的诊断、构建与发布记录；这些历史版本、安装证据和回滚标签不代表 OpenAgentAtelier 本次已构建或安装。当前提纯版的 ASMR、自动恢复、用户音色保留及通话接入以 [实时通话与语音接入](development/实时通话与语音接入.md) 为准。
+
 本次加入了独立的 Fish Audio MCP TTS Provider。原有 Fish Audio REST、百炼、通用 OpenAI TTS、MiMo 和本地 CosyVoice 仍然保留；MCP 不会进入 LLM 请求链，也不会覆盖普通 API Key。
 
 ## 已实现
@@ -15,7 +17,7 @@
 - MCP 连接失败不会自动删除现有 Fish REST 配置。设置页保留 MCP 失败回退开关字段，原有 Provider 可随时切回。
 - MCP 模型提供下拉选择：`s2.1-pro`、`drama-3`，兼容已保存的自定义值；“服务默认”不指定模型。设置页显示当前草稿对应的实际生成路径及缺失的 Studio 工具。下拉选项不代表账号具有相应模型权益。
 - 模型和音色修改先作为本页草稿，点击“保存并使用 MCP”后下次调用才生效；返回或取消不会自动保存。模型下方区分最近请求、Studio 已确认的后端配置及云端返回模型；配置读回不冒充实际推理模型证明。草稿与最近请求不同时会标明旧记录不能作为本次选择的结果。
-- 普通音色与 ASMR 音色分别设置，ASMR 留空沿用普通音色；持续 ASMR 始终优先使用 ASMR 音色。已有单音色配置兼容为普通音色，新字段支持持久化与普通配置备份。科洛蒂娅固定音色 ID 在页面只读显示，MCP 模式下和主角共用当前 MCP 模型与连接，仅为真实台词生成语音。
+- 普通与 ASMR 音色按当前模型分别保存，不提供旧人物固定音色。MCP 的 ASMR 字段为空时可沿用当前模型普通 MCP 音色；REST 的 ASMR 使用其独立配置值。隐藏输入框不回显已存 ID，留空保存保留原值；未配置时提示“尚未设置音色”。
 
 ## 2026-10-15 StateError 修复
 
@@ -136,7 +138,7 @@ Studio 会将台词、音色配置及生成结果保存到 Fish Audio 云端项�
 
 ## Windows OAuth 回调与打包
 
-Windows 与 Android 使用同一份 MCP 服务、Studio 模型配置、诊断和聊天/ASMR 代码。Windows 启动时为当前用户注册 `agentatelier-fishmcp` 协议，命令中的 EXE 路径和回调参数均带引号，支持包含空格的安装目录。请先把完整 Windows 包解压到固定目录，再运行其中的 `AgentAtelier.exe`，不要仅复制 EXE 或从压缩包临时目录打开。回调只接受上述专属 scheme、`oauth` 主机及 `/callback` 路径，旧应用链接不会修改当前授权状态。
+Windows 与 Android 使用同一份 MCP 服务、Studio 模型配置、诊断和聊天/ASMR 代码。Windows 启动时为当前用户注册 `agentatelier-fishmcp` 协议，命令中的 EXE 路径和回调参数均带引号，支持包含空格的安装目录。请先把完整 Windows 包解压到固定目录，再运行其中的 `OpenAgentAtelier.exe`，不要仅复制 EXE 或从压缩包临时目录打开。回调只接受上述专属 scheme、`oauth` 主机及 `/callback` 路径，旧应用链接不会修改当前授权状态。
 
 浏览器完成授权后，Windows 会用 URL 协议启动应用进程。入口现在先调用 `app_links 7.2.2` 官方的 `SendAppLinkToInstance()`，把链接转交给已运行的同一路径应用并结束临时进程；原应用的 `AppLinks().uriLinkStream` 接收回调，使用原进程内保存的 PKCE state/verifier 完成交换。此前只有协议注册而没有转交逻辑，回调会进入不持有 PKCE 状态的新进程并被拒绝。
 

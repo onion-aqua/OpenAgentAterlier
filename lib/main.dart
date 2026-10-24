@@ -11,12 +11,15 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:spine_flutter/spine_flutter.dart' hide Color;
 
 import 'src/app_controller.dart';
+import 'src/app_identity.dart';
 import 'src/app_localization.dart';
+import 'src/alarm_ringing_overlay.dart';
 import 'src/app_theme.dart';
 import 'src/app_shell.dart';
 import 'src/runtime_log.dart';
 import 'src/android_companion_runtime.dart';
 import 'src/companion_notification_permission.dart';
+import 'src/platform_capabilities.dart';
 import 'src/local_skin_store.dart';
 import 'src/local_live2d_store.dart';
 import 'src/local_scene_store.dart';
@@ -24,6 +27,8 @@ import 'src/character_appearance.dart';
 import 'src/character_loading_indicator.dart';
 import 'src/glass_ui.dart';
 import 'src/fish_mcp_service.dart';
+import 'src/update/update_runtime.dart';
+import 'src/update/resource_resolver.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,18 +72,16 @@ class _BootstrapApp extends StatefulWidget {
 
 class _BootstrapAppState extends State<_BootstrapApp> {
   AppController? _controller;
+  UpdateRuntime? _updates;
+  final _resourceBundle = ResourceOverlayAssetBundle();
   Object? _error;
-  Timer? _logoTimer;
   StreamSubscription<Uri>? _appLinksSubscription;
-  bool _showLogo = true;
   bool _characterReady = false;
+  final _bootstrapClock = Stopwatch();
 
   @override
   void initState() {
     super.initState();
-    _logoTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted) setState(() => _showLogo = false);
-    });
     _appLinksSubscription = AppLinks().uriLinkStream.listen(
       (uri) => unawaited(FishMcpService.instance.handleRedirectUri(uri)),
       onError: (Object error, StackTrace stack) {
@@ -90,9 +93,9 @@ class _BootstrapAppState extends State<_BootstrapApp> {
 
   @override
   void dispose() {
-    _logoTimer?.cancel();
     _appLinksSubscription?.cancel();
     _controller?.removeListener(_handleControllerChanged);
+    _updates?.dispose();
     super.dispose();
   }
 
@@ -101,7 +104,13 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   }
 
   void _handleCharacterReady() {
-    if (!_characterReady && mounted) setState(() => _characterReady = true);
+    if (!_characterReady && mounted) {
+      RuntimeLog.instance.info(
+        'Startup',
+        '角色加载回调：初始化后 ${_bootstrapClock.elapsedMilliseconds}ms',
+      );
+      setState(() => _characterReady = true);
+    }
   }
 
   void _handleCharacterLoadFailed() {
@@ -111,11 +120,14 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   }
 
   Future<void> _initialize() async {
+    _bootstrapClock
+      ..reset()
+      ..start();
     try {
       await RuntimeLog.instance.initialize();
       RuntimeLog.instance.info('App', '应用启动，版本 1.0.0');
       await initSpineFlutter(enableMemoryDebugging: false);
-      await Alarm.init();
+      if (AppPlatformCapabilities.supportsVoiceAlarms) await Alarm.init();
       await AndroidCompanionRuntime.instance.initialize();
       await AudioPlayer.global.setAudioContext(
         AudioContext(
@@ -128,7 +140,26 @@ class _BootstrapAppState extends State<_BootstrapApp> {
           ),
         ),
       );
+      // Recover/activate verified resources before catalogues and prompts are
+      // read. This avoids mixing old startup data with the new snapshot.
+      final resourceStart = _bootstrapClock.elapsedMilliseconds;
+      final updates = await UpdateRuntime.production();
+      RuntimeLog.instance.info(
+        'Startup',
+        '资源更新检查：${_bootstrapClock.elapsedMilliseconds - resourceStart}ms',
+      );
+      if (!mounted) {
+        updates.dispose();
+        return;
+      }
+      _updates?.dispose();
+      _updates = updates;
       final controller = await AppController.load();
+      RuntimeLog.instance.info(
+        'Startup',
+        '控制器恢复完成：累计 ${_bootstrapClock.elapsedMilliseconds}ms',
+      );
+      controller.startColdLaunchGreeting();
       await controller.initializeAlarmRuntime();
       await LocalSkinStore.instance.initialize();
       await LocalLive2dStore.instance.initialize();
@@ -164,10 +195,17 @@ class _BootstrapAppState extends State<_BootstrapApp> {
     final controller = _controller;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AgentAtelier',
-      builder: (context, child) => GlassStyleScope(
-        enabled: controller?.liquidGlassChatUi ?? false,
-        child: child!,
+      title: appDisplayName,
+      builder: (context, child) => DefaultAssetBundle(
+        bundle: _resourceBundle,
+        child: GlassStyleScope(
+          enabled: controller?.liquidGlassChatUi ?? false,
+          child: AlarmRingingOverlay(
+            enabled: AppPlatformCapabilities.supportsVoiceAlarms,
+            language: controller?.interfaceLanguage ?? AppLanguage.chinese,
+            child: child!,
+          ),
+        ),
       ),
       theme: controller == null
           ? ThemeData.light()
@@ -200,6 +238,8 @@ class _BootstrapAppState extends State<_BootstrapApp> {
           if (controller != null)
             AppShell(
               controller: controller,
+              updateRuntime: _updates,
+              startupUpdateCheckReady: _characterReady,
               onCharacterReady: _handleCharacterReady,
               onCharacterLoadFailed: _handleCharacterLoadFailed,
             )
@@ -217,26 +257,6 @@ class _BootstrapAppState extends State<_BootstrapApp> {
                       characterName: controller?.isCustomModelScope == true
                           ? controller!.activeModelDisplayName
                           : null,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          if (_error == null && _showLogo)
-            const Positioned.fill(
-              child: AbsorbPointer(
-                child: ColoredBox(
-                  color: Colors.white,
-                  child: Center(
-                    child: FractionallySizedBox(
-                      widthFactor: 0.85,
-                      child: Image(
-                        image: AssetImage(
-                          'assets/branding/agent_atelier_logo.png',
-                        ),
-                        fit: BoxFit.contain,
-                        semanticLabel: 'AgentAtelier',
-                      ),
                     ),
                   ),
                 ),

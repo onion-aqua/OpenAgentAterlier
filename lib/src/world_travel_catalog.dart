@@ -34,22 +34,27 @@ class WorldTravelDestination {
     language: language,
   );
 
-  String localizedStageName(AppLanguage language) => localizedWorldPlaceName(
-    id: stageId,
-    fallback: stageName,
-    language: language,
-  );
+  String localizedStageName(AppLanguage language, {String? characterName}) =>
+      localizedWorldPlaceName(
+        id: stageId,
+        fallback: stageName,
+        language: language,
+        characterName: characterName,
+      );
 
-  Map<String, String> toToolJson(AppLanguage language) => {
+  Map<String, String> toToolJson(
+    AppLanguage language, {
+    String? characterName,
+  }) => {
     'area_id': areaId,
     'area_name': localizedAreaName(language),
     'field_id': fieldId,
     'field_name': localizedFieldName(language),
     'stage_id': stageId,
-    'stage_name': localizedStageName(language),
+    'stage_name': localizedStageName(language, characterName: characterName),
   };
 
-  bool matches(String query) {
+  bool matches(String query, {String? characterName}) {
     final normalized = query.trim().toLowerCase();
     if (normalized.isEmpty) return true;
     return [
@@ -62,7 +67,7 @@ class WorldTravelDestination {
       for (final language in AppLanguage.values) ...[
         localizedAreaName(language),
         localizedFieldName(language),
-        localizedStageName(language),
+        localizedStageName(language, characterName: characterName),
       ],
     ].any((value) => value.toLowerCase().contains(normalized));
   }
@@ -113,11 +118,14 @@ class WorldTravelCatalog {
     required String query,
     required String currentAreaId,
     int limit = 40,
+    String? characterName,
   }) {
     final normalized = query.trim();
     final matches = normalized.isEmpty
         ? destinations.where((item) => item.areaId == currentAreaId)
-        : destinations.where((item) => item.matches(normalized));
+        : destinations.where(
+            (item) => item.matches(normalized, characterName: characterName),
+          );
     return matches.take(limit).toList(growable: false);
   }
 }

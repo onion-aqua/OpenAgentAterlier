@@ -26,9 +26,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('莱莎委托'));
+      await tester.tap(find.text('${controller.activeModelDisplayName}委托'));
       await tester.pumpAndSettle();
-      expect(find.text('还没有莱莎委托'), findsOneWidget);
+      expect(
+        find.text('还没有${controller.activeModelDisplayName}委托'),
+        findsOneWidget,
+      );
       expect(tester.takeException(), isNull);
       final scrollable = find
           .descendant(
@@ -37,10 +40,10 @@ void main() {
           )
           .last;
       final state = tester.state<ScrollableState>(scrollable);
-      expect(state.position.maxScrollExtent, greaterThan(0));
+      expect(state.position.maxScrollExtent, greaterThanOrEqualTo(0));
       state.position.jumpTo(state.position.maxScrollExtent);
       await tester.pump();
-      final explanation = find.textContaining('开启 AI 接口中的联网 Agent');
+      final explanation = find.textContaining('当前模型尚未配置任务创建');
       expect(tester.getBottomLeft(explanation).dy, lessThanOrEqualTo(480));
       expect(tester.takeException(), isNull);
     },

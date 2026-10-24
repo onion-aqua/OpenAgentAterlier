@@ -81,6 +81,8 @@ class ModelPackageStore {
     'longTermMemoryConsolidatedCount',
     'memoryEditRevision',
     'characterState',
+    'personalityConfiguration',
+    'callRecords',
     'virtualPhoneCarrier',
     'npcChats',
     'settingsSlots',

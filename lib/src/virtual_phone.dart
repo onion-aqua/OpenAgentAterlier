@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'app_localization.dart';
 import 'glass_ui.dart';
+import 'platform_capabilities.dart';
+import 'phone_desktop_snapshot.dart';
 import 'virtual_phone_app_route.dart';
 import 'virtual_phone_chrome.dart';
 import 'virtual_phone_wallpaper_image.dart';
@@ -29,10 +32,17 @@ enum VirtualPhoneApp {
   phone,
   messages,
   wallpaper,
+  imageGeneration,
   shortcut,
 }
 
 extension VirtualPhoneAppData on VirtualPhoneApp {
+  bool get supported => switch (this) {
+    VirtualPhoneApp.phone => AppPlatformCapabilities.supportsRealtimeCalls,
+    VirtualPhoneApp.alarms => AppPlatformCapabilities.supportsVoiceAlarms,
+    _ => true,
+  };
+
   IconData get icon => switch (this) {
     VirtualPhoneApp.status => Icons.favorite_outline_rounded,
     VirtualPhoneApp.shop => Icons.storefront_outlined,
@@ -41,7 +51,7 @@ extension VirtualPhoneAppData on VirtualPhoneApp {
     VirtualPhoneApp.pcAgent => Icons.forum_outlined,
     VirtualPhoneApp.saves => Icons.save_outlined,
     VirtualPhoneApp.worldMap => Icons.map_outlined,
-    VirtualPhoneApp.alchemy => Icons.science_outlined,
+    VirtualPhoneApp.alchemy => Icons.inventory_2_outlined,
     VirtualPhoneApp.missions => Icons.assignment_outlined,
     VirtualPhoneApp.alarms => Icons.alarm_outlined,
     VirtualPhoneApp.settings => Icons.settings_outlined,
@@ -49,6 +59,7 @@ extension VirtualPhoneAppData on VirtualPhoneApp {
     VirtualPhoneApp.phone => Icons.phone_rounded,
     VirtualPhoneApp.messages => Icons.message_rounded,
     VirtualPhoneApp.wallpaper => Icons.wallpaper_rounded,
+    VirtualPhoneApp.imageGeneration => Icons.image_outlined,
     VirtualPhoneApp.shortcut => Icons.dashboard_customize_outlined,
   };
 
@@ -64,7 +75,7 @@ extension VirtualPhoneAppData on VirtualPhoneApp {
     ),
     VirtualPhoneApp.saves => language.text('存档', 'Saves', 'セーブ'),
     VirtualPhoneApp.worldMap => language.text('世界地图', 'World map', 'ワールドマップ'),
-    VirtualPhoneApp.alchemy => language.text('炼金工房', 'Atelier', 'アトリエ'),
+    VirtualPhoneApp.alchemy => language.text('背包', 'Inventory', '持ち物'),
     VirtualPhoneApp.missions => language.text('任务', 'Quests', 'クエスト'),
     VirtualPhoneApp.alarms => language.text('语音闹钟', 'Voice alarms', 'ボイスアラーム'),
     VirtualPhoneApp.settings => language.text('设置', 'Settings', '設定'),
@@ -76,21 +87,16 @@ extension VirtualPhoneAppData on VirtualPhoneApp {
     VirtualPhoneApp.phone => language.text('电话', 'Phone', '電話'),
     VirtualPhoneApp.messages => language.text('信息', 'Messages', 'メッセージ'),
     VirtualPhoneApp.wallpaper => language.text('手机壁纸', 'Wallpaper', '壁紙'),
+    VirtualPhoneApp.imageGeneration => language.text(
+      '生图管理',
+      'Image gallery',
+      '画像管理',
+    ),
     VirtualPhoneApp.shortcut => language.text('自定义', 'Shortcut', 'カスタム'),
   };
 }
 
 typedef VirtualPhonePageBuilder = Widget Function(BuildContext context);
-
-class _PhoneNavigatorObserver extends NavigatorObserver {
-  _PhoneNavigatorObserver(this.onHomeChanged);
-  final ValueChanged<bool> onHomeChanged;
-
-  @override
-  void didChangeTop(Route<dynamic> topRoute, Route<dynamic>? previousTopRoute) {
-    onHomeChanged(topRoute.isFirst);
-  }
-}
 
 /// Navigation owned by the phone, including its forms and confirmation dialogs.
 class VirtualPhoneScope extends InheritedWidget {
@@ -274,6 +280,9 @@ class VirtualPhoneLauncher extends StatelessWidget {
     this.wallpapers,
     this.liquidGlassBuilder,
     this.languageBuilder,
+    this.imageGenerationUpdates,
+    this.imageGenerationActiveBuilder,
+    this.imageGenerationUnreadBuilder,
   });
 
   final AppLanguage language;
@@ -302,6 +311,9 @@ class VirtualPhoneLauncher extends StatelessWidget {
   final VirtualPhoneWallpaperStore? wallpapers;
   final bool Function()? liquidGlassBuilder;
   final AppLanguage Function()? languageBuilder;
+  final Listenable? imageGenerationUpdates;
+  final bool Function()? imageGenerationActiveBuilder;
+  final bool Function()? imageGenerationUnreadBuilder;
 
   VoidCallback? _callbackFor(VirtualPhoneApp app) => switch (app) {
     VirtualPhoneApp.status => onStatusPressed,
@@ -319,52 +331,63 @@ class VirtualPhoneLauncher extends StatelessWidget {
     VirtualPhoneApp.phone ||
     VirtualPhoneApp.messages ||
     VirtualPhoneApp.wallpaper ||
+    VirtualPhoneApp.imageGeneration ||
     VirtualPhoneApp.shortcut => null,
   };
 
   Future<void> _open(BuildContext context) async {
-    await showGeneralDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black.withValues(alpha: .72),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (dialogContext, animation, secondaryAnimation) => SafeArea(
-        left: false,
-        right: false,
-        bottom: false,
-        child: SizedBox.expand(
-          child: _VirtualPhoneCard(
-            language: language,
-            liquidGlass: liquidGlass,
-            pages: pages,
-            callbackFor: _callbackFor,
-            homeInfo: homeInfo,
-            fullBleedApps: fullBleedApps,
-            pageManagedBackApps: pageManagedBackApps,
-            updates: updates,
-            homeInfoBuilder: homeInfoBuilder,
-            shortcutLabel: shortcutLabel,
-            shortcutIcon: shortcutIcon,
-            shortcutPicker: shortcutPicker,
-            statusInfo: statusInfo,
-            statusInfoBuilder: statusInfoBuilder,
-            wallpapers: wallpapers,
-            liquidGlassBuilder: liquidGlassBuilder,
-            languageBuilder: languageBuilder,
-          ),
-        ),
+    await Navigator.of(context, rootNavigator: true).push<void>(
+      PageRouteBuilder<void>(
+        opaque: true,
+        barrierDismissible: true,
+        barrierLabel: MaterialLocalizations.of(context)
+            .modalBarrierDismissLabel,
+        barrierColor: Colors.black.withValues(alpha: .72),
+        transitionDuration: const Duration(milliseconds: 220),
+        pageBuilder: (dialogContext, animation, secondaryAnimation) =>
+            ColoredBox(
+              color: Colors.black,
+              child: SafeArea(
+                left: false,
+                right: false,
+                bottom: false,
+                child: SizedBox.expand(
+                  child: _VirtualPhoneCard(
+                    language: language,
+                    liquidGlass: liquidGlass,
+                    pages: pages,
+                    callbackFor: _callbackFor,
+                    homeInfo: homeInfo,
+                    fullBleedApps: fullBleedApps,
+                    pageManagedBackApps: pageManagedBackApps,
+                    updates: updates,
+                    homeInfoBuilder: homeInfoBuilder,
+                    shortcutLabel: shortcutLabel,
+                    shortcutIcon: shortcutIcon,
+                    shortcutPicker: shortcutPicker,
+                    statusInfo: statusInfo,
+                    statusInfoBuilder: statusInfoBuilder,
+                    wallpapers: wallpapers,
+                    liquidGlassBuilder: liquidGlassBuilder,
+                    languageBuilder: languageBuilder,
+                    imageGenerationUpdates: imageGenerationUpdates,
+                    imageGenerationActiveBuilder: imageGenerationActiveBuilder,
+                    imageGenerationUnreadBuilder: imageGenerationUnreadBuilder,
+                  ),
+                ),
+              ),
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final curve = animation.drive(CurveTween(curve: Curves.easeOutCubic));
+          return FadeTransition(
+            opacity: curve,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: .94, end: 1).animate(curve),
+              child: child,
+            ),
+          );
+        },
       ),
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curve = animation.drive(CurveTween(curve: Curves.easeOutCubic));
-        return FadeTransition(
-          opacity: curve,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: .94, end: 1).animate(curve),
-            child: child,
-          ),
-        );
-      },
     );
   }
 
@@ -399,6 +422,9 @@ class _VirtualPhoneCard extends StatefulWidget {
     required this.wallpapers,
     required this.liquidGlassBuilder,
     required this.languageBuilder,
+    required this.imageGenerationUpdates,
+    required this.imageGenerationActiveBuilder,
+    required this.imageGenerationUnreadBuilder,
   });
 
   final AppLanguage language;
@@ -418,6 +444,9 @@ class _VirtualPhoneCard extends StatefulWidget {
   final VirtualPhoneWallpaperStore? wallpapers;
   final bool Function()? liquidGlassBuilder;
   final AppLanguage Function()? languageBuilder;
+  final Listenable? imageGenerationUpdates;
+  final bool Function()? imageGenerationActiveBuilder;
+  final bool Function()? imageGenerationUnreadBuilder;
 
   @override
   State<_VirtualPhoneCard> createState() => _VirtualPhoneCardState();
@@ -425,6 +454,7 @@ class _VirtualPhoneCard extends StatefulWidget {
 
 class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+  final _desktopCaptureKey = GlobalKey();
   final _iconKeys = <VirtualPhoneApp, GlobalKey>{
     for (final app in VirtualPhoneApp.values)
       app: GlobalKey(debugLabel: 'virtual-phone-icon-${app.name}'),
@@ -434,11 +464,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   double _dragOffset = 0;
   bool _dragging = false;
   bool _closing = false;
-  final _homeVisible = ValueNotifier(true);
-  late final _PhoneNavigatorObserver _navigationObserver =
-      _PhoneNavigatorObserver((home) {
-        if (mounted) _homeVisible.value = home;
-      });
+  final _appAnimation = ProxyAnimation(kAlwaysDismissedAnimation);
   late bool _lastGlass;
 
   bool get _liquidGlass =>
@@ -473,7 +499,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   @override
   void dispose() {
     widget.updates?.removeListener(_handleStyleUpdate);
-    _homeVisible.dispose();
+    _appAnimation.parent = null;
     super.dispose();
   }
 
@@ -495,7 +521,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
     VirtualPhoneApp.phone,
     VirtualPhoneApp.messages,
     VirtualPhoneApp.wallpaper,
-    VirtualPhoneApp.shortcut,
+    VirtualPhoneApp.imageGeneration,
   ];
 
   VirtualPhoneHomeInfo get _homeInfo =>
@@ -530,6 +556,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   }
 
   void _openApp(VirtualPhoneApp app, {VirtualPhonePageBuilder? builder}) {
+    if (!app.supported) return;
     final navigator = _navigatorKey.currentState;
     if (_closing || _navOpening || navigator == null || navigator.canPop()) {
       return;
@@ -541,7 +568,28 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
       WidgetsBinding.instance.addPostFrameCallback((_) => callback());
       return;
     }
+    if (app == VirtualPhoneApp.settings) {
+      _navOpening = true;
+      // Capture after the current paint (including a pressed launcher icon),
+      // before the settings route covers the desktop.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _closing || !navigator.mounted) return;
+        _pushApp(app, navigator, builder);
+      });
+      WidgetsBinding.instance.ensureVisualUpdate();
+      return;
+    }
+    _pushApp(app, navigator, builder);
+  }
+
+  void _pushApp(
+    VirtualPhoneApp app,
+    NavigatorState navigator,
+    VirtualPhonePageBuilder? builder,
+  ) {
     final origin = _iconRect(app);
+    final boundary = _desktopCaptureKey.currentContext?.findRenderObject();
+    final viewport = _navigatorKey.currentContext?.findRenderObject();
     final route = VirtualPhoneAppRoute(
       settings: RouteSettings(name: '/virtual-phone/${app.name}'),
       originRect: origin,
@@ -552,6 +600,13 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
       iconBackground: const Color(0xFF26292D),
       iconForeground: Colors.white,
       reduceMotion: MediaQuery.disableAnimationsOf(context),
+      desktopBackdrop: app == VirtualPhoneApp.settings,
+      desktopSnapshot:
+          app == VirtualPhoneApp.settings &&
+              boundary is RenderRepaintBoundary &&
+              viewport is RenderBox
+          ? capturePhoneDesktop(boundary, viewport)
+          : null,
       canHandleBackGesture: () =>
           mounted && (ModalRoute.of(context)?.isCurrent ?? false),
       builder: (context) => _buildAppPage(context, app, builder),
@@ -560,6 +615,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
     _navOpening = true;
     navigator.push<void>(route);
     final animation = route.animation;
+    _appAnimation.parent = animation;
     void handleStatus(AnimationStatus status) {
       if (!identical(_activeAppRoute, route)) return;
       _navOpening =
@@ -571,9 +627,10 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
     if (animation != null) handleStatus(animation.status);
     route.completed.then((_) {
       animation?.removeStatusListener(handleStatus);
-      if (identical(_activeAppRoute, route)) {
+      if (mounted && identical(_activeAppRoute, route)) {
         _activeAppRoute = null;
         _navOpening = false;
+        _appAnimation.parent = kAlwaysDismissedAnimation;
       }
     });
   }
@@ -652,10 +709,14 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
               key: const ValueKey('virtual-phone-screen'),
               width: phoneWidth,
               height: phoneHeight,
+              padding: const EdgeInsets.all(1),
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: phoneRadius,
-                border: Border.all(color: Colors.white.withValues(alpha: .35)),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: .35),
+                  width: 0,
+                ),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black87,
@@ -688,92 +749,83 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                       ),
                       child: VirtualPhoneScope(
                         goHome: _goHome,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            _buildLiveWallpaper(),
-                            SafeArea(
-                              top: false,
-                              child: Column(
-                                children: [
-                                  _buildLiveStatusBar(),
-                                  Expanded(
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) => MediaQuery(
-                                        data: MediaQuery.of(
-                                          context,
-                                        ).copyWith(size: constraints.biggest),
-                                        child: ScaffoldMessenger(
-                                          child: Navigator(
-                                            key: _navigatorKey,
-                                            observers: [_navigationObserver],
-                                            onGenerateRoute: (_) =>
-                                                PageRouteBuilder<void>(
-                                                  settings: const RouteSettings(
-                                                    name: '/virtual-phone',
-                                                  ),
-                                                  transitionDuration:
-                                                      Duration.zero,
-                                                  maintainState: true,
-                                                  pageBuilder: (
-                                                    context,
-                                                    _,
-                                                    _,
-                                                  ) => _buildLiveHome(context),
-                                                  transitionsBuilder:
-                                                      (
-                                                        context,
-                                                        _,
-                                                        secondaryAnimation,
-                                                        child,
-                                                      ) {
-                                                        if (MediaQuery.disableAnimationsOf(
-                                                          context,
-                                                        )) {
-                                                          return child;
-                                                        }
-                                                        final progress =
-                                                            secondaryAnimation.drive(
-                                                              CurveTween(
-                                                                curve: Curves
-                                                                    .easeOutCubic,
-                                                              ),
-                                                            );
-                                                        return FadeTransition(
-                                                          opacity: progress
-                                                              .drive(
-                                                                Tween<double>(
-                                                                  begin: 1,
-                                                                  end: .88,
-                                                                ),
-                                                              ),
-                                                          child:
-                                                              ScaleTransition(
-                                                                scale: progress
-                                                                    .drive(
-                                                                      Tween<
-                                                                        double
-                                                                      >(
-                                                                        begin:
-                                                                            1,
-                                                                        end:
-                                                                            .97,
-                                                                      ),
-                                                                    ),
-                                                                child: child,
-                                                              ),
-                                                        );
-                                                      },
+                        child: RepaintBoundary(
+                          key: _desktopCaptureKey,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              _buildLiveWallpaper(),
+                              SafeArea(
+                                top: false,
+                                child: Column(
+                                  children: [
+                                    _buildLiveStatusBar(),
+                                    Expanded(
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) => MediaQuery(
+                                          data: MediaQuery.of(
+                                            context,
+                                          ).copyWith(size: constraints.biggest),
+                                          child: ScaffoldMessenger(
+                                            child: Navigator(
+                                              key: _navigatorKey,
+                                              onGenerateRoute: (_) => PageRouteBuilder<void>(
+                                                settings: const RouteSettings(
+                                                  name: '/virtual-phone',
                                                 ),
+                                                transitionDuration:
+                                                    Duration.zero,
+                                                maintainState: true,
+                                                pageBuilder: (context, _, _) =>
+                                                    _buildLiveHome(context),
+                                                transitionsBuilder:
+                                                    (
+                                                      context,
+                                                      _,
+                                                      secondaryAnimation,
+                                                      child,
+                                                    ) {
+                                                      if (MediaQuery.disableAnimationsOf(
+                                                        context,
+                                                      )) {
+                                                        return child;
+                                                      }
+                                                      final progress =
+                                                          secondaryAnimation.drive(
+                                                            CurveTween(
+                                                              curve: Curves
+                                                                  .easeOutCubic,
+                                                            ),
+                                                          );
+                                                      return FadeTransition(
+                                                        opacity: progress.drive(
+                                                          Tween<double>(
+                                                            begin: 1,
+                                                            end: .88,
+                                                          ),
+                                                        ),
+                                                        child: ScaleTransition(
+                                                          scale: progress.drive(
+                                                            Tween<double>(
+                                                              begin: 1,
+                                                              end: .97,
+                                                            ),
+                                                          ),
+                                                          child: child,
+                                                        ),
+                                                      );
+                                                    },
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -851,12 +903,14 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   );
 
   Widget _buildLiveHome(BuildContext context) {
-    return widget.updates == null
-        ? _buildHome(context)
-        : AnimatedBuilder(
-            animation: widget.updates!,
-            builder: (_, _) => _buildHome(context),
-          );
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        if (widget.updates != null) widget.updates!,
+        if (widget.imageGenerationUpdates != null)
+          widget.imageGenerationUpdates!,
+      ]),
+      builder: (_, _) => _buildHome(context),
+    );
   }
 
   Widget _buildLiveStatusBar() => LayoutBuilder(
@@ -865,7 +919,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
           .copyWith(size: Size(constraints.maxWidth, 44)),
       child: AnimatedBuilder(
         animation: Listenable.merge([
-          _homeVisible,
+          _appAnimation,
           if (widget.updates != null) widget.updates!,
         ]),
         builder: (context, _) => _buildStatusBar(context),
@@ -874,17 +928,21 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   );
 
   Widget _buildStatusBar(BuildContext context) {
-    final home = _homeVisible.value;
-    // Apps use a solid surface matching their page header, rather than the
-    // wallpaper underneath. Tint monochrome assets while retaining alpha.
-    final background = home
-        ? Colors.transparent
-        : glassPageHeaderColor(context).withValues(alpha: 1);
-    final foreground =
-        home ||
-            ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+    // Start blending as the expanding window approaches the top. Using the
+    // route's own progress also keeps reverse and cancelled gestures in sync;
+    // Navigator's top route changes before that window has finished moving.
+    final progress = const Interval(
+      .55,
+      1,
+    ).transform(VirtualPhoneAppRoute.visualProgress(_appAnimation.value));
+    final header = glassPageHeaderColor(context).withValues(alpha: 1);
+    final background = header.withValues(alpha: progress);
+    final appForeground =
+        ThemeData.estimateBrightnessForColor(header) == Brightness.dark
         ? Colors.white
         : Colors.black;
+    final foreground = Color.lerp(Colors.white, appForeground, progress)!;
+    final homeLabel = progress < .5;
     final info = _statusInfo;
     final bars = (info.signalBars ?? 0).clamp(0, 4);
     final seconds = info.llmLatency == null
@@ -930,18 +988,19 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
               right: MediaQuery.sizeOf(context).width / 2 + 53,
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  _homeVisible.value
-                      ? _homeInfo.carrierLabel
-                      : _homeInfo.timeLabel,
-                  key: const ValueKey('virtual-phone-status-time'),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: foreground,
-                    fontSize: 12,
-                    height: 1,
-                    fontWeight: FontWeight.w600,
+                child: Opacity(
+                  opacity: (1 - 2 * progress).abs(),
+                  child: Text(
+                    homeLabel ? _homeInfo.carrierLabel : _homeInfo.timeLabel,
+                    key: const ValueKey('virtual-phone-status-time'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: foreground,
+                      fontSize: 12,
+                      height: 1,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -957,7 +1016,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: foreground.withValues(alpha: .16),
-                      width: .7,
+                      width: 0,
                     ),
                   ),
                   child: Image.asset(
@@ -1017,6 +1076,8 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
   }
 
   Widget _buildHome(BuildContext context) {
+    final apps = _apps.where((app) => app.supported).toList();
+    final dockApps = _dockApps.where((app) => app.supported).toList();
     return LayoutBuilder(
       builder: (context, constraints) {
         final iconSize = ((constraints.maxWidth - 36 - 30) / 4).clamp(
@@ -1048,7 +1109,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                         primary: false,
                         physics: const NeverScrollableScrollPhysics(),
                         padding: EdgeInsets.zero,
-                        itemCount: _apps.length,
+                        itemCount: apps.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                           crossAxisSpacing: 10,
@@ -1056,7 +1117,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                           mainAxisExtent: rowHeight,
                         ),
                         itemBuilder: (context, index) {
-                          final app = _apps[index];
+                          final app = apps[index];
                           final callback = widget.callbackFor(app);
                           final hasPage =
                               widget.pages.containsKey(app) || callback != null;
@@ -1081,7 +1142,8 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
               GlassSurface(
                 key: const ValueKey('virtual-phone-dock'),
                 liquidGlass: _liquidGlass,
-                backdropBlur: false,
+                tone: GlassTone.dark,
+                blurSigma: 2,
                 borderRadius: BorderRadius.circular(28),
                 fallbackColor: const Color(0xB33B3F45),
                 child: Padding(
@@ -1092,7 +1154,7 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      for (final app in _dockApps)
+                      for (final app in dockApps)
                         Expanded(
                           child: _PhoneAppIcon(
                             key: ValueKey('virtual-phone-app-${app.name}'),
@@ -1100,24 +1162,20 @@ class _VirtualPhoneCardState extends State<_VirtualPhoneCard> {
                             iconKey: _iconKeys[app]!,
                             size: iconSize,
                             liquidGlass: _liquidGlass,
-                            icon: app == VirtualPhoneApp.shortcut
-                                ? widget.shortcutIcon?.call() ?? app.icon
-                                : app.icon,
-                            label: app == VirtualPhoneApp.shortcut
-                                ? widget.shortcutLabel?.call() ??
-                                      app.label(_language)
-                                : app.label(_language),
+                            icon: app.icon,
+                            label: app.label(_language),
                             enabled: true,
                             showLabel: false,
+                            refractBackdrop: false,
+                            showProgress:
+                                app == VirtualPhoneApp.imageGeneration &&
+                                (widget.imageGenerationActiveBuilder?.call() ??
+                                    false),
+                            showUnread:
+                                app == VirtualPhoneApp.imageGeneration &&
+                                (widget.imageGenerationUnreadBuilder?.call() ??
+                                    false),
                             onPressed: () => _openApp(app),
-                            onLongPress:
-                                app == VirtualPhoneApp.shortcut &&
-                                    widget.shortcutPicker != null
-                                ? () => _openApp(
-                                    app,
-                                    builder: widget.shortcutPicker,
-                                  )
-                                : null,
                           ),
                         ),
                     ],
@@ -1293,7 +1351,8 @@ class _PhoneHomeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       liquidGlass: GlassStyleScope.resolve(context),
-      backdropBlur: false,
+      tone: GlassTone.dark,
+      blurSigma: 2,
       fallbackColor: const Color(0xB33B3F45),
       borderRadius: BorderRadius.circular(15),
       child: Padding(
@@ -1352,8 +1411,10 @@ class _PhoneAppIcon extends StatefulWidget {
     required this.label,
     required this.enabled,
     required this.onPressed,
-    this.onLongPress,
     this.showLabel = true,
+    this.showProgress = false,
+    this.showUnread = false,
+    this.refractBackdrop = true,
     this.size = 58,
   });
 
@@ -1364,8 +1425,10 @@ class _PhoneAppIcon extends StatefulWidget {
   final String label;
   final bool enabled;
   final VoidCallback? onPressed;
-  final VoidCallback? onLongPress;
   final bool showLabel;
+  final bool showProgress;
+  final bool showUnread;
+  final bool refractBackdrop;
   final double size;
 
   @override
@@ -1389,7 +1452,6 @@ class _PhoneAppIconState extends State<_PhoneAppIcon> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: widget.onPressed,
-        onLongPress: widget.onLongPress,
         onHighlightChanged: _setPressed,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1406,14 +1468,60 @@ class _PhoneAppIconState extends State<_PhoneAppIcon> {
                   key: widget.iconKey,
                   width: widget.size,
                   height: widget.size,
-                  child: GlassSurface(
-                    liquidGlass: widget.liquidGlass,
-                    backdropBlur: false,
-                    fallbackColor: widget.enabled
-                        ? const Color(0xFF26292D)
-                        : const Color(0xFF111214),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Icon(widget.icon, color: foreground, size: 29),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    fit: StackFit.expand,
+                    children: [
+                      GlassSurface(
+                        liquidGlass: widget.liquidGlass,
+                        tone: GlassTone.dark,
+                        backdropBlur: widget.refractBackdrop,
+                        blurSigma: 2,
+                        fallbackColor: widget.enabled
+                            ? const Color(0xFF26292D)
+                            : const Color(0xFF111214),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Icon(widget.icon, color: foreground, size: 29),
+                      ),
+                      if (widget.showProgress)
+                        const Positioned.fill(
+                          left: -3,
+                          right: -3,
+                          top: -3,
+                          bottom: -3,
+                          child: IgnorePointer(
+                            child: CircularProgressIndicator(
+                              key: ValueKey(
+                                'image-generation-toolbar-progress',
+                              ),
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      if (widget.showUnread)
+                        Positioned(
+                          top: -2,
+                          right: -2,
+                          child: IgnorePointer(
+                            child: Container(
+                              key: const ValueKey(
+                                'image-generation-unread-dot',
+                              ),
+                              width: 11,
+                              height: 11,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.redAccent,
+                                border: Border.all(
+                                  color: const Color(0xFF26292D),
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),

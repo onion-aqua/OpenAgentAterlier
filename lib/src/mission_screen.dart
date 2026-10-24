@@ -50,7 +50,13 @@ class MissionScreen extends StatelessWidget {
           bottom: TabBar(
             tabs: [
               Tab(text: language.text('主线', 'Story', 'メイン')),
-              Tab(text: language.text('莱莎委托', 'Ryza quests', 'ライザの依頼')),
+              Tab(
+                text: language.text(
+                  '${controller.activeModelDisplayName}委托',
+                  '${controller.activeModelDisplayName} quests',
+                  '${controller.activeModelDisplayName}の依頼',
+                ),
+              ),
             ],
           ),
         ),
@@ -76,6 +82,21 @@ class _StoryQuestList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final language = controller.interfaceLanguage;
+    if (!controller.usesBuiltInCharacterWorld) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            language.text(
+              '${controller.activeModelDisplayName}尚未配置主线任务。',
+              'Story quests are not configured for ${controller.activeModelDisplayName}.',
+              '${controller.activeModelDisplayName}のメインクエストはまだ設定されていません。',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
     return ListView(
       key: const PageStorageKey('story-quests'),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
@@ -97,9 +118,9 @@ class _StoryQuestList extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           language.text(
-            '以《莱莎的炼金工房 1》的主要旅程为灵感重新概括，不复制原作任务文本。',
-            'An original condensed progression inspired by Atelier Ryza 1, without copied quest text.',
-            '「ライザのアトリエ1」の旅を着想に再構成した、原文を複製しない進行です。',
+            '当前世界配置的主线任务；任务进度以本地存档为准。',
+            'Story quests configured for this world. Progress follows the local save.',
+            '現在の世界に設定されたメインクエストです。進行はローカルセーブに従います。',
           ),
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -198,7 +219,11 @@ class _StoryQuestCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                quest.description(language),
+                quest.description(
+                  language,
+                  characterName: controller.activeCharacterProfile
+                      .displayNameFor(language.name),
+                ),
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
@@ -271,7 +296,13 @@ class _DynamicQuestList extends StatelessWidget {
     final language = controller.interfaceLanguage;
     final quests = controller.dynamicQuests;
     final unclaimed = quests.where((quest) => !quest.isClaimed).length;
-    if (quests.isEmpty) return _EmptyQuestState(language: language);
+    if (quests.isEmpty) {
+      return _EmptyQuestState(
+        language: language,
+        characterName: controller.activeModelDisplayName,
+        worldToolsAvailable: controller.usesBuiltInCharacterWorld,
+      );
+    }
     return ListView(
       key: const PageStorageKey('dynamic-quests'),
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
@@ -295,9 +326,15 @@ class _DynamicQuestList extends StatelessWidget {
 }
 
 class _EmptyQuestState extends StatelessWidget {
-  const _EmptyQuestState({required this.language});
+  const _EmptyQuestState({
+    required this.language,
+    required this.characterName,
+    required this.worldToolsAvailable,
+  });
 
   final AppLanguage language;
+  final String characterName;
+  final bool worldToolsAvailable;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -314,16 +351,26 @@ class _EmptyQuestState extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            language.text('还没有莱莎委托', 'No Ryza quests yet', 'ライザの依頼はまだありません'),
+            language.text(
+              '还没有$characterName委托',
+              'No quests from $characterName yet',
+              '$characterNameの依頼はまだありません',
+            ),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            language.text(
-              '开启 AI 接口中的联网 Agent，然后在聊天中说“给我一个委托”，或接受莱莎提出的任务。工具创建成功后会显示在这里；采集、调合、旅行或交流会自动记录进度。',
-              'Enable Agent in AI settings, then ask Ryza for a quest or accept her proposal. Quests appear here after successful tool creation; gathering, synthesis, travel and conversation update progress automatically.',
-              'AI設定のAgentを有効にして「依頼を作って」と話しかけるか、ライザの提案を受けてください。ツールで作成された依頼がここに表示され、採取・調合・移動・会話で進行します。',
-            ),
+            worldToolsAvailable
+                ? language.text(
+                    '开启 AI 接口中的联网 Agent，然后在聊天中说“给我一个委托”，或接受$characterName提出的任务。工具创建成功后会显示在这里；采集、调合、旅行或交流会自动记录进度。',
+                    'Enable Agent in AI settings, then ask $characterName for a quest or accept a proposal. Quests appear here after successful tool creation; gathering, synthesis, travel and conversation update progress.',
+                    'AI設定のAgentを有効にして「依頼を作って」と話しかけるか、$characterNameの提案を受けてください。作成後の依頼は採取・調合・移動・会話で進行します。',
+                  )
+                : language.text(
+                    '当前模型尚未配置任务创建与世界交互能力。',
+                    'Quest creation and world interactions are not configured for this model.',
+                    '現在のモデルには依頼作成と世界への操作がまだ設定されていません。',
+                  ),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,

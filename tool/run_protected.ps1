@@ -1,11 +1,15 @@
 param(
     [string]$Device = "emulator-5554",
 
-    [string]$RelayServerConfig = ''
+    [string]$RelayServerConfig = '',
+
+    [string]$UpdateConfigDefinesPath = ''
 )
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot 'update_config_defines.ps1')
+$updateConfigDefines = Resolve-OpenAgentUpdateConfigDefines -Path $UpdateConfigDefinesPath
 
 Push-Location $projectRoot
 try {
@@ -30,6 +34,9 @@ try {
     $runArgs = @('run', '-d', $Device, '--no-pub')
     if ($privateRelayDefines) {
         $runArgs += "--dart-define-from-file=$privateRelayDefines"
+    }
+    if ($updateConfigDefines) {
+        $runArgs += "--dart-define-from-file=$updateConfigDefines"
     }
     & flutter @runArgs
     if ($LASTEXITCODE -ne 0) { throw "Protected Flutter run failed." }

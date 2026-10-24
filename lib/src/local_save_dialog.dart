@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 
 import 'app_controller.dart';
+import 'app_identity.dart';
 import 'app_localization.dart';
 import 'app_theme.dart';
 import 'glass_ui.dart';
@@ -125,7 +126,7 @@ class _LocalSavePageState extends State<LocalSavePage> {
         if (includeHistory == null || !mounted) return;
         await FilePicker.saveFile(
           fileName:
-              'AgentAtelier-save-${index + 1}-${DateTime.now().millisecondsSinceEpoch}.json',
+              '$appDisplayName-save-${index + 1}-${DateTime.now().millisecondsSinceEpoch}.json',
           bytes: Uint8List.fromList(
             utf8.encode(
               const JsonEncoder.withIndent('  ').convert(

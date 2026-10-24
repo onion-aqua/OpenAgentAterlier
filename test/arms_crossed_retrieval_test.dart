@@ -27,7 +27,9 @@ const _queries = [
 ];
 
 List<CharacterMotionGroup> _groups(String skin) => parseCharacterMotionGroups(
-  File('assets/character/ryza/$skin/${skin}_gesture.json').readAsStringSync(),
+  File(
+    'assets/data/spine_templates/${skin.endsWith('_99') ? 'standing_99' : 'seated_01'}.json',
+  ).readAsStringSync(),
 );
 
 Map<String, String> _catalogue({

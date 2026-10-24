@@ -536,36 +536,78 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('outfit and import cards use a restrained translucent fill', (
-    tester,
-  ) async {
-    for (final liquidGlass in [false, true]) {
-      await showPicker(
-        tester,
-        size: const Size(390, 760),
-        liquidGlass: liquidGlass,
-        onSelected: (_) {},
-      );
-      for (final key in [
-        ValueKey('outfit-surface-${characterAppearances.first.id}'),
-        const ValueKey('outfit-import-surface'),
-      ]) {
-        final finder = find.byKey(key);
-        final surface = tester.widget<GlassSurface>(finder);
-        expect(surface.transparentFill, isFalse);
-        expect(surface.fillOpacity, .65);
-        final fills = tester
-            .widgetList<DecoratedBox>(
-              find.descendant(of: finder, matching: find.byType(DecoratedBox)),
-            )
-            .map((box) => box.decoration)
-            .whereType<BoxDecoration>();
-        final fill = fills.firstWhere((decoration) => decoration.color != null);
-        expect(fill.color!.a, inInclusiveRange(.2, .6));
-        expect(fill.gradient, liquidGlass ? isNotNull : isNull);
+  testWidgets(
+    'outfit and import cards follow the glass tint and sheen switch',
+    (tester) async {
+      for (final liquidGlass in [false, true, false]) {
+        await showPicker(
+          tester,
+          size: const Size(390, 760),
+          liquidGlass: liquidGlass,
+          onSelected: (_) {},
+        );
+        for (final key in [
+          ValueKey('outfit-surface-${characterAppearances.first.id}'),
+          const ValueKey('outfit-import-surface'),
+        ]) {
+          final finder = find.byKey(key);
+          final surface = tester.widget<GlassSurface>(finder);
+          expect(surface.transparentFill, isFalse);
+          expect(surface.fillOpacity, .65);
+          expect(surface.backdropBlur, isFalse);
+          final fillBox = tester
+              .widgetList<DecoratedBox>(
+                find.descendant(
+                  of: finder,
+                  matching: find.byType(DecoratedBox),
+                ),
+              )
+              .firstWhere(
+                (box) => (box.decoration as BoxDecoration).color != null,
+              );
+          final fill = fillBox.decoration as BoxDecoration;
+          // The active glass tint is lighter than the fallback card. Its sheen
+          // is painted separately so it does not multiply the tint's opacity.
+          expect(
+            fill.color!.a,
+            liquidGlass ? inInclusiveRange(.05, .2) : inInclusiveRange(.4, .6),
+          );
+          expect(fill.gradient, isNull);
+          final sheen =
+              (fillBox.child! as DecoratedBox).decoration as BoxDecoration;
+          expect(sheen.gradient, liquidGlass ? isNotNull : isNull);
+          if (liquidGlass) {
+            expect(sheen.color, isNull);
+            expect(
+              (sheen.gradient! as LinearGradient).colors.map(
+                (color) => color.a,
+              ),
+              everyElement(inExclusiveRange(0, .2)),
+            );
+          }
+          expect(
+            tester
+                .widgetList<BackdropFilter>(
+                  find.descendant(
+                    of: finder,
+                    matching: find.byType(BackdropFilter),
+                  ),
+                )
+                .every((filter) => !filter.enabled),
+            isTrue,
+          );
+        }
+        final pageBackdrop = tester.widget<BackdropFilter>(
+          find.descendant(
+            of: find.byType(GlassPageSurface),
+            matching: find.byType(BackdropFilter),
+          ),
+        );
+        expect(pageBackdrop.enabled, liquidGlass);
+        expect(tester.takeException(), isNull);
       }
-    }
-  });
+    },
+  );
 
   testWidgets('next right card slides in from offscreen on each left swipe', (
     tester,

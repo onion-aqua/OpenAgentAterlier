@@ -265,7 +265,9 @@ void main() {
       glass.value = true;
       await tester.pump();
       for (final surface in surfaces) {
-        expect(_surfaceFillDecoration(tester, surface).gradient, isNotNull);
+        // Tint and optical sheen are now separate painted layers. The first
+        // decoration remains a colour; the same surface must gain its sheen.
+        expect(_surfaceHasGradient(tester, surface), isTrue);
       }
       expect(tester.getRect(surfaces.last), dockBefore);
 
@@ -409,7 +411,7 @@ void main() {
         VirtualPhoneApp.phone,
         VirtualPhoneApp.messages,
         VirtualPhoneApp.wallpaper,
-        VirtualPhoneApp.shortcut,
+        VirtualPhoneApp.imageGeneration,
       ]) {
         expect(_app(app).hitTestable(), findsOneWidget);
       }

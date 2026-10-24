@@ -83,16 +83,12 @@ assets/**/*
 !assets/data/
 !assets/data/motion_recipes_extra.json
 
-# User-provided branding explicitly approved for public distribution.
-!assets/branding/
-!assets/branding/agent_atelier_logo.png
-!assets/branding/app_icon_source.png
-!assets/branding/loading/
-!assets/branding/loading/frame_0[0-5].png
+# Shared neutral UI assets used by the framework.
 !assets/images/shop/gift-box.png
 !assets/images/shop/energy-potion.png
 !assets/images/shop/reconciliation-voucher.png
 !assets/images/shop/iphone-18-pro-max.png
+!assets/images/shop/oath-ring.png
 !assets/images/character_switch/ryza.png
 !assets/images/character_switch/sophie.png
 !assets/images/virtual_phone/
@@ -133,3 +129,6 @@ lib/src/chat_screen.dart.backup
 /evidence/
 # Historical manuals include local screenshots and old project data.
 /docs/user_manual_2026-10-08/
+
+# Local relocation manifests, original snapshots and preserved build artifacts.
+/.project-migration/

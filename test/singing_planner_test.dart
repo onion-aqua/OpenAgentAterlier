@@ -77,7 +77,7 @@ void main() {
   test('planner failure fallback keeps the full reply in singing mode', () {
     final plan = SingingPlan.forAllLines('莱莎：一句。\n莱莎：再一句。');
     expect(plan.tagsBySegment.keys, {0, 1});
-    expect(plan.apply('莱莎：一句。\n莱莎：再一句。'), '莱莎：[singing]一句。\n莱莎：[singing]再一句。');
+    expect(plan.apply('莱莎：一句。\n莱莎：再一句。'), '主角：[singing]一句。\n主角：[singing]再一句。');
   });
 
   test(
@@ -91,7 +91,7 @@ void main() {
       expect(plan.tagsBySegment[0], ['singing', 'gentle singing']);
       expect(
         plan.apply('莱莎：第一句。第二句。'),
-        '莱莎：[singing][gentle singing]第一句。[singing]第二句。',
+        '主角：[singing][gentle singing]第一句。[singing]第二句。',
       );
     },
   );

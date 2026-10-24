@@ -14,6 +14,10 @@ import 'package:ryza_chat_mvp/src/app_localization.dart';
 import 'package:ryza_chat_mvp/src/android_companion_runtime.dart';
 import 'package:ryza_chat_mvp/src/audio_envelope.dart';
 import 'package:ryza_chat_mvp/src/chat_screen.dart';
+import 'package:ryza_chat_mvp/src/character_appearance.dart';
+import 'package:ryza_chat_mvp/src/model_package_store.dart';
+import 'package:ryza_chat_mvp/src/local_skin_store.dart';
+import 'package:ryza_chat_mvp/src/protected_character_assets.dart';
 import 'package:ryza_chat_mvp/src/continuous_asmr_page.dart';
 import 'package:ryza_chat_mvp/src/runtime_log.dart';
 import 'package:ryza_chat_mvp/src/tts_spatial_settings.dart';
@@ -22,18 +26,29 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Run the real send/confirm and playback paths against loopback LLM/TTS. Only
 // the native player is replaced; inspect the WAV actually handed to playback.
 final _nativeTrace = <String>[];
+late Directory _voiceModelDirectory;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final audio = _AudioCapture();
   setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    _voiceModelDirectory = await Directory.systemTemp.createTemp(
+      'stereo_model_assets_',
+    );
+    await LocalSkinStore.instance.initialize(
+      storageDirectory: _voiceModelDirectory,
+    );
     audio.install();
     // Keep the plugin's static initialization future out of a widget test's
     // fake clock, otherwise the next test can await an inactive clock forever.
     await AudioPlayer.global.ensureInitialized();
     await AndroidCompanionRuntime.instance.initialize();
   });
-  tearDownAll(audio.uninstall);
+  tearDownAll(() async {
+    audio.uninstall();
+    await _voiceModelDirectory.delete(recursive: true);
+  });
   setUp(() async {
     audio.reset();
     await AndroidCompanionRuntime.instance.refresh();
@@ -44,7 +59,7 @@ void main() {
     (tester) async {
       final fixture = await _Fixture.create(
         tester,
-        reply: '苏菲：「这是第一句轻声测试。」\n苏菲：「这是第二句轻声测试。」',
+        reply: '主角：「这是第一句轻声测试。」\n主角：「这是第二句轻声测试。」',
       );
       final controller = fixture.controller;
       await tester.pumpWidget(
@@ -67,12 +82,12 @@ void main() {
       await tester.enterText(
         find.byWidgetPredicate(
           (widget) =>
-              widget is TextField && widget.decoration?.hintText == '和苏菲说点什么…',
+              widget is TextField && widget.decoration?.hintText == '和星见说点什么…',
         ),
         '说两句话陪我聊聊吧。',
       );
       await tester.tap(find.byKey(const ValueKey('chat-send-button')));
-      await _waitFor(tester, () => fixture.ttsRequests == 1);
+      await _waitFor(tester, () => fixture.ttsRequests == 2);
       expect(audio.played, isEmpty);
       controller.configureTtsStereo(
         enabled: false,
@@ -117,7 +132,7 @@ void main() {
       );
       await tester.enterText(find.byType(TextField), '雨夜轻声陪伴');
       await tester.tap(find.text('确定'));
-      await _waitFor(tester, () => fixture.ttsRequests == 1);
+      await _waitFor(tester, () => fixture.ttsRequests == 2);
       fixture.controller.configureTtsStereo(
         enabled: false,
         position: TtsStereoPosition.right,
@@ -404,7 +419,8 @@ void main() {
       final fixture = await _Fixture.create(
         tester,
         reply: '第一段暂时听不到，也要保留完整的文字内容。\n第二段是有效语音，会继续陪你听窗外的雨声。',
-        ttsResponses: [_silentWav(), _silentWav(), _monoWav()],
+        ttsResponseForText: (text) =>
+            text.contains('第一段') ? _silentWav() : _monoWav(),
       );
       await tester.pumpWidget(
         MaterialApp(home: ContinuousAsmrPage(controller: fixture.controller)),
@@ -417,8 +433,8 @@ void main() {
         tester,
         () => find.text('雨夜轻声陪伴 · 2').evaluate().isNotEmpty,
       );
-      expect(fixture.ttsTexts[0], fixture.ttsTexts[1]);
-      expect(fixture.ttsTexts[2], isNot(fixture.ttsTexts[0]));
+      expect(fixture.ttsTexts.where((text) => text.contains('第一段')).length, 2);
+      expect(fixture.ttsTexts.where((text) => text.contains('第二段')).length, 1);
       expect(find.textContaining('第一段暂时听不到'), findsOneWidget);
       expect(find.textContaining('异常音频已跳过'), findsOneWidget);
       expect(audio.played, isEmpty);
@@ -464,9 +480,8 @@ void main() {
         tester,
         () => find.textContaining('音频准备失败').evaluate().isNotEmpty,
       );
-      expect(fixture.ttsTexts[0], fixture.ttsTexts[1]);
-      expect(fixture.ttsTexts[2], fixture.ttsTexts[3]);
-      expect(fixture.ttsTexts[0], isNot(fixture.ttsTexts[2]));
+      expect(fixture.ttsTexts.where((text) => text.contains('第一段')).length, 2);
+      expect(fixture.ttsTexts.where((text) => text.contains('第二段')).length, 2);
       expect(fixture.ttsTexts.any((text) => text.contains('第三段')), isFalse);
       expect(find.textContaining('异常音频已跳过'), findsNWidgets(2));
       expect(audio.played, isEmpty);
@@ -494,14 +509,14 @@ void main() {
     (tester) async {
       final fixture = await _Fixture.create(
         tester,
-        reply: '第一段的语音请求尚未返回，现在停止陪伴。\n第二段不应该在停止之后发起合成。',
+        reply: '第一段的语音请求尚未返回，现在停止陪伴。\n第二段会提前请求。\n第三段不应该在停止之后发起合成。',
       );
       await tester.pumpWidget(
         MaterialApp(home: ContinuousAsmrPage(controller: fixture.controller)),
       );
       await tester.enterText(find.byType(TextField), '雨夜轻声陪伴');
       await tester.tap(find.text('确定'));
-      await _waitFor(tester, () => fixture.ttsRequests == 1);
+      await _waitFor(tester, () => fixture.ttsRequests == 2);
       await audio.emitCompanionState({
         'running': false,
         'stopRequested': true,
@@ -509,13 +524,13 @@ void main() {
       });
       await _waitFor(tester, () => find.text('后台陪伴已停止').evaluate().isNotEmpty);
       fixture.releaseFirstTts();
-      await _waitFor(tester, () => fixture.ttsResponsesSent == 1);
+      await _waitFor(tester, () => fixture.ttsResponsesSent == 2);
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pump();
       await _waitForNoSpeechCache(tester, fixture.directory);
-      expect(fixture.ttsRequests, 1);
+      expect(fixture.ttsRequests, 2);
       expect(audio.played, isEmpty);
       expect(audio.sources, isEmpty);
       expect(await _speechCacheFiles(tester, fixture.directory), isEmpty);
@@ -661,6 +676,7 @@ class _Fixture {
     WidgetTester tester, {
     required String reply,
     List<Uint8List>? ttsResponses,
+    Uint8List Function(String text)? ttsResponseForText,
   }) async {
     tester.view.physicalSize = const Size(390, 1000);
     tester.view.devicePixelRatio = 1;
@@ -683,17 +699,16 @@ class _Fixture {
       final body = await utf8.decoder.bind(request).join();
       final data = jsonDecode(body) as Map<String, dynamic>;
       if (request.uri.path == '/tts') {
-        fixture.ttsRequests++;
+        final ordinal = fixture.ttsRequests++;
         fixture.ttsTexts.add(data['text'] as String);
-        if (fixture.ttsRequests == 1) await fixture.firstTts.future;
+        if (ordinal == 0) await fixture.firstTts.future;
         request.response.headers.contentType = ContentType('audio', 'wav');
         request.response.add(
-          ttsResponses == null
+          ttsResponseForText != null
+              ? ttsResponseForText(data['text'] as String)
+              : ttsResponses == null
               ? _monoWav()
-              : ttsResponses[min(
-                  fixture.ttsRequests - 1,
-                  ttsResponses.length - 1,
-                )],
+              : ttsResponses[min(ordinal, ttsResponses.length - 1)],
         );
       } else if (data['stream'] == true) {
         fixture.streamedReplies++;
@@ -743,7 +758,42 @@ class _Fixture {
       'openai_api_key': 'loopback-only',
       'fish_audio_api_key': 'loopback-only',
     });
-    final controller = (await tester.runAsync(() => AppController.load()))!;
+    final modelId = directory.path.split(Platform.pathSeparator).last;
+    final packages = _StereoMemoryPackages(modelId);
+    final appearance = CharacterAppearance(
+      id: modelId,
+      label: '星见',
+      description: '',
+      promptDescription: '',
+      assetName: modelId,
+      animated: false,
+      idleAnimations: const [],
+      hasPreview: false,
+    );
+    await tester.runAsync(
+      () => LocalSkinStore.instance.initialize(storageDirectory: directory),
+    );
+    await tester.runAsync(() async {
+      final modelFolder = await Directory(
+        '${_voiceModelDirectory.path}/imported_skins/$modelId',
+      ).create(recursive: true);
+      for (final suffix in ['.atlas', '.skel', '_gesture.json', '.png']) {
+        await File('${modelFolder.path}/$modelId$suffix').writeAsBytes([0]);
+      }
+    });
+    LocalSkinStore.instance.skins.add({
+      'id': modelId,
+      'base': modelId,
+      'label': '星见',
+    });
+    characterAppearances.add(appearance);
+    final controller = (await tester.runAsync(
+      () => AppController.load(modelPackages: packages),
+    ))!;
+    await tester.runAsync(() => controller.setCharacterAppearance(modelId));
+    await tester.runAsync(() => ProtectedCharacterAssets.bundleFor(modelId));
+    controller.fishAudioReferenceId = 'configured-stereo-voice';
+    controller.fishAudioAsmrReferenceId = 'configured-stereo-asmr';
     controller.agentEnabled = false;
     controller.independentSpeechPerformance = false;
     controller.longTermMemoryEnabled = false;
@@ -754,6 +804,7 @@ class _Fixture {
       characterReply: AppLanguage.chinese,
       translation: TranslationLanguage.none,
     );
+    controller.fishAudioSpeed = 1;
     controller.configureTtsStereo(
       enabled: true,
       position: TtsStereoPosition.left,
@@ -771,7 +822,16 @@ class _Fixture {
           .then((_) => focusDrained = true);
       await _waitFor(tester, () => focusDrained);
       await drain;
-      controller.dispose();
+      await tester.runAsync(() async {
+        await controller.flushModelSession();
+        controller.dispose();
+        await packages.flush();
+      });
+      characterAppearances.remove(appearance);
+      LocalSkinStore.instance.skins.removeWhere(
+        (skin) => skin['id'] == modelId,
+      );
+      ProtectedCharacterAssets.clearCache();
       await tester.runAsync(() async {
         await server.close(force: true);
         await serving.cancel();
@@ -1081,4 +1141,30 @@ void _expectLeftStereo(Uint8List bytes) {
   }
   expect(rightEnergy, greaterThan(0));
   expect(leftEnergy, greaterThan(rightEnergy * 2));
+}
+
+class _StereoMemoryPackages extends ModelPackageStore {
+  _StereoMemoryPackages(this.modelId) : super.forTesting();
+  final String modelId;
+  Map<String, dynamic>? session;
+  Map<String, dynamic>? slots;
+  @override
+  Future<void> initialize({Directory? storageDirectory}) async {}
+  @override
+  Future<void> flush() async {}
+  @override
+  Future<bool> exists(String value) async => value == modelId;
+  @override
+  Future<Map<String, dynamic>?> readSession(String modelId) async => session;
+  @override
+  Future<Map<String, dynamic>?> readSaveSlots(String modelId) async => slots;
+  @override
+  Future<void> saveSession(
+    String modelId,
+    Map<String, dynamic> data, {
+    Map<String, dynamic>? saveSlots,
+  }) async {
+    session = data;
+    slots = saveSlots;
+  }
 }

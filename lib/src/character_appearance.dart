@@ -70,7 +70,7 @@ final characterAppearances = <CharacterAppearance>[
     id: 'seated_01',
     label: '常服·坐姿',
     description: '原版普通坐姿资源，包含完整的坐姿动作库',
-    promptDescription: '莱莎穿着白色无袖上衣、浅蓝领饰、棕色合身皮革马甲与红色短裤，戴黑色兔耳形发带和白色花朵发饰；当前是坐姿。',
+    promptDescription: '当前角色穿着白色无袖上衣、浅蓝领饰、棕色合身皮革马甲与红色短裤，戴黑色兔耳形发带和白色花朵发饰；当前是坐姿。',
     assetName: 'crf_skn_002_0001_01',
     animated: true,
     idleAnimations: [
@@ -99,8 +99,9 @@ final characterAppearances = <CharacterAppearance>[
   CharacterAppearance(
     id: 'standing_99',
     label: '常服·站姿',
-    description: '原版莱莎3常服站姿资源',
-    promptDescription: '莱莎穿着白色上衣、棕色合身皮革马甲和红色短裤，肩上披着黄白色短外套，腰间系有工具腰带与炼金小瓶；当前是站姿。',
+    description: '兼容常服站姿操纵模板',
+    promptDescription:
+        '当前角色穿着白色上衣、棕色合身皮革马甲和红色短裤，肩上披着黄白色短外套，腰间系有工具腰带与炼金小瓶；当前是站姿。',
     assetName: 'crf_skn_002_0001_99',
     animated: true,
     idleAnimations: [
@@ -117,7 +118,8 @@ final characterAppearances = <CharacterAppearance>[
     id: 'summer_yellow_01',
     label: '夏日泳装·黄色',
     description: '完整 Spine 服装与动作资源',
-    promptDescription: '莱莎穿着黄白配色的花纹荷叶边泳装，上身带肩部褶边，下身搭配黄色褶边围裙式泳裙与青绿色细绳装饰；当前是坐姿。',
+    promptDescription:
+        '当前角色穿着黄白配色的花纹荷叶边泳装，上身带肩部褶边，下身搭配黄色褶边围裙式泳裙与青绿色细绳装饰；当前是坐姿。',
     assetName: 'crf_skn_002_0002_01',
     animated: true,
     idleAnimations: [
@@ -130,7 +132,7 @@ final characterAppearances = <CharacterAppearance>[
     id: 'summer_black_01',
     label: '夏日泳装·黑色',
     description: '完整 Spine 服装与动作资源',
-    promptDescription: '莱莎穿着黑白配色的荷叶边泳装，下身搭配黑色褶边围裙式泳裙与青绿色细绳装饰；当前是坐姿。',
+    promptDescription: '当前角色穿着黑白配色的荷叶边泳装，下身搭配黑色褶边围裙式泳裙与青绿色细绳装饰；当前是坐姿。',
     assetName: 'crf_skn_002_0003_01',
     animated: true,
     idleAnimations: [
@@ -143,7 +145,7 @@ final characterAppearances = <CharacterAppearance>[
     id: 'relaxed_shirt_01',
     label: '休闲 T 恤',
     description: '完整 Spine 服装与动作资源',
-    promptDescription: '莱莎穿着宽松的白色短袖长款 T 恤，袖口有黑色包边，胸前印着蓝色可爱图案；当前是坐姿。',
+    promptDescription: '当前角色穿着宽松的白色短袖长款 T 恤，袖口有黑色包边，胸前印着蓝色可爱图案；当前是坐姿。',
     assetName: 'crf_skn_002_0004_01',
     animated: true,
     idleAnimations: [
@@ -156,7 +158,7 @@ final characterAppearances = <CharacterAppearance>[
     id: 'crf_skn_002_0005_01',
     label: '夏日泳装·蓝白短裤',
     description: '完整 Spine 服装与动作资源',
-    promptDescription: '莱莎穿着蓝白配色、金色滚边与红色细带的泳装上衣，搭配深蓝色短裤和浅蓝色腰带；头顶架着心形太阳镜，手腕戴有蓝色手镯、金色细环和花朵饰品；当前是坐姿。服装细节来自贴图，名称为应用内描述名，不是已确认的官方名称。',
+    promptDescription: '当前角色穿着蓝白配色、金色滚边与红色细带的泳装上衣，搭配深蓝色短裤和浅蓝色腰带；头顶架着心形太阳镜，手腕戴有蓝色手镯、金色细环和花朵饰品；当前是坐姿。服装细节来自贴图，名称为应用内描述名，不是已确认的官方名称。',
     assetName: 'crf_skn_002_0005_01',
     animated: true,
     idleAnimations: [
@@ -169,8 +171,7 @@ final characterAppearances = <CharacterAppearance>[
     id: 'crf_skn_002_0006_01',
     label: '东方旗袍·紫色',
     description: '可供用户导入资源使用的 Spine 坐姿操纵模板',
-    promptDescription:
-        '莱莎穿着深紫色、金色滚边和花纹装饰的中式旗袍，头发扎成双髻并配有黑色兔耳发饰；当前是坐姿。服装名称是应用内描述名，不是已确认的官方名称。',
+    promptDescription: '当前角色穿着深紫色、金色滚边和花纹装饰的中式旗袍，头发扎成双髻并配有黑色兔耳发饰；当前是坐姿。服装名称是应用内描述名，不是已确认的官方名称。',
     assetName: 'crf_skn_002_0006_01',
     animated: true,
     baseAppearanceId: 'seated_01',

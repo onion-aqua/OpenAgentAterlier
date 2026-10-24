@@ -13,12 +13,12 @@ import 'android_companion_runtime.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:spine_flutter/spine_flutter.dart' hide Color;
 
 import 'ai_services.dart';
+import 'qwen_tts_config.dart';
 import 'fish_mcp_protocol.dart';
 import 'fish_mcp_service.dart';
 import 'continuous_asmr_page.dart';
@@ -43,13 +43,29 @@ import 'app_localization.dart';
 import 'dialogue_language_guard.dart';
 import 'attachment_thumbnail_store.dart';
 import 'image_food_invitation.dart';
+import 'image_generation_intent.dart';
+import 'image_generation_prompt.dart';
+import 'image_generation_config.dart';
+import 'image_generation_manager_page.dart';
+import 'image_generation_service.dart';
+import 'image_generation_store.dart';
 import 'audio_envelope.dart';
+import 'realtime_call/call_session.dart';
+import 'realtime_call/call_page.dart';
+import 'realtime_call/call_settings.dart';
+import 'realtime_call/call_audio_priority.dart';
+import 'realtime_call/main_chat_voice_panel.dart';
+import 'platform_capabilities.dart';
+import 'virtual_phone_wallpaper_image.dart';
 import 'speech_envelope_loader.dart';
 import 'speech_media_probe.dart';
 import 'speech_file_playback.dart';
 import 'speech_loudness.dart';
 import 'tts_spatial_settings.dart';
 import 'character_speech_driver.dart';
+import 'character_startup_sleep.dart';
+import 'character_wake_performance.dart';
+import 'cold_start_wake_button.dart';
 import 'character_resource_behavior.dart';
 import 'character_lipsync.dart';
 import 'character_motion_dynamics.dart';
@@ -108,6 +124,9 @@ import 'character_face_pull_rig.dart';
 import 'character_touch_physics_rig.dart';
 import 'virtual_phone.dart';
 import 'virtual_phone_wallpaper_page.dart';
+import 'update/update_runtime.dart';
+import 'update/resource_resolver.dart';
+import 'update/resource_audio.dart';
 
 extension SceneTimeIcon on SceneTime {
   IconData get icon => switch (this) {
@@ -215,6 +234,13 @@ class ChatScreen extends StatefulWidget {
     this.onFullscreenChanged,
     this.onCharacterReady,
     this.onCharacterLoadFailed,
+    this.imageGenerationService,
+    this.imageGenerationStore,
+    this.aiClient,
+    this.secretStore,
+    this.imageThumbnailer,
+    this.updateRuntime,
+    this.sceneBackground,
   });
 
   final AppController controller;
@@ -225,6 +251,18 @@ class ChatScreen extends StatefulWidget {
   final ValueChanged<bool>? onFullscreenChanged;
   final VoidCallback? onCharacterReady;
   final VoidCallback? onCharacterLoadFailed;
+
+  /// Optional image dependencies keep widget tests offline. Production callers
+  /// use the controller-owned store and the default network service.
+  final ImageGenerationService? imageGenerationService;
+  final ImageGenerationStore? imageGenerationStore;
+  final OpenAiCompatibleClient? aiClient;
+  final SecretStore? secretStore;
+  final Future<Uint8List?> Function(Uint8List bytes)? imageThumbnailer;
+  final UpdateRuntime? updateRuntime;
+
+  /// Replaces the native scene layer for embedded hosts and widget tests.
+  final Widget? sceneBackground;
   final bool pageActive;
   final bool pauseCharacterAnimation;
 
@@ -298,17 +336,25 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final _effectPlayer = AppAudioPlayer();
   final _companionRuntime = AndroidCompanionRuntime.instance;
   bool _companionStopped = false;
-  late final _aiClient = OpenAiCompatibleClient(
-    contextToolExecutor: (name, args) async =>
-        widget.controller.queryContextTool(name, args),
-    agentToolExecutor: const DeviceAgentTools().execute,
-  );
+  late final _aiClient =
+      widget.aiClient ??
+      OpenAiCompatibleClient(
+        contextToolExecutor: (name, args) async =>
+            widget.controller.queryContextTool(name, args),
+        agentToolExecutor: const DeviceAgentTools().execute,
+      );
   final _fishAudioClient = FishAudioClient();
+  late final _imageGenerationService =
+      widget.imageGenerationService ?? ImageGenerationService();
+  final Map<String, ImageGenerationCancellationToken>
+  _imageGenerationCancellations = {};
   final _fishMcpService = FishMcpService.instance;
   final _dashScopeTtsClient = DashScopeTtsClient();
   final _genericTtsClient = GenericTtsClient();
   final _mimoTtsClient = MimoTtsClient();
-  final _secretStore = const SecretStore();
+  late final _secretStore = widget.secretStore ?? const SecretStore();
+  ImageGenerationStore get _imageGenerationStore =>
+      widget.imageGenerationStore ?? widget.controller.imageGenerationStore;
   final _inputController = TextEditingController();
   final _narrationInputController = TextEditingController();
   final _narrationBottomInputController = TextEditingController();
@@ -323,6 +369,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   late String _activeCharacterId;
   bool _staticPortraitReady = false;
   bool _lifecyclePaused = false;
+  bool _wasAwaitingWake = false;
+  bool get _awaitingWake => widget.controller.characterAwaitingWake;
+  final _startupSleepMotion = CharacterStartupSleepMotion();
+  CharacterWakePerformance? _wakePerformance;
+  Timer? _staticWakeTimer;
+  bool _waking = false;
+  bool _wakeCompletionScheduled = false;
   CharacterRuntimeProfile get _activeCharacterProfile =>
       widget.controller.activeCharacterProfile;
   bool get _usesProtectedSpine =>
@@ -360,7 +413,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void _selectPosture(String id, {bool byUser = false}) {
     final group = _crossLeggedGroup;
-    if (!_spineReady || _tapReactionActive || _appearance.isStanding) return;
+    if (_awaitingWake ||
+        !_spineReady ||
+        _tapReactionActive ||
+        _appearance.isStanding) {
+      return;
+    }
     if (!_postureState.select(
       id,
       supported: id == 'sitting_normal' || group != null,
@@ -388,6 +446,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   bool _spineReady = false;
   bool _isReplying = false;
+  late final RealtimeCallController _calls;
+  bool _mainVoiceVisible = false;
+  bool _callWasActive = false;
+  CallUiPhase _lastCallUiPhase = CallUiPhase.idle;
   bool _isContinuing = false;
   bool _isSuggestingReply = false;
   bool _isCharacterSpeaking = false;
@@ -677,10 +739,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _calls = RealtimeCallController(
+      app: widget.controller,
+      canStart: () =>
+          !_awaitingWake && !_isReplying && !widget.controller.continuousAsmr,
+    );
+    _calls.addListener(_handleCallChanged);
+    widget.controller.addDataResetListener(_calls.prepareForDataReset);
     _companionStopped = _companionRuntime.stopRequested;
     _companionRuntime.addListener(_handleCompanionRuntimeChange);
     WidgetsBinding.instance.addObserver(this);
     _activeCharacterId = widget.controller.activeCharacterId;
+    _wasAwaitingWake = _awaitingWake;
     _appearance = characterAppearanceById(
       widget.controller.selectedCharacterAppearanceId,
       characterId: _activeCharacterId,
@@ -722,6 +792,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _narrationInputController.addListener(_recordUserActivity);
     _narrationBottomInputController.addListener(_recordUserActivity);
     widget.controller.addListener(_handleControllerChange);
+    unawaited(() async {
+      try {
+        await _imageGenerationStore.load();
+      } on Object catch (error, stackTrace) {
+        RuntimeLog.instance.error('ImageGenerationStore', error, stackTrace);
+      }
+    }());
     widget.controller.frameRate.addListener(_handleFrameRateChange);
     _scrollController.addListener(_handleConversationScroll);
     _suggestionQuotaTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -738,6 +815,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       onBeforeApplyAnimation: _prepareSpeechFrame,
       onAfterApplyAnimation: (controller) {
         _applySpeakingHeadMotion(controller);
+        _wakePerformance?.applyTearOpacity(controller.skeleton);
         _touchPhysics.apply(controller.updateDelta);
       },
       onAfterUpdateWorldTransforms: (controller) =>
@@ -811,7 +889,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void _handleSceneResourcesChanged() {
     if (mounted) {
-      setState(() => _seatBundleFuture = LocalSceneStore.instance.seatBundle());
+      setState(() {
+        _seatBundleFuture = LocalSceneStore.instance.seatBundle();
+      });
     }
   }
 
@@ -819,6 +899,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _syncBackgroundVoicePolicy();
     final characterChanged =
         _activeCharacterId != widget.controller.activeCharacterId;
+    if (_waking &&
+        (characterChanged ||
+            _observedDataRevision != widget.controller.dataRevision ||
+            widget.controller.selectedCharacterAppearanceId != _appearance.id ||
+            forceAppearanceReload)) {
+      _cancelWakePerformance();
+      _applyStartupSleepFace();
+    }
     if (characterChanged ||
         _observedDataRevision != widget.controller.dataRevision) {
       _selectingCollection = false;
@@ -833,6 +921,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       _syncCharacterAnimationPause();
     }
     if (!widget.controller.gazeTrackingEnabled) _endGaze();
+    if (_wasAwaitingWake != _awaitingWake) {
+      _wasAwaitingWake = _awaitingWake;
+      _applyExpression(_currentExpression);
+      if (!_awaitingWake) {
+        _recordUserActivity();
+        _scheduleIdleChange();
+        _scheduleMicroMotion();
+        _scheduleCharacterBlink();
+        _scheduleFacialDetailChange();
+      }
+      if (mounted) setState(() {});
+    }
     final next = characterAppearanceById(
       widget.controller.selectedCharacterAppearanceId,
       characterId: _activeCharacterId,
@@ -920,6 +1020,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _resetConversationWorkForDataReplacement() {
+    _mainVoiceVisible = false;
     _cancelFacePull();
     _contactFollowUp = null;
     _recentDialogueActions.clear();
@@ -1043,13 +1144,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Future<List<MotionRecipe>> _loadMotionRecipes() async {
     final builtIn = await compute(
       MotionRecipe.parse,
-      await rootBundle.loadString('assets/data/motion_recipes.json'),
+      await ResourceAssetResolver.instance.loadString(
+        'assets/data/motion_recipes.json',
+      ),
     );
     final catalogues = <Iterable<MotionRecipe>>[builtIn];
     try {
       final extension = await compute(
         MotionRecipe.parse,
-        await rootBundle.loadString('assets/data/motion_recipes_extra.json'),
+        await ResourceAssetResolver.instance.loadString(
+          'assets/data/motion_recipes_extra.json',
+        ),
       );
       catalogues.add(extension);
       RuntimeLog.instance.infoRateLimited(
@@ -1072,14 +1177,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   Future<void> _playSkinChangeEffect() async {
     await _effectPlayer.stop();
-    await _effectPlayer.play(AssetSource('audio/se/se_skin_change.m4a'));
+    await _effectPlayer.play(
+      await resourceAudioSource('audio/se/se_skin_change.m4a'),
+    );
   }
 
   void _scheduleIdleChange() {
-    if (widget.controller.continuousAsmr || widget.pauseCharacterAnimation) {
+    _idleTimer?.cancel();
+    if (_awaitingWake ||
+        widget.controller.continuousAsmr ||
+        widget.pauseCharacterAnimation) {
       return;
     }
-    _idleTimer?.cancel();
     // The bundled original rig locks its base pose. Preserve manual pose choice;
     // emotion and conversation are not reasons to randomly cross sitting axes.
     if (_resourceBehavior.fixedBasePoseMode) return;
@@ -1126,7 +1235,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   void _playIdleAnimation(String animation) {
     final spineController = _spineController;
-    if (!_spineReady ||
+    if (_awaitingWake ||
+        !_spineReady ||
         spineController == null ||
         spineController.skeletonData.findAnimation(animation) == null) {
       return;
@@ -1498,7 +1608,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     Duration? remainingDuration,
   }) {
     final spineController = _spineController;
-    if (!_spineReady ||
+    if (_awaitingWake ||
+        !_spineReady ||
         spineController == null ||
         !_canPlayMotionGroup(group)) {
       return false;
@@ -1709,7 +1820,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   bool _canPlayRecipe(MotionRecipe recipe) {
     final controller = _spineController;
-    return _spineReady &&
+    return !_awaitingWake &&
+        _spineReady &&
         controller != null &&
         recipe.available(
           _recipeAnimationNames,
@@ -1911,6 +2023,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
 
     if (!_spineReady || _spineController == null || _tapReactionActive) return;
+    if (_waking) return;
+    if (_awaitingWake) {
+      _applyStartupSleepFace();
+      return;
+    }
     _blinkRestoreTimer?.cancel();
     _speechBlinkClosed = false;
     _spineController!.animationState
@@ -2167,7 +2284,57 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     entry.setAlpha(strength);
   }
 
+  void _handleCallChanged() {
+    if (!mounted) return;
+    final wasActive = _callWasActive;
+    final phase = _calls.snapshot.phase;
+    final phaseChanged = phase != _lastCallUiPhase;
+    _lastCallUiPhase = phase;
+    if (_calls.active && !_callWasActive) _cancelSpeechPlayback();
+    _callWasActive = _calls.active;
+    if (_calls.speaking &&
+        _calls.snapshot.contact?.id ==
+            'primary:${widget.controller.activeConversationScopeId}') {
+      if (!_isCharacterSpeaking) _startSpeakingAnimation();
+    } else if (_isCharacterSpeaking &&
+        _speechCancellation == null &&
+        (wasActive || _callWasActive)) {
+      _stopSpeakingAnimation();
+    }
+    // Captions and elapsed time repaint their small controls through the shared
+    // controller. Do not rebuild the character scene for every clock tick.
+    if (phaseChanged) setState(() {});
+  }
+
   void _prepareSpeechFrame(SpineWidgetController controller) {
+    final wake = _wakePerformance;
+    if (wake != null) {
+      final lifecycle = WidgetsBinding.instance.lifecycleState;
+      final visible =
+          widget.pageActive &&
+          !widget.pauseCharacterAnimation &&
+          (lifecycle == null || lifecycle == AppLifecycleState.resumed);
+      wake.advance(visible ? controller.updateDelta : 0);
+      if (wake.finished && !_wakeCompletionScheduled) {
+        _wakeCompletionScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && identical(_wakePerformance, wake)) {
+            _finishWakePerformance();
+          }
+        });
+      }
+      return;
+    }
+    if (_calls.active &&
+        _calls.snapshot.contact?.id ==
+            'primary:${widget.controller.activeConversationScopeId}') {
+      final energy = _calls.speaking ? _calls.playbackLevel.value : 0.0;
+      _currentSpeechEnergy = energy;
+      _lipSyncEntry?.setTrackTime(
+        (_lipSyncEntry?.getAnimation().getDuration() ?? 0) * energy * 0.48,
+      );
+      return;
+    }
     final playing =
         _isCharacterSpeaking && (_syntheticSpeech || _positionClock.isRunning);
     final position = _syntheticSpeech
@@ -2240,7 +2407,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     // This director advances on frame delta, not per-audio-clip position.
     // Its target/hold transitions continue through TTS sentence boundaries.
-    final parts = _performanceDirector.sample(
+    final awakeParts = _performanceDirector.sample(
       delta: delta,
       emotion: _currentExpression.name,
       speaking: _isCharacterSpeaking,
@@ -2248,12 +2415,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       enhanceConversation:
           !widget.pauseCharacterAnimation && !widget.controller.continuousAsmr,
       suppressed:
+          _awaitingWake ||
           _tapReactionActive ||
           _gazePointer != null ||
           _performanceQueue.isNotEmpty ||
           (_motionBlocksProcedural &&
               !_performanceDirector.hasActiveAttitudeCue),
     );
+    final sleepFrame = _startupSleepMotion.sample(
+      delta: delta,
+      sleeping: _awaitingWake && !_waking,
+    );
+    final parts = sleepFrame.merge(awakeParts);
     for (final entry in parts.entries) {
       if (_tapReactionActive) break;
       // Automatic gaze uses the same visible eyeball joints as pointer gaze.
@@ -2582,10 +2755,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _scheduleFacialDetailChange() {
-    if (widget.controller.continuousAsmr || widget.pauseCharacterAnimation) {
+    _facialDetailTimer?.cancel();
+    if (_awaitingWake ||
+        widget.controller.continuousAsmr ||
+        widget.pauseCharacterAnimation) {
       return;
     }
-    _facialDetailTimer?.cancel();
     if (!mounted || !_spineReady) return;
     final profile = _resourceEmotion;
     _facialDetailTimer = Timer(
@@ -2600,6 +2775,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _rotateFacialDetail() {
+    if (_awaitingWake) return;
     if (_motionBusy) {
       _scheduleFacialDetailChange();
       return;
@@ -2659,10 +2835,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _scheduleCharacterBlink() {
-    if (widget.controller.continuousAsmr || widget.pauseCharacterAnimation) {
+    _blinkTimer?.cancel();
+    if (_awaitingWake ||
+        widget.controller.continuousAsmr ||
+        widget.pauseCharacterAnimation) {
       return;
     }
-    _blinkTimer?.cancel();
     if (!mounted || !_spineReady || !_appearance.animated) return;
     _blinkBeat = chooseCharacterBlink(
       _performanceDirector.profile.tensionProfile(
@@ -2678,7 +2856,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _performCharacterBlink() {
-    if (!mounted || !_spineReady || _spineController == null) {
+    if (_awaitingWake || !mounted || !_spineReady || _spineController == null) {
       return;
     }
     // Tap animations own the eyes; semantic gestures and held gaze should not
@@ -2719,10 +2897,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _scheduleMicroMotion() {
-    if (widget.controller.continuousAsmr || widget.pauseCharacterAnimation) {
+    _microMotionTimer?.cancel();
+    if (_awaitingWake ||
+        widget.controller.continuousAsmr ||
+        widget.pauseCharacterAnimation) {
       return;
     }
-    _microMotionTimer?.cancel();
     if (!_spineReady || !_appearance.animated) return;
     // Speech retains resource-authored torso beats. Explicit gestures keep
     // priority; the speaking candidate filter below never selects random arms.
@@ -2748,6 +2928,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _playAmbientMotion() {
+    if (_awaitingWake) return;
     if (!ConversationMotionPolicy.canAnimate(
           resourcesReady: _spineReady,
           paused:
@@ -3235,6 +3416,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _cancelWakePerformance(nativeAlive: false);
+    widget.controller.removeDataResetListener(_calls.prepareForDataReset);
+    _calls.removeListener(_handleCallChanged);
+    _calls.dispose();
     _companionRuntime.removeListener(_handleCompanionRuntimeChange);
     LocalSceneStore.instance.removeListener(_handleSceneResourcesChanged);
     _modelCatalogRevision.dispose();
@@ -3275,6 +3460,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _playerStateSubscription?.cancel();
     _audioPlayer.dispose();
     _mimoTtsClient.close();
+    for (final token in _imageGenerationCancellations.values) {
+      token.cancel();
+    }
+    _imageGenerationCancellations.clear();
+    _imageGenerationService.close();
     _effectPlayer.dispose();
     _idleTimer?.cancel();
     _tapReactionTimer?.cancel();
@@ -3296,8 +3486,98 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  void _applyStartupSleepFace() {
+    final controller = _spineController;
+    if (!_spineReady || controller == null || _usesMappedSpine || _usesLive2d) {
+      return;
+    }
+    _idleTimer?.cancel();
+    _microMotionTimer?.cancel();
+    _facialDetailTimer?.cancel();
+    _blinkTimer?.cancel();
+    _blinkRestoreTimer?.cancel();
+    _speechBlinkClosed = false;
+    _lipSyncEntry = null;
+    final face = resolveStartupSleepFace(
+      _appearance.baseAppearanceId ?? _appearance.id,
+      (name) => controller.skeletonData.findAnimation(name) != null,
+    );
+    for (final (track, animation) in [
+      (11, face.eye),
+      (12, face.eyebrow),
+      (13, face.mouth),
+    ]) {
+      if (animation != null) {
+        // The first revealed frame must already be asleep. Waking uses the
+        // normal expression mix, so its eyes still open smoothly.
+        _setFacialAnimation(track, animation, mixDuration: 0);
+      }
+    }
+    for (var track = 14; track <= 16; track++) {
+      controller.animationState.setEmptyAnimation(track, .2);
+    }
+  }
+
+  void _wakeCharacter() {
+    if (!_awaitingWake || _waking) return;
+    FocusScope.of(context).unfocus();
+    final spine = _spineController;
+    _clearPerformanceQueue();
+    _resetMotionOverlays();
+    _applyStartupSleepFace();
+    setState(() {
+      _waking = true;
+      _wakeCompletionScheduled = false;
+    });
+    if (_appearance.animated &&
+        _spineReady &&
+        spine != null &&
+        !_usesMappedSpine &&
+        !_usesLive2d) {
+      _wakePerformance = CharacterWakePerformance(
+        state: spine.animationState,
+        data: spine.skeletonData,
+        appearanceId: _appearance.baseAppearanceId ?? _appearance.id,
+        pose: _currentIdleAnimation,
+      )..advance(0);
+      RuntimeLog.instance.info(
+        'Interaction',
+        '唤醒演出开始；stretch=${_wakePerformance!.stretch ?? 'unavailable'}；输入保持锁定',
+      );
+    } else {
+      // Static portraits or an unavailable rig must not trap the composer.
+      // Keep visible click feedback, then safely unlock without inventing clips.
+      _staticWakeTimer = Timer(const Duration(milliseconds: 700), () {
+        if (mounted && _waking) _finishWakePerformance();
+      });
+    }
+    widget.controller.frameRate.boost(
+      FrameRateActivity.characterMotion,
+      duration: const Duration(seconds: 7),
+    );
+  }
+
+  void _cancelWakePerformance({bool nativeAlive = true}) {
+    _staticWakeTimer?.cancel();
+    _staticWakeTimer = null;
+    _wakePerformance?.clear(nativeAlive: nativeAlive);
+    _wakePerformance = null;
+    _wakeCompletionScheduled = false;
+    _waking = false;
+  }
+
+  void _finishWakePerformance() {
+    _cancelWakePerformance();
+    widget.controller.wakeCharacter();
+    if (mounted) setState(() {});
+  }
+
   Future<void> _reactToTap(Offset localPosition) async {
     final reaction = _hitTestReaction(localPosition);
+    if (_awaitingWake) {
+      if (reaction != null) _wakeCharacter();
+      return;
+    }
     if (reaction == null) {
       return;
     }
@@ -3365,7 +3645,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     await _audioPlayer.setVolume(widget.controller.voiceVolume);
     try {
       await _audioPlayer.play(
-        AssetSource(
+        await resourceAudioSource(
           reaction.localizedVoiceAsset(
             widget.controller.characterReplyLanguage,
             _random.nextInt(3) + 1,
@@ -3375,7 +3655,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       );
     } on Object {
       await _audioPlayer.play(
-        AssetSource(
+        await resourceAudioSource(
           reaction.voiceAsset(
             _random.nextInt(3) + 1,
             asmr: widget.controller.asmrModeEnabled,
@@ -3497,6 +3777,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _sendMessage({String? automaticPrompt}) async {
+    if (_awaitingWake) return;
+    if (_calls.active) {
+      if (automaticPrompt == null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.controller.interfaceLanguage.text(
+                '请先结束实时通话。',
+                'End the voice call first.',
+                '先に音声通話を終了してください。',
+              ),
+            ),
+          ),
+        );
+      }
+      return;
+    }
     final rawText = _inputController.text.trim();
     final narration = _narrationInputController.text.trim();
     final narrationBottom = _narrationBottomInputController.text.trim();
@@ -3521,6 +3818,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             '请分析我发送的附件。',
         ].join('\n');
     final isAutomatic = automaticPrompt != null;
+    final personalityPreferences = widget.controller
+        .interpretPersonality(text)
+        .preferences;
     final precedingContactRequest = _takeContactFollowUp();
     // Keep contact intent with this generation. Cancelled or failed replies
     // must not leave an invitation for a later reply or a different save.
@@ -3541,6 +3841,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
     final contactRequestRevision = widget.controller.dataRevision;
     final contactRequestCharacter = widget.controller.activeCharacterId;
+    final imageIntent = isAutomatic
+        ? null
+        : detectImageGenerationIntent(
+            [narration, rawText, narrationBottom].join('\n'),
+          );
+    // Capture this save's scene and dialogue before the ordinary reply starts
+    // streaming, or the user switches character, location or save slots.
+    final imagePrompt = imageIntent == null
+        ? null
+        : _imagePromptForIntent(imageIntent);
     if (!isAutomatic) _recordUserActivity();
     widget.controller.removeFailedReplies();
 
@@ -3549,16 +3859,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (!isAutomatic) _narrationInputController.clear();
     if (!isAutomatic) _narrationBottomInputController.clear();
     if (!isAutomatic) {
-      widget.controller.addUserMessage(
+      final userMessageId = widget.controller.addUserMessage(
         text,
         attachments: attachments,
         imageFoodInvitation: hasCurrentImageFoodInvitation(
           text,
+          characterName: widget.controller.activeModelDisplayName,
           hasReadableImage: attachments.any(
             (attachment) => attachment.isImage && attachment.bytes != null,
           ),
         ),
       );
+      if (imagePrompt != null) {
+        unawaited(
+          _startImageGeneration(imagePrompt, userMessageId: userMessageId),
+        );
+      }
     }
     setState(() {
       if (!isAutomatic) _pendingAttachments.clear();
@@ -3811,6 +4127,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       final recentDialogue = history.take(max(0, history.length - 1)).toList();
       final characterState = widget.controller.characterState;
       final sharedContext = <String, dynamic>{
+        if (personalityPreferences.isNotEmpty)
+          'personality_preferences': personalityPreferences,
         'current_reply': reply,
         'user_intent_text': text,
         'previous_dialogue': recentDialogue.reversed
@@ -4121,7 +4439,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _suggestUserReply() async {
-    if (_isReplying ||
+    if (_awaitingWake ||
+        _calls.active ||
+        _isReplying ||
         _isSuggestingReply ||
         widget.controller.messages.isEmpty) {
       return;
@@ -4240,6 +4560,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void _checkIdleUser() {
+    if (_awaitingWake || _calls.active) return;
     if (!mounted ||
         !widget.pageActive ||
         widget.controller.continuousAsmr ||
@@ -4276,6 +4597,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _openContinuousAsmr() async {
+    if (_calls.active) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.controller.interfaceLanguage.text(
+              '请先结束实时通话。',
+              'End the voice call first.',
+              '先に音声通話を終了してください。',
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     if (_isReplying) _cancelReply();
     _cancelSpeechPlayback();
     _stopSpeakingAnimation();
@@ -4572,6 +4907,14 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               ? apiKey
               : await _secretStore.readTtsKey(TtsProvider.fishAudio)
         : '';
+    if (widget.controller.ttsProvider == TtsProvider.fishAudioMcp &&
+        !_fishMcpService.isReady) {
+      await _fishMcpService.restoreConnection();
+      if (!performanceIsCurrent() ||
+          initialSpeechGeneration != _speechPlaybackGeneration) {
+        return;
+      }
+    }
     final missingProviderSettings = switch (widget.controller.ttsProvider) {
       TtsProvider.fishAudio =>
         widget.controller.activeFishAudioReferenceId.isEmpty,
@@ -4607,10 +4950,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         .where((segment) => segment.isPrimary ? primaryReady : klaudiaReady)
         .toList(growable: false);
     if (segments.isEmpty) {
-      RuntimeLog.instance.warning(
-        'TTS',
-        '跳过合成：主角语音模型或服务配置、科洛蒂娅 Fish Audio 配置未就绪',
-      );
+      RuntimeLog.instance.warning('TTS', '跳过合成：当前人物或相应发言者的语音模型与服务配置未就绪');
       await applyWithoutSpeech();
       return;
     }
@@ -4646,7 +4986,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         : null;
     String? plannedText;
     var playbackFinished = false;
-    Future<SpeechPreparation<_PreparedSpeech?>>? inFlightPreparation;
+    OrderedSpeechPreparation<_PreparedSpeech?>? preparations;
     int primaryOrdinalAt(int index) => primaryOrdinals[segments[index]] ?? -1;
     void applyDispatched(List<SpeechPerformanceDispatchCue> cues) {
       if (!performanceIsCurrent() || generation != _speechPlaybackGeneration) {
@@ -4733,18 +5073,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         );
       }
 
-      Future<SpeechPreparation<_PreparedSpeech?>> captureSegmentAt(int index) {
-        return inFlightPreparation = SpeechPreparation.capture(
-          () => prepareSegmentAt(index),
-        );
-      }
-
+      final providerKey = widget.controller.ttsProvider.name;
+      final queue = preparations = OrderedSpeechPreparation<_PreparedSpeech?>(
+        length: segments.length,
+        concurrency: SpeechConcurrencyPolicy.limit(providerKey),
+        prepare: prepareSegmentAt,
+        dispose: (prepared) async {
+          if (prepared != null) await _deleteTemporarySpeech(prepared.path);
+        },
+        isCurrent: () =>
+            performanceIsCurrent() && generation == _speechPlaybackGeneration,
+        onError: (error) => SpeechConcurrencyPolicy.observe(providerKey, error),
+      );
+      queue.prefetch();
       final rejections = SpeechRejectionBudget();
       Object? lastRejected;
-      var pending = captureSegmentAt(0);
       for (var index = 0; index < segments.length; index++) {
-        final result = await pending;
-        if (identical(inFlightPreparation, pending)) inFlightPreparation = null;
+        final result = await queue.take(index);
         if (!performanceIsCurrent() ||
             generation != _speechPlaybackGeneration) {
           await result.discard((prepared) async {
@@ -4768,9 +5113,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           rejections.accepted();
         }
         if (prepared == null) {
-          if (index + 1 < segments.length) {
-            pending = captureSegmentAt(index + 1);
-          }
+          queue.prefetch();
           continue;
         }
         if (!performanceIsCurrent() ||
@@ -4778,9 +5121,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           unawaited(_deleteTemporarySpeech(prepared.path));
           return;
         }
-        final next = index + 1 < segments.length
-            ? captureSegmentAt(index + 1)
-            : null;
+        queue.prefetch();
+        final hasNext = index + 1 < segments.length;
         final segment = segments[index];
         final displayIndex = _displayIndexForSpeechSegment(
           displaySource ?? text,
@@ -4849,13 +5191,12 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             motionGroupIds: performance?.motionGroupIds ?? const [],
           ),
         );
-        if (next != null) {
+        if (hasNext) {
           if (segment.isPrimary && segments[index + 1].isPrimary) {
             _pauseSpeakingBetweenSegments();
           } else {
             _stopSpeakingAnimation();
           }
-          pending = next;
         } else {
           _stopSpeakingAnimation();
         }
@@ -4983,18 +5324,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         ),
       );
     } finally {
-      // A cancellation can finish playback before its prefetched clip arrives.
-      // Observe the result and remove it without delaying the user's next turn.
-      final abandoned = inFlightPreparation;
-      if (abandoned != null) {
-        unawaited(
-          abandoned.then(
-            (result) => result.discard((prepared) async {
-              if (prepared != null) await _deleteTemporarySpeech(prepared.path);
-            }),
-          ),
-        );
-      }
+      preparations?.close();
     }
   }
 
@@ -5032,7 +5362,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (emotionIntensity != TtsEmotionIntensity.off &&
           speechEmotionTags.contains(plannedEmotion))
         'Express $plannedEmotion naturally; preserve continuity with the preceding sentence.',
-      if (asmr) 'Speak softly in a close, quiet voice.',
+      if (asmr)
+        'Maintain a clear close whisper throughout the whole passage; '
+            'do not switch to ordinary voiced speech or add breathing sounds.',
     ].join(' ');
     final fishText = normalizeFishAudioSynthesisText(
       segment.isPrimary
@@ -5054,6 +5386,23 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       required double speed,
       required TtsEmotionIntensity emotionIntensity,
     }) async {
+      final connected =
+          _fishMcpService.isReady || await _fishMcpService.restoreConnection();
+      if (!mounted || generation != _speechPlaybackGeneration) {
+        throw FishMcpException(
+          stage: 'cancelled',
+          code: 'request_cancelled',
+          message: '当前语音请求已取消，未提交生成。',
+        );
+      }
+      if (!connected) {
+        // Connection recovery is never a reason to switch to billable REST.
+        throw FishMcpException(
+          stage: 'connection',
+          code: 'oauth_restore_failed',
+          message: 'Fish Audio MCP 未恢复连接，请在语音设置中检查 OAuth 授权后重试。',
+        );
+      }
       try {
         final referenceId = fishReferenceIdForAssistantSpeech(
           segment,
@@ -5085,14 +5434,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         }
         final fallbackKey = await _secretStore.readFishAudioKey();
         if (!mounted || generation != _speechPlaybackGeneration) rethrow;
+        final fallbackModel = widget.controller.fishMcpRestFallbackModel;
         final fallbackReferenceId = fishReferenceIdForAssistantSpeech(
           segment,
-          primaryReferenceId: widget.controller.activeFishAudioReferenceId,
+          primaryReferenceId: widget.controller.fishAudioReferenceIdForMode(
+            asmr: asmr,
+            model: fallbackModel,
+          ),
         );
         if (fallbackKey.isEmpty || fallbackReferenceId.isEmpty) {
           rethrow;
         }
-        final fallbackModel = widget.controller.fishMcpRestFallbackModel;
         RuntimeLog.instance.warning(
           'TTS',
           'Fish MCP 未提交生成请求，按已启用的设置回退 Fish Audio REST，'
@@ -5118,7 +5470,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         apiKey: apiKey,
         referenceId: fishReferenceIdForAssistantSpeech(
           segment,
-          primaryReferenceId: widget.controller.activeFishAudioReferenceId,
+          primaryReferenceId: widget.controller.fishAudioReferenceIdForMode(
+            asmr: asmr,
+          ),
         ),
         model: widget.controller.fishAudioModel,
         format: playbackFormat,
@@ -5140,16 +5494,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         model: widget.controller.dashScopeTtsModel,
         voice: widget.controller.activeDashScopeTtsVoice,
         language: widget.controller.dashScopeTtsLanguage,
+        options: widget.controller.dashScopeTtsOptions,
         instructions:
-            widget.controller.dashScopeTtsModel.toLowerCase().contains(
-              'instruct',
+            QwenTtsConfig.supportsInstructions(
+              widget.controller.dashScopeTtsModel,
+              voice: widget.controller.activeDashScopeTtsVoice,
             )
             ? mergeTtsInstructions(
                 '${widget.controller.dashScopeTtsInstructions} $voiceDirection'
                     .trim(),
                 emotionIntensity,
               )
-            : widget.controller.dashScopeTtsInstructions,
+            : '',
         text: plainText,
       ),
       TtsProvider.generic => _genericTtsClient.synthesize(
@@ -5251,11 +5607,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                       ? 'zh'
                       : 'en',
                   asmr: asmr,
-                  effectiveSpeed:
-                      actualProvider == TtsProvider.fishAudio ||
-                          actualProvider == TtsProvider.generic
-                      ? requestedSpeed
-                      : 1,
+                  effectiveSpeed: switch (actualProvider) {
+                    TtsProvider.dashScope
+                        when QwenTtsConfig.isModernModel(
+                          widget.controller.dashScopeTtsModel,
+                        ) =>
+                      widget.controller.dashScopeTtsOptions.rate,
+                    TtsProvider.fishAudio ||
+                    TtsProvider.fishAudioMcp ||
+                    TtsProvider.generic => requestedSpeed,
+                    _ => 1,
+                  },
                 ),
                 actualDuration,
               );
@@ -5359,7 +5721,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _regenerateLastSpeech() async {
-    if (_isReplying || _regeneratingSpeech || !_mayPlayVoice) return;
+    if (_awaitingWake || _isReplying || _regeneratingSpeech || !_mayPlayVoice) {
+      return;
+    }
     final message = widget.controller.messages
         .where((m) => !m.isUser && m.text.trim().isNotEmpty)
         .lastOrNull;
@@ -5403,6 +5767,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _replayLastSpeech() async {
+    if (_awaitingWake) return;
     await _playCachedSpeech(_lastSpeech);
   }
 
@@ -5411,7 +5776,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     String text,
     ChatSpeaker speaker,
   ) async {
-    if (_isReplying || !_mayPlayVoice) return;
+    if (_awaitingWake || _isReplying || !_mayPlayVoice) return;
     final characterId = widget.controller.activeCharacterId;
     final revision = widget.controller.dataRevision;
     try {
@@ -5639,7 +6004,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   bool get _mayPlayVoice =>
+      !_awaitingWake &&
       !_companionRuntime.stopRequested &&
+      !CallAudioPriority.instance.value &&
       (widget.pageActive || widget.controller.backgroundVoicePlayback);
 
   void _syncBackgroundVoicePolicy() {
@@ -6353,26 +6720,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildVirtualPhoneShortcutPicker(BuildContext context) =>
-      SettingsShortcutPicker(
-        controller: widget.controller,
-        includePcAgent: widget.relayService != null,
-        onSelected: (_) => VirtualPhoneScope.of(context).goHome(),
-      );
-
-  Widget _buildVirtualPhoneShortcutPage(BuildContext context) {
-    final section = widget.controller.virtualPhoneSettingsShortcut;
-    if (section == null) return _buildVirtualPhoneShortcutPicker(context);
-    return SettingsScreen(
-      controller: widget.controller,
-      relayService: widget.relayService,
-      onMenuPressed: () {},
-      embedded: true,
-      initialSection: section,
-    );
-  }
-
   Future<void> _openFullscreenComposer() async {
+    if (_awaitingWake) return;
     if (!widget.controller.splitNarrationComposer) return;
     FocusManager.instance.primaryFocus?.unfocus();
     final language = widget.controller.interfaceLanguage;
@@ -6387,13 +6736,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         body: SafeArea(
           child: GlassSurface(
             liquidGlass: widget.controller.liquidGlassChatUi,
-            fallbackColor: const Color(0xE62A2A2A),
+            readableText: true,
+            fallbackColor: Theme.of(context).colorScheme.surface
+                .withValues(alpha: .94),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Expanded(
                     child: NarrationComposerFields(
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
                       controllers: [
                         _narrationInputController,
                         _inputController,
@@ -6661,6 +7013,294 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
+  String _imagePromptForIntent(ImageGenerationIntent intent) {
+    final controller = widget.controller;
+    final profile = controller.activeCharacterProfile;
+    if (!intent.requiresConversationContext) {
+      return buildImageGenerationPrompt(
+        intent: intent,
+        context: ImageGenerationPromptContext(
+          characterName: profile.names.chinese,
+        ),
+      );
+    }
+    final home = _virtualPhoneHomeInfo();
+    return buildImageGenerationPrompt(
+      intent: intent,
+      context: ImageGenerationPromptContext(
+        characterName: '${profile.names.chinese}（${profile.names.japanese}）',
+        characterProfile: controller.characterPersonaInjectionEnabled
+            ? controller.editableCharacterPersona
+            : '',
+        worldBackground: controller.worldSettingInjectionEnabled
+            ? controller.editableWorldSetting
+            : '',
+        location:
+            '${controller.selectedAreaName} / ${controller.selectedStageName}',
+        storyTime: controller.storyClockEnabled
+            ? '第${controller.storyClock.day}天 ${controller.storyClock.timeLabel}，${controller.sceneTime.label}'
+            : controller.sceneTime.label,
+        weather: '${home.weatherLabel}，${home.temperatureLabel}',
+        appearance: controller.activeModelId == null
+            ? ''
+            : '${_appearance.label}。${_appearance.promptDescription}',
+        history: controller.messages.map(
+          (message) => ImageGenerationPromptMessage(
+            text: message.text,
+            isUser: message.isUser,
+            isFailure: message.isFailure,
+            isGeneratedImageRecord: message.attachments.any(
+              (attachment) => attachment.generatedImageTaskId != null,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _startImageGeneration(
+    String prompt, {
+    String? userMessageId,
+    ImageGenerationTask? retryTask,
+  }) async {
+    final store = _imageGenerationStore;
+    final config = widget.controller.imageGeneration;
+    final targetCharacterId = widget.controller.activeCharacterId;
+    final targetRevision = widget.controller.dataRevision;
+    ImageGenerationTask? task = retryTask;
+    var receivedGeneratedImage = false;
+    try {
+      if (!config.enabled) {
+        throw const ImageGenerationException(
+          code: 'disabled',
+          stage: 'configuration',
+          message: '请先在“设置 → AI 接口 → 生图接口配置”中启用生图服务。',
+        );
+      }
+      if (task == null) {
+        task = await store.createTask(
+          prompt: prompt,
+          protocol: config.protocol.storageName,
+          model: config.model,
+          messageId: userMessageId,
+        );
+      } else {
+        task = await store.retry(task.id);
+      }
+      await store.markGenerating(
+        task.id,
+        protocol: config.resolvedProtocol.storageName,
+        model: config.model,
+      );
+      final cancellation = ImageGenerationCancellationToken();
+      _imageGenerationCancellations[task.id] = cancellation;
+      final needsApiKey = config.resolvedProtocol.requiresApiKey;
+      final apiKey = await _secretStore.readImageGenerationKey();
+      if (needsApiKey && apiKey.trim().isEmpty) {
+        throw const ImageGenerationException(
+          code: 'missing_api_key',
+          stage: 'configuration',
+          message: '生图 API Key 为空，请先完成接口配置。',
+        );
+      }
+      final result = await _imageGenerationService.generate(
+        config: config,
+        apiKey: apiKey,
+        prompt: prompt,
+        cancellationToken: cancellation,
+      );
+      receivedGeneratedImage = true;
+      final completed = await store.complete(
+        task.id,
+        bytes: result.bytes,
+        mimeType: result.mimeType,
+        protocol: result.protocol.storageName,
+        model: result.model,
+      );
+      final thumbnail = await (widget.imageThumbnailer == null
+          ? _createImageThumbnail(result.bytes)
+          : widget.imageThumbnailer!(result.bytes));
+      final thumbnailKey = thumbnail == null
+          ? null
+          : await AttachmentThumbnailStore.write(thumbnail);
+      await _appendGeneratedImageWhenSafe(
+        prompt: prompt,
+        taskId: completed.id,
+        attachment: ChatAttachment(
+          name:
+              'generated_${completed.id}.${_extensionForImageMime(result.mimeType)}',
+          mimeType: result.mimeType,
+          size: result.bytes.length,
+          bytes: result.bytes,
+          thumbnailBytes: thumbnail,
+          thumbnailKey: thumbnailKey,
+          generatedImageTaskId: completed.id,
+        ),
+        characterId: targetCharacterId,
+        revision: targetRevision,
+      );
+    } on Object catch (error, stackTrace) {
+      RuntimeLog.instance.error('ImageGeneration', error, stackTrace);
+      final message = _imageGenerationErrorText(error);
+      if (task != null && store.taskById(task.id)?.isActive == true) {
+        await store.fail(
+          task.id,
+          message,
+          outcomeUnknown:
+              receivedGeneratedImage ||
+              error is ImageGenerationException && error.outcomeUnknown,
+        );
+      }
+      await _appendImageNoticeWhenSafe(
+        task == null ? '图片生成未开始：$message' : '图片生成失败：$message',
+        characterId: targetCharacterId,
+        revision: targetRevision,
+      );
+    } finally {
+      if (task != null) _imageGenerationCancellations.remove(task.id);
+    }
+  }
+
+  Future<void> _appendGeneratedImageWhenSafe({
+    required String prompt,
+    required String taskId,
+    required ChatAttachment attachment,
+    required String characterId,
+    required int revision,
+  }) async {
+    // The dialogue streamer owns the last assistant message. Insert the image
+    // only after it has finished so an early image response cannot steal its
+    // text deltas or attachments.
+    while (mounted && _isReplying) {
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+    }
+    if (!_conversationIsCurrent(characterId, revision)) return;
+    widget.controller.addAssistantMessage(
+      '图片已生成：${imageGenerationPromptCaption(prompt)}',
+      attachments: [attachment],
+    );
+    await _imageGenerationStore.linkMessage(
+      taskId,
+      widget.controller.messages.last.id,
+    );
+    if (mounted) _scrollToBottom();
+  }
+
+  Future<void> _appendImageNoticeWhenSafe(
+    String message, {
+    required String characterId,
+    required int revision,
+  }) async {
+    while (mounted && _isReplying) {
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+    }
+    if (!_conversationIsCurrent(characterId, revision)) return;
+    widget.controller.addAssistantMessage(message);
+    if (mounted) _scrollToBottom();
+  }
+
+  String _extensionForImageMime(String mimeType) => switch (mimeType) {
+    'image/jpeg' => 'jpg',
+    'image/webp' => 'webp',
+    'image/gif' => 'gif',
+    'image/avif' => 'avif',
+    _ => 'png',
+  };
+
+  String _imageGenerationErrorText(Object error) =>
+      error is ImageGenerationException ? error.message : '图片生成失败，请打开生图管理查看记录。';
+
+  Widget _buildVirtualPhoneCallPage(BuildContext context) {
+    final wallpaper = widget.controller.virtualPhoneWallpapers.selected;
+    return RealtimeCallPage(
+      controller: _calls,
+      language: widget.controller.interfaceLanguage,
+      wallpaper: wallpaper.filePath != null
+          ? Image(
+              image: virtualPhoneWallpaperFileImage(wallpaper.filePath!),
+              fit: BoxFit.cover,
+            )
+          : Image.asset(
+              wallpaper.assetPath ?? 'assets/images/virtual_phone/bg1.png',
+              fit: BoxFit.cover,
+            ),
+      onBack: () => Navigator.of(context).maybePop(),
+      onOpenMessages: (_) {
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) navigator.pop();
+      },
+      onOpenSettings: () => _openVoiceCallSettings(context),
+    );
+  }
+
+  Future<void> _startMainVoiceCall() async {
+    if (!_calls.contacts.any(
+          (c) =>
+              c.id == 'primary:${widget.controller.activeConversationScopeId}',
+        ) ||
+        _awaitingWake ||
+        _isReplying ||
+        widget.controller.continuousAsmr) {
+      return;
+    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _mainVoiceVisible = true);
+    try {
+      await _calls.startCall(
+        'primary:${widget.controller.activeConversationScopeId}',
+      );
+    } catch (_) {
+      if (mounted) {
+        final language = widget.controller.interfaceLanguage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              language.text(
+                '无法开始语音通话，请检查语音设置后重试。',
+                'Unable to start voice chat. Check voice settings and retry.',
+                '音声会話を開始できません。音声設定を確認してください。',
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _openVoiceCallSettings(BuildContext context) =>
+      Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (callContext) => AnimatedBuilder(
+            animation: widget.controller,
+            builder: (_, _) => RealtimeCallSettingsPage(
+              liquidGlass: widget.controller.liquidGlassChatUi,
+              onOpenVoiceSettings: () => Navigator.of(callContext).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => SettingsScreen(
+                    controller: widget.controller,
+                    initialSection: SettingsSection.audio,
+                    onMenuPressed: () => Navigator.of(callContext).maybePop(),
+                  ),
+                ),
+              ),
+              ttsProvider: widget.controller.ttsProvider,
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildVirtualPhoneImagePage(BuildContext context) =>
+      ImageGenerationManagerPage(
+        store: _imageGenerationStore,
+        language: widget.controller.interfaceLanguage,
+        liquidGlass: widget.controller.liquidGlassChatUi,
+        onRetry: (task) => _startImageGeneration(
+          task.prompt,
+          userMessageId: task.messageId,
+          retryTask: task,
+        ),
+      );
+
   Widget _buildVirtualPhoneMotionPage(BuildContext context) {
     return AnimatedBuilder(
       animation: Listenable.merge([widget.controller, _modelCatalogRevision]),
@@ -6909,14 +7549,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 right: 0,
                 height: viewportConstraints.maxHeight,
                 child:
-                    (_usesProtectedSpine || _usesLive2d) &&
-                        widget.controller.usesBuiltInCharacterWorld
-                    ? _SceneBackground(
-                        sceneTime: widget.controller.sceneTime,
-                        stageId: widget.controller.selectedStageId,
-                        frameRate: widget.controller.frameRate,
-                      )
-                    : const ColoredBox(color: Color(0xFF15191B)),
+                    widget.sceneBackground ??
+                    ((_usesProtectedSpine || _usesLive2d) &&
+                            widget.controller.usesBuiltInCharacterWorld
+                        ? _SceneBackground(
+                            sceneTime: widget.controller.sceneTime,
+                            stageId: widget.controller.selectedStageId,
+                            frameRate: widget.controller.frameRate,
+                          )
+                        : const ColoredBox(color: Color(0xFF15191B))),
               ),
               Positioned(
                 top: mediaQuery.viewPadding.top,
@@ -6976,10 +7617,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     );
     final panelFraction =
         _lockedPanelFraction ?? _manualPanelFraction ?? automaticFraction;
+    final showVoicePanel =
+        _mainVoiceVisible ||
+        _calls.active ||
+        _calls.snapshot.phase == CallUiPhase.incoming;
     final panelBounds = conversationPanelBounds(
       viewport: viewport,
       keyboardInset: keyboardInset,
-      fraction: widget.controller.splitNarrationComposer
+      fraction: showVoicePanel
+          ? max(panelFraction, 350 / max(1.0, viewport.height))
+          : widget.controller.splitNarrationComposer
           ? max(panelFraction, 290 / max(1.0, viewport.height))
           : panelFraction,
       fullscreen: _conversationFullscreen,
@@ -7022,21 +7669,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 homeInfoBuilder: _virtualPhoneHomeInfo,
                 statusInfo: _virtualPhoneStatusInfo(),
                 statusInfoBuilder: _virtualPhoneStatusInfo,
-                shortcutLabel: () =>
-                    widget.controller.virtualPhoneSettingsShortcut?.title(
-                      widget.controller.interfaceLanguage,
-                    ) ??
-                    widget.controller.interfaceLanguage.text(
-                      '自定义',
-                      'Shortcut',
-                      'カスタム',
-                    ),
-                shortcutIcon: () =>
-                    widget.controller.virtualPhoneSettingsShortcut?.icon ??
-                    Icons.dashboard_customize_outlined,
-                shortcutPicker: _buildVirtualPhoneShortcutPicker,
-                pageManagedBackApps: const {VirtualPhoneApp.pcAgent},
+                imageGenerationUpdates: _imageGenerationStore,
+                imageGenerationActiveBuilder: () =>
+                    _imageGenerationStore.activeCount > 0,
+                imageGenerationUnreadBuilder: () =>
+                    _imageGenerationStore.hasUnseenCompleted,
+                pageManagedBackApps: const {
+                  VirtualPhoneApp.pcAgent,
+                  VirtualPhoneApp.phone,
+                  VirtualPhoneApp.imageGeneration,
+                },
                 fullBleedApps: <VirtualPhoneApp>{
+                  VirtualPhoneApp.phone,
                   VirtualPhoneApp.shop,
                   VirtualPhoneApp.pcAgent,
                   VirtualPhoneApp.messages,
@@ -7047,14 +7691,17 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   VirtualPhoneApp.settings,
                   VirtualPhoneApp.runtimeLogs,
                   VirtualPhoneApp.wallpaper,
+                  VirtualPhoneApp.imageGeneration,
                 },
                 pages: <VirtualPhoneApp, VirtualPhonePageBuilder>{
+                  if (AppPlatformCapabilities.supportsRealtimeCalls)
+                    VirtualPhoneApp.phone: _buildVirtualPhoneCallPage,
                   VirtualPhoneApp.status: _buildVirtualPhoneStatusPage,
                   VirtualPhoneApp.messages: (_) =>
                       NpcMessagesPage(controller: widget.controller),
                   VirtualPhoneApp.outfit: _buildVirtualPhoneAppearancePage,
                   VirtualPhoneApp.motion: _buildVirtualPhoneMotionPage,
-                  VirtualPhoneApp.shortcut: _buildVirtualPhoneShortcutPage,
+                  VirtualPhoneApp.imageGeneration: _buildVirtualPhoneImagePage,
                   VirtualPhoneApp.wallpaper: (_) => VirtualPhoneWallpaperPage(
                     store: widget.controller.virtualPhoneWallpapers,
                     language: widget.controller.interfaceLanguage,
@@ -7086,16 +7733,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           phoneContext,
                           VirtualPhoneApp.worldMap,
                         ),
-                  VirtualPhoneApp.alchemy: (context) =>
-                      widget.controller.usesBuiltInCharacterWorld
-                      ? AlchemyScreen(
-                          controller: widget.controller,
-                          embedded: true,
-                        )
-                      : _buildVirtualPhoneWorldFeature(
-                          context,
-                          VirtualPhoneApp.alchemy,
-                        ),
+                  VirtualPhoneApp.alchemy: (context) => AlchemyScreen(
+                    controller: widget.controller,
+                    embedded: true,
+                  ),
                   VirtualPhoneApp.missions: (context) =>
                       widget.controller.usesBuiltInCharacterWorld
                       ? MissionScreen(
@@ -7106,14 +7747,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           context,
                           VirtualPhoneApp.missions,
                         ),
-                  VirtualPhoneApp.alarms: (_) => AlarmScreen(
-                    controller: widget.controller,
-                    onMenuPressed: () {},
-                    embedded: true,
-                  ),
+                  if (AppPlatformCapabilities.supportsVoiceAlarms)
+                    VirtualPhoneApp.alarms: (_) => AlarmScreen(
+                      controller: widget.controller,
+                      onMenuPressed: () {},
+                      embedded: true,
+                    ),
                   VirtualPhoneApp.settings: (_) => SettingsScreen(
                     controller: widget.controller,
                     relayService: widget.relayService,
+                    updateRuntime: widget.updateRuntime,
                     backHandledByShell: false,
                     onMenuPressed: () {},
                     embedded: true,
@@ -7151,6 +7794,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   widget.controller.translationLanguage.name != 'none',
               messages: widget.controller.messages,
               isReplying: _isReplying,
+              onWakeCharacter: _awaitingWake ? _wakeCharacter : null,
+              waking: _waking,
               scrollController: _scrollController,
               inputController: _inputController,
               narrationController: _narrationInputController,
@@ -7161,7 +7806,25 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   !widget.controller.splitNarrationComposer,
                 );
               },
-              showMicrophone: widget.controller.showMicrophoneButton,
+              showMicrophone:
+                  widget.controller.showMicrophoneButton &&
+                  _calls.contacts.any(
+                    (c) =>
+                        c.id ==
+                        'primary:${widget.controller.activeConversationScopeId}',
+                  ),
+              onStartVoiceCall:
+                  !widget.controller.continuousAsmr && !_isReplying
+                  ? _startMainVoiceCall
+                  : null,
+              voiceControls: showVoicePanel
+                  ? MainChatVoicePanel(
+                      controller: _calls,
+                      language: widget.controller.interfaceLanguage,
+                      onClose: () => setState(() => _mainVoiceVisible = false),
+                      onOpenSettings: () => _openVoiceCallSettings(context),
+                    )
+                  : null,
               unlockInputWhileReplying:
                   widget.controller.unlockInputWhileReplying,
               attachments: _pendingAttachments,
@@ -7176,11 +7839,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               onCancel: _cancelReply,
               expanded: false,
               onToggleExpanded: _openFullscreenComposer,
-              canUndo: widget.controller.messages.any(
-                (message) => message.isUser,
-              ),
-              canReplay: _lastSpeech.isNotEmpty && !_isReplying,
+              canUndo:
+                  !_awaitingWake &&
+                  !_calls.active &&
+                  widget.controller.messages.any((message) => message.isUser),
+              canReplay:
+                  !_awaitingWake &&
+                  !_calls.active &&
+                  _lastSpeech.isNotEmpty &&
+                  !_isReplying,
               canContinue:
+                  !_awaitingWake &&
+                  !_calls.active &&
                   widget.controller.messages.any(
                     (message) => !message.isUser,
                   ) &&
@@ -7523,25 +8193,33 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             ),
             keepSceneProportions: true,
             onTap: _usesMappedSpine ? (_) {} : _reactToTap,
-            onCharacterDragStart: _appearance.animated && !_usesMappedSpine
+            onCharacterDragStart:
+                !_awaitingWake && _appearance.animated && !_usesMappedSpine
                 ? _beginFacePull
                 : null,
-            onCharacterDragUpdate: _appearance.animated && !_usesMappedSpine
+            onCharacterDragUpdate:
+                !_awaitingWake && _appearance.animated && !_usesMappedSpine
                 ? _updateFacePull
                 : null,
             onCharacterDragEnd: _endFacePull,
-            onCharacterTouchStart: _appearance.animated && !_usesMappedSpine
+            onCharacterTouchStart:
+                !_awaitingWake && _appearance.animated && !_usesMappedSpine
                 ? _beginTouchPhysics
                 : null,
-            onCharacterTouchMove: _appearance.animated && !_usesMappedSpine
+            onCharacterTouchMove:
+                !_awaitingWake && _appearance.animated && !_usesMappedSpine
                 ? _moveTouchPhysics
                 : null,
             onCharacterTouchEnd: _endTouchPhysics,
             onGazeChanged:
-                widget.controller.gazeTrackingEnabled && !_usesMappedSpine
+                !_awaitingWake &&
+                    widget.controller.gazeTrackingEnabled &&
+                    !_usesMappedSpine
                 ? _updateGaze
                 : null,
-            onGazeEnd: widget.controller.gazeTrackingEnabled ? _endGaze : null,
+            onGazeEnd: !_awaitingWake && widget.controller.gazeTrackingEnabled
+                ? _endGaze
+                : null,
             child: Stack(
               fit: StackFit.expand,
               clipBehavior: Clip.none,
@@ -7852,7 +8530,11 @@ class _SceneSpineLayerState extends State<_SceneSpineLayer> {
   }
 
   void _reloadBundle() {
-    if (mounted) setState(() => _bundleFuture = _loadBundle());
+    if (mounted) {
+      setState(() {
+        _bundleFuture = _loadBundle();
+      });
+    }
   }
 
   @override
@@ -8180,6 +8862,7 @@ class _SceneTimeMenuState extends State<_SceneTimeMenu> {
         label: widget.language.text('切换场景时间', 'Change scene time', 'シーンの時間を変更'),
         child: GlassSurface(
           liquidGlass: widget.liquidGlass,
+          tone: GlassTone.dark,
           borderRadius: BorderRadius.circular(21),
           fallbackColor: Colors.black.withValues(alpha: 0.38),
           child: SizedBox(
@@ -8352,6 +9035,7 @@ class _TimeOptionPill extends StatelessWidget {
       message: tooltip,
       child: GlassSurface(
         liquidGlass: liquidGlass,
+        tone: GlassTone.dark,
         borderRadius: BorderRadius.circular(22),
         fallbackColor: selected
             ? Colors.white.withValues(alpha: 0.30)
@@ -8414,6 +9098,7 @@ class _VoiceModeOptionPill extends StatelessWidget {
     const foreground = Colors.white;
     return GlassSurface(
       liquidGlass: liquidGlass,
+      tone: GlassTone.dark,
       borderRadius: BorderRadius.circular(22),
       fallbackColor: selected
           ? Colors.white.withValues(alpha: 0.30)
@@ -8471,10 +9156,9 @@ class _GlassPickerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
-      child: GlassSurface(
+      child: GlassContentCard(
         liquidGlass: liquidGlass,
         borderRadius: BorderRadius.circular(10),
-        fallbackColor: Colors.white.withValues(alpha: 0.08),
         child: ListTile(
           dense: dense,
           leading: leading,
@@ -8515,10 +9199,8 @@ class _MotionPickerPage extends StatelessWidget {
           ),
         ),
       ),
-      body: GlassSurface(
+      body: GlassPageSurface(
         liquidGlass: liquidGlass,
-        borderRadius: BorderRadius.zero,
-        fallbackColor: const Color(0xE8201D1B),
         child: Column(
           children: [
             postureControls,
@@ -8533,7 +9215,11 @@ class _MotionPickerPage extends StatelessWidget {
                             'No combinations are available for this skin or posture. Try sitting normally.',
                             '現在の衣装・姿勢では再生できる組み合わせがありません。通常座りをお試しください。',
                           ),
-                          style: const TextStyle(color: Colors.white70),
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -8546,17 +9232,23 @@ class _MotionPickerPage extends StatelessWidget {
                         return _GlassPickerTile(
                           liquidGlass: liquidGlass,
                           dense: true,
-                          leading: const Icon(
+                          leading: Icon(
                             Icons.layers_outlined,
-                            color: Colors.white70,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                           title: Text(
                             recipe.name.replaceFirst(RegExp(r'^\d+_'), ''),
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
-                          trailing: const Icon(
+                          trailing: Icon(
                             Icons.play_arrow,
-                            color: Colors.white70,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
                           ),
                           onTap: () => onSelected(recipe),
                         );
@@ -8601,6 +9293,11 @@ class _ProtectedAppearancePreview extends StatelessWidget {
       return _TextureAppearancePreview(
         appearance: appearance,
         fallback: fallback,
+      );
+    }
+    if (!appearance.hasPreview) {
+      return const Center(
+        child: Icon(Icons.checkroom_outlined, size: 72, color: Colors.white54),
       );
     }
     return fallback;
@@ -8825,6 +9522,7 @@ class _StaticAppearanceLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       liquidGlass: liquidGlass,
+      tone: GlassTone.dark,
       borderRadius: BorderRadius.circular(16),
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -8975,7 +9673,7 @@ class _SuggestionQuotaButtonState extends State<_SuggestionQuotaButton> {
                       ? const Color(0xFFD99636)
                       : const Color(0xFF59636D),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white70, width: 0.8),
+                  border: Border.all(color: Colors.white70, width: 0),
                 ),
                 child: Text(
                   '$remaining',
@@ -8997,6 +9695,8 @@ class _SuggestionQuotaButtonState extends State<_SuggestionQuotaButton> {
 
 class _LiquidGlassConversation extends StatelessWidget {
   const _LiquidGlassConversation({
+    this.onWakeCharacter,
+    this.waking = false,
     required this.selectingCollection,
     required this.savingCollection,
     required this.collectionSelection,
@@ -9016,6 +9716,8 @@ class _LiquidGlassConversation extends StatelessWidget {
     required this.splitNarration,
     required this.onToggleNarration,
     required this.showMicrophone,
+    required this.onStartVoiceCall,
+    required this.voiceControls,
     required this.unlockInputWhileReplying,
     required this.attachments,
     required this.onTakePhoto,
@@ -9055,6 +9757,8 @@ class _LiquidGlassConversation extends StatelessWidget {
   });
 
   final AppLanguage language;
+  final VoidCallback? onWakeCharacter;
+  final bool waking;
   final CharacterRuntimeProfile characterProfile;
   final bool selectingCollection;
   final bool savingCollection;
@@ -9073,6 +9777,8 @@ class _LiquidGlassConversation extends StatelessWidget {
   final bool splitNarration;
   final VoidCallback onToggleNarration;
   final bool showMicrophone;
+  final VoidCallback? onStartVoiceCall;
+  final Widget? voiceControls;
   final bool unlockInputWhileReplying;
   final List<ChatAttachment> attachments;
   final VoidCallback onTakePhoto;
@@ -9174,47 +9880,66 @@ class _LiquidGlassConversation extends StatelessWidget {
                     height: 1,
                     color: Colors.white.withValues(alpha: 0.2),
                   ),
-                  speechProgress,
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: min(
-                        MediaQuery.sizeOf(context).height * .5,
-                        max(0.0, constraints.maxHeight - 90),
+                  if (voiceControls == null) speechProgress,
+                  if (voiceControls != null && onWakeCharacter == null)
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: max(0, constraints.maxHeight - 70),
                       ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: IgnorePointer(
-                        ignoring: selectingCollection,
-                        child: _GlassComposer(
-                          availableHeight: min(
-                            MediaQuery.sizeOf(context).height * .5,
-                            max(0.0, constraints.maxHeight - 90),
-                          ),
-                          language: language,
-                          characterProfile: characterProfile,
-                          controller: inputController,
-                          narrationController: narrationController,
-                          bottomNarrationController: bottomNarrationController,
-                          splitNarration: splitNarration,
-                          onToggleNarration: onToggleNarration,
-                          isReplying: isReplying,
-                          showMicrophone: showMicrophone,
-                          unlockInputWhileReplying: unlockInputWhileReplying,
-                          attachments: attachments,
-                          liquidGlass: liquidGlass,
-                          onTakePhoto: onTakePhoto,
-                          onPickImage: onPickImage,
-                          onPickFile: onPickFile,
-                          onRemoveAttachment: onRemoveAttachment,
-                          onSubmitted: onSubmitted,
-                          onSend: onSend,
-                          onCancel: onCancel,
-                          expanded: expanded,
-                          onToggleExpanded: onToggleExpanded,
+                      child: voiceControls,
+                    )
+                  else
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: min(
+                          MediaQuery.sizeOf(context).height * .5,
+                          max(0.0, constraints.maxHeight - 90),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        child: IgnorePointer(
+                          ignoring: selectingCollection,
+                          child: onWakeCharacter != null
+                              ? ColdStartWakeButton(
+                                  characterName: characterProfile.names
+                                      .forLocale(language.name),
+                                  language: language,
+                                  onPressed: onWakeCharacter!,
+                                  waking: waking,
+                                )
+                              : _GlassComposer(
+                                  availableHeight: min(
+                                    MediaQuery.sizeOf(context).height * .5,
+                                    max(0.0, constraints.maxHeight - 90),
+                                  ),
+                                  language: language,
+                                  characterProfile: characterProfile,
+                                  controller: inputController,
+                                  narrationController: narrationController,
+                                  bottomNarrationController:
+                                      bottomNarrationController,
+                                  splitNarration: splitNarration,
+                                  onToggleNarration: onToggleNarration,
+                                  isReplying: isReplying,
+                                  showMicrophone: showMicrophone,
+                                  onStartVoiceCall: onStartVoiceCall,
+                                  unlockInputWhileReplying:
+                                      unlockInputWhileReplying,
+                                  attachments: attachments,
+                                  liquidGlass: liquidGlass,
+                                  onTakePhoto: onTakePhoto,
+                                  onPickImage: onPickImage,
+                                  onPickFile: onPickFile,
+                                  onRemoveAttachment: onRemoveAttachment,
+                                  onSubmitted: onSubmitted,
+                                  onSend: onSend,
+                                  onCancel: onCancel,
+                                  expanded: expanded,
+                                  onToggleExpanded: onToggleExpanded,
+                                ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -9235,7 +9960,9 @@ class _LiquidGlassConversation extends StatelessWidget {
                     isSuggesting: isSuggestingReply,
                     controller: suggestionController,
                     onPressed:
-                        !isReplying &&
+                        onWakeCharacter == null &&
+                            voiceControls == null &&
+                            !isReplying &&
                             !selectingCollection &&
                             !isSuggestingReply
                         ? onSuggestReply
@@ -9281,7 +10008,8 @@ class _LiquidGlassConversation extends StatelessWidget {
                         ? const _RotatingIcon(Icons.autorenew_rounded)
                         : null,
                     onLongPress:
-                        !isReplying &&
+                        onWakeCharacter == null &&
+                            !isReplying &&
                             !selectingCollection &&
                             messages.any(
                               (m) => !m.isUser && m.text.trim().isNotEmpty,
@@ -9311,7 +10039,8 @@ class _LiquidGlassConversation extends StatelessWidget {
                           : 'Select text or audio',
                       selectingCollection ? 'お気に入りを保存（未選択で終了）' : 'テキスト・音声を選択',
                     ),
-                    onPressed: isReplying || savingCollection
+                    onPressed:
+                        isReplying || savingCollection || voiceControls != null
                         ? null
                         : onToggleCollection,
                     size: 36,
@@ -9374,7 +10103,9 @@ class _LiquidGlassSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       liquidGlass: liquidGlass,
+      tone: GlassTone.dark,
       fallbackColor: const Color(0xFF201D1B).withValues(alpha: 0.72),
+      readableText: true,
       boxShadow: const [
         BoxShadow(
           color: Color(0x52000000),
@@ -9488,7 +10219,10 @@ class _GlassMessageList extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withValues(alpha: 0.16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.24),
+                width: 0,
+              ),
             ),
             child: Icon(
               Icons.person_outline_rounded,
@@ -9978,6 +10712,7 @@ class _CharacterRun extends StatelessWidget {
           color: glass
               ? Colors.white.withValues(alpha: 0.24)
               : Theme.of(context).colorScheme.outlineVariant,
+          width: 0,
         ),
       ),
       child: avatarAsset == null
@@ -10220,6 +10955,7 @@ class _PendingAttachmentBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: glass ? Colors.white24 : Colors.black12,
+                width: 0,
               ),
             ),
             child: Row(
@@ -10288,6 +11024,7 @@ class _SentAttachmentLabels extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: glass ? Colors.white24 : Colors.black12,
+                  width: 0,
                 ),
               ),
               clipBehavior: Clip.antiAlias,
@@ -10327,6 +11064,7 @@ class _SentAttachmentLabels extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: glass ? Colors.white24 : Colors.black12,
+                  width: 0,
                 ),
               ),
               child: Row(
@@ -10421,6 +11159,7 @@ class _GlassComposer extends StatelessWidget {
     required this.onToggleNarration,
     required this.isReplying,
     required this.showMicrophone,
+    required this.onStartVoiceCall,
     required this.unlockInputWhileReplying,
     required this.attachments,
     required this.liquidGlass,
@@ -10444,6 +11183,7 @@ class _GlassComposer extends StatelessWidget {
   final VoidCallback onToggleNarration;
   final bool isReplying;
   final bool showMicrophone;
+  final VoidCallback? onStartVoiceCall;
   final bool unlockInputWhileReplying;
   final List<ChatAttachment> attachments;
   final bool liquidGlass;
@@ -10477,11 +11217,12 @@ class _GlassComposer extends StatelessWidget {
             children: [
               if (showMicrophone) ...[
                 IconButton(
-                  onPressed: () {},
+                  key: const ValueKey('main-chat-voice-start'),
+                  onPressed: onStartVoiceCall,
                   tooltip: language.text(
-                    '语音输入（待接入）',
-                    'Voice input (coming later)',
-                    '音声入力（未実装）',
+                    '开始语音通话',
+                    'Start voice chat',
+                    '音声会話を開始',
                   ),
                   color: Colors.white,
                   icon: const Icon(Icons.mic_none_rounded),
@@ -10511,6 +11252,7 @@ class _GlassComposer extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.28),
+                      width: 0,
                     ),
                   ),
                   child: splitNarration
@@ -10696,13 +11438,15 @@ class _AttachmentMenuButtonState extends State<_AttachmentMenuButton> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  _AttachmentMenuOption(
-                    liquidGlass: widget.liquidGlass,
-                    icon: Icons.camera_alt_outlined,
-                    label: widget.language.text('拍照', 'Camera', '撮影'),
-                    onPressed: () => _select(widget.onTakePhoto),
-                  ),
-                  const SizedBox(height: 6),
+                  if (AppPlatformCapabilities.supportsPhotoCapture) ...[
+                    _AttachmentMenuOption(
+                      liquidGlass: widget.liquidGlass,
+                      icon: Icons.camera_alt_outlined,
+                      label: widget.language.text('拍照', 'Camera', '撮影'),
+                      onPressed: () => _select(widget.onTakePhoto),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
                   _AttachmentMenuOption(
                     liquidGlass: widget.liquidGlass,
                     icon: Icons.image_outlined,
@@ -10795,6 +11539,7 @@ class _AttachmentMenuOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       liquidGlass: liquidGlass,
+      tone: GlassTone.dark,
       borderRadius: BorderRadius.circular(20),
       fallbackColor: Colors.black.withValues(alpha: 0.58),
       child: InkWell(
@@ -10855,8 +11600,10 @@ class _ConversationSheetState extends State<_ConversationSheet> {
       top: false,
       child: GlassSurface(
         liquidGlass: widget.liquidGlass,
+        tone: GlassTone.dark,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
         fallbackColor: const Color(0xE8201D1B),
+        readableText: true,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

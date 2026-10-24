@@ -261,7 +261,7 @@ void main() {
       );
 
       expect(calls, 2);
-      expect(output, '莱莎：[face:sad][action:none]我先想想。');
+      expect(output, '主角：[face:sad][action:none]我先想想。');
     },
   );
 }

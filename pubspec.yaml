@@ -1,5 +1,5 @@
 name: ryza_chat_mvp
-description: "AgentAtelier is a model-importable AI character companion framework."
+description: "OpenAgentAtelier is a model-importable AI character companion framework."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -60,6 +60,8 @@ dependencies:
   mcp_dart: 2.4.3
   url_launcher: ^6.3.3
   app_links: ^7.2.2
+  record: ^7.1.2
+  sherpa_onnx: 1.13.8
 
 dev_dependencies:
   flutter_test:
@@ -88,8 +90,6 @@ flutter:
 
   assets:
     - docs/third_party/ryza-ai-revive-LICENSE.txt
-    - assets/branding/
-    - assets/branding/loading/
     - assets/data/
     - assets/data/spine_templates/
     - assets/images/

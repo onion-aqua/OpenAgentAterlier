@@ -36,7 +36,11 @@ class ShopScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    item.name(language),
+                    item.name(
+                      language,
+                      characterName: controller.activeCharacterProfile
+                          .displayNameFor(language.name),
+                    ),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 16),
@@ -48,7 +52,13 @@ class ShopScreen extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 16),
-                  Text(item.description(language)),
+                  Text(
+                    item.description(
+                      language,
+                      characterName: controller.activeCharacterProfile
+                          .displayNameFor(language.name),
+                    ),
+                  ),
                   if (item.effect(language).trim().isNotEmpty) ...[
                     const SizedBox(height: 16),
                     const Divider(height: 1),
@@ -84,22 +94,28 @@ class ShopScreen extends StatelessWidget {
         content: Text(
           bought
               ? language.text(
-                  '已放入背包：${item.name(language)}',
-                  'Added to inventory: ${item.name(language)}',
-                  'バッグに追加：${item.name(language)}',
+                  '已放入背包：${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}',
+                  'Added to inventory: ${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}',
+                  'バッグに追加：${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}',
                 )
-              : language.text(
-                  '关系点数不足或库存已满',
-                  'Not enough relationship points or inventory is full',
-                  '関係ポイント不足、または所持数が上限です',
-                ),
+              : controller.shopPurchaseBlockReason(item.id) ??
+                    language.text(
+                      '关系点数不足或库存已满',
+                      'Not enough relationship points or inventory is full',
+                      '関係ポイント不足、または所持数が上限です',
+                    ),
         ),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: controller,
+    builder: (context, _) => _buildShop(context),
+  );
+
+  Widget _buildShop(BuildContext context) {
     final language = controller.interfaceLanguage;
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -149,6 +165,26 @@ class ShopScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (controller.characterState.reconciliationPurchaseBlocked)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        horizontalPadding,
+                        0,
+                        horizontalPadding,
+                        16,
+                      ),
+                      child: Text(
+                        controller.shopPurchaseBlockReason(
+                          ShopCatalog.reconciliationVoucherId,
+                        )!,
+                        key: const ValueKey('shop-voucher-lock-reason'),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
@@ -177,9 +213,9 @@ class ShopScreen extends StatelessWidget {
                               Expanded(
                                 child: Tooltip(
                                   message: language.text(
-                                    '查看${item.name(language)}详情',
-                                    'View details for ${item.name(language)}',
-                                    '${item.name(language)}の詳細を見る',
+                                    '查看${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}详情',
+                                    'View details for ${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}',
+                                    '${item.name(language, characterName: controller.activeCharacterProfile.displayNameFor(language.name))}の詳細を見る',
                                   ),
                                   child: InkWell(
                                     key: ValueKey('shop-item-image-${item.id}'),
@@ -188,7 +224,12 @@ class ShopScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(6),
                                     child: Image.asset(
                                       item.imageAsset,
-                                      semanticLabel: item.name(language),
+                                      semanticLabel: item.name(
+                                        language,
+                                        characterName: controller
+                                            .activeCharacterProfile
+                                            .displayNameFor(language.name),
+                                      ),
                                       cacheWidth: 512,
                                       fit: BoxFit.contain,
                                     ),
@@ -199,7 +240,12 @@ class ShopScreen extends StatelessWidget {
                               SizedBox(
                                 height: 42,
                                 child: Text(
-                                  item.name(language),
+                                  item.name(
+                                    language,
+                                    characterName: controller
+                                        .activeCharacterProfile
+                                        .displayNameFor(language.name),
+                                  ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleSmall,
@@ -234,17 +280,28 @@ class ShopScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Expanded(
-                                    child: FilledButton(
-                                      onPressed: () =>
-                                          _buy(context, item, language),
-                                      style: FilledButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
+                                    child: Tooltip(
+                                      message:
+                                          controller.shopPurchaseBlockReason(
+                                            item.id,
+                                          ) ??
+                                          '',
+                                      child: FilledButton(
+                                        key: ValueKey('shop-buy-${item.id}'),
+                                        onPressed:
+                                            controller.canBuyShopItem(item.id)
+                                            ? () =>
+                                                  _buy(context, item, language)
+                                            : null,
+                                        style: FilledButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        language.text('购买', 'Buy', '購入'),
-                                        maxLines: 1,
+                                        child: Text(
+                                          language.text('购买', 'Buy', '購入'),
+                                          maxLines: 1,
+                                        ),
                                       ),
                                     ),
                                   ),

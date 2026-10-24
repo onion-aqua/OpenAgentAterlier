@@ -6,13 +6,18 @@ import 'package:audioplayers/audioplayers.dart';
 import 'app_audio_player.dart';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'ai_services.dart';
+import 'qwen_tts_config.dart';
+import 'image_generation_config.dart';
+import 'image_generation_settings_page.dart';
 import 'relay/relay_service.dart';
 import 'relay/relay_chat_page.dart';
 import 'app_controller.dart';
+import 'app_identity.dart';
 import 'app_localization.dart';
 import 'app_theme.dart';
 import 'auxiliary_llm_tasks.dart';
@@ -39,12 +44,19 @@ import 'settings_slot_selector.dart';
 import 'openai_settings_dialog.dart';
 import 'legacy_data_converter.dart';
 import 'settings_detail_page.dart';
+import 'settings_form.dart';
+import 'personality/personality_editor_page.dart';
 import 'conversation_collections_page.dart';
 import 'conversation_history_page.dart';
 import 'tts_spatial_settings.dart';
 import 'speech_loudness.dart';
+import 'hidden_voice_id_field.dart';
 import 'companion_runtime_settings.dart';
 import 'model_workspace_page.dart';
+import 'update/update_center_page.dart';
+import 'update/update_runtime.dart';
+import 'desktop_updates_page.dart';
+import 'platform_capabilities.dart';
 
 String _activeTtsModel(AppController controller) =>
     switch (controller.ttsProvider) {
@@ -57,6 +69,17 @@ String _activeTtsModel(AppController controller) =>
       TtsProvider.generic => controller.genericTtsModel,
       TtsProvider.mimo => controller.mimoTts.model,
       TtsProvider.local => 'MNN',
+    };
+
+String _imageProtocolLabel(ImageGenerationProtocol protocol) =>
+    switch (protocol) {
+      ImageGenerationProtocol.auto => '自动识别',
+      ImageGenerationProtocol.openAiImages => 'OpenAI Images',
+      ImageGenerationProtocol.openAiResponses => 'OpenAI Responses',
+      ImageGenerationProtocol.gemini => 'Google Gemini',
+      ImageGenerationProtocol.syncJson => '同步 JSON',
+      ImageGenerationProtocol.asyncTask => '异步任务',
+      ImageGenerationProtocol.comfyUi => 'ComfyUI',
     };
 
 String _activeCharacterName(AppController controller, AppLanguage language) =>
@@ -102,6 +125,7 @@ class SettingsScreen extends StatefulWidget {
     this.relayService,
     this.embedded = false,
     this.initialSection,
+    this.updateRuntime,
   });
 
   final AppController controller;
@@ -110,6 +134,7 @@ class SettingsScreen extends StatefulWidget {
   final RelayService? relayService;
   final bool embedded;
   final SettingsSection? initialSection;
+  final UpdateRuntime? updateRuntime;
 
   @override
   State<SettingsScreen> createState() => SettingsScreenState();
@@ -131,38 +156,6 @@ class SettingsScreenState extends State<SettingsScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialSection != widget.initialSection) {
       _category = widget.initialSection;
-    }
-  }
-
-  Future<void> _pinSection(SettingsSection section) async {
-    final language = controller.interfaceLanguage;
-    try {
-      await controller.setVirtualPhoneSettingsShortcut(section);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            language.text(
-              '已将${section.title(language)}设为手机快捷入口',
-              '${section.title(language)} is now your phone shortcut',
-              '${section.title(language)}をスマホのショートカットに設定しました',
-            ),
-          ),
-        ),
-      );
-    } on Object {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            language.text(
-              '快捷入口保存失败，请重试',
-              'Could not save the shortcut. Please try again.',
-              'ショートカットを保存できませんでした。もう一度お試しください。',
-            ),
-          ),
-        ),
-      );
     }
   }
 
@@ -202,17 +195,19 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: controller,
-    builder: (context, _) => widget.backHandledByShell
-        ? _buildSettings(context)
-        : PopScope(
-            canPop: _category == null || _isShortcutRoot,
-            onPopInvokedWithResult: (didPop, _) {
-              if (!didPop) handleBack();
-            },
-            child: _buildSettings(context),
-          ),
+  Widget build(BuildContext context) => SettingsFormTheme(
+    child: AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) => widget.backHandledByShell
+          ? _buildSettings(context)
+          : PopScope(
+              canPop: _category == null || _isShortcutRoot,
+              onPopInvokedWithResult: (didPop, _) {
+                if (!didPop) handleBack();
+              },
+              child: _buildSettings(context),
+            ),
+    ),
   );
 
   Widget _buildSettings(BuildContext context) {
@@ -227,23 +222,6 @@ class SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: glassPageHeaderColor(context),
         automaticallyImplyLeading: false,
-        actions: [
-          if (_category != null)
-            IconButton(
-              key: const ValueKey('settings-pin-phone-shortcut'),
-              tooltip: language.text(
-                '添加到手机快捷入口',
-                'Use as phone shortcut',
-                'スマホのショートカットに追加',
-              ),
-              onPressed: () => _pinSection(_category!),
-              icon: Icon(
-                controller.virtualPhoneSettingsShortcut == _category
-                    ? Icons.star_rounded
-                    : Icons.star_outline_rounded,
-              ),
-            ),
-        ],
         title: Padding(
           padding: EdgeInsets.only(left: widget.embedded ? 40 : 58),
           child: Row(
@@ -308,7 +286,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                       builder: (_) =>
                           RelayChatScreen(service: widget.relayService!),
                     ),
-                    onLongPress: () => _pinSection(SettingsSection.pcAgent),
                   ),
                 for (final category in SettingsSection.values)
                   if (category != SettingsSection.pcAgent)
@@ -339,7 +316,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                           subtitle: Text(category.description(language)),
                           trailing: const Icon(Icons.chevron_right_rounded),
                           onTap: () => setState(() => _category = category),
-                          onLongPress: () => _pinSection(category),
                         ),
                       ),
                     ),
@@ -384,9 +360,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                   subtitle: Text(
                     controller.liquidGlassChatUi
                         ? language.text(
-                            '动态浮层启用背景模糊与玻璃高光',
-                            'Blur and glass highlights enabled',
-                            'ぼかしとガラスのハイライトを有効化',
+                            '轻量半透明玻璃与细边高光；设置背景使用缓存模糊',
+                            'Light translucent glass with fine highlights; settings use a cached blurred backdrop',
+                            '軽量な半透明ガラスと細いハイライト。設定背景にはぼかしキャッシュを使用',
                           )
                         : language.text(
                             '保留动态浮层，仅关闭模糊并使用普通半透明材质',
@@ -397,7 +373,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
                 SwitchListTile(
                   value: controller.showMicrophoneButton,
-                  onChanged: controller.setShowMicrophoneButton,
+                  onChanged: AppPlatformCapabilities.supportsRealtimeCalls
+                      ? controller.setShowMicrophoneButton
+                      : null,
                   secondary: const Icon(Icons.mic_none_rounded),
                   title: Text(
                     language.text(
@@ -408,9 +386,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   subtitle: Text(
                     language.text(
-                      '语音输入尚未接入，默认隐藏',
-                      'Voice input is not available yet',
-                      '音声入力はまだ利用できません',
+                      '点击主界面麦克风，与${controller.activeModelDisplayName}语音通话',
+                      'Tap the main chat microphone to talk with ${controller.activeModelDisplayName}',
+                      '会話画面のマイクから${controller.activeModelDisplayName}と音声会話',
                     ),
                   ),
                 ),
@@ -742,6 +720,25 @@ class SettingsScreenState extends State<SettingsScreen> {
                       : const Icon(Icons.chevron_right),
                   onTap: () => _showGeminiSettings(context),
                 ),
+                ListTile(
+                  key: const ValueKey('image-generation-settings-tile'),
+                  leading: const Icon(Icons.image_outlined),
+                  title: Text(
+                    language.text('生图接口配置', 'Image generation API', '画像生成 API'),
+                  ),
+                  subtitle: Text(
+                    controller.imageGeneration.enabled
+                        ? '${controller.imageGeneration.model}\n${_imageProtocolLabel(controller.imageGeneration.protocol)} · ${controller.imageGeneration.baseUrl}'
+                        : language.text('未启用', 'Disabled', '無効'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  isThreeLine: controller.imageGeneration.enabled,
+                  trailing: controller.imageGeneration.enabled
+                      ? const Icon(Icons.check_circle_outline)
+                      : const Icon(Icons.chevron_right),
+                  onTap: () => _showImageGenerationSettings(context),
+                ),
                 SwitchListTile(
                   value: controller.llmContextCompatibility,
                   onChanged: controller.setLlmContextCompatibility,
@@ -766,6 +763,39 @@ class SettingsScreenState extends State<SettingsScreen> {
                 _modelWorkspaceTile(context),
                 _SectionLabel(
                   language.text('设定与注入', 'Profiles & injection', '設定と注入'),
+                ),
+                ListTile(
+                  key: const ValueKey('settings-personality-editor'),
+                  leading: const Icon(Icons.psychology_alt_outlined),
+                  title: Text(
+                    language.text(
+                      '人格倾向（试用）',
+                      'Personality tendencies (trial)',
+                      '性格傾向（試用）',
+                    ),
+                  ),
+                  subtitle: Text(
+                    controller.personalityLoadWarning ??
+                        (controller.personalityEnabled
+                            ? controller
+                                  .personalityConfiguration
+                                  .activeProfile
+                                  .name
+                            : language.text(
+                                '未启用 · 预设、参数与情境预览',
+                                'Disabled · Presets, traits and scenario preview',
+                                '無効 · プリセット・パラメータ・場面プレビュー',
+                              )),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openDetailPage<void>(
+                    context: context,
+                    builder: (_) => PersonalityEditorPage(
+                      controller: controller,
+                      initialConfiguration: controller.personalityConfiguration,
+                      onSave: controller.savePersonalityConfiguration,
+                    ),
+                  ),
                 ),
                 SwitchListTile(
                   value: controller.characterPersonaInjectionEnabled,
@@ -1089,9 +1119,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   subtitle: Text(
                     language.text(
-                      '单独规划语音情绪与停顿，改善上下句衔接。开启后每轮增加一次模型请求，可能增加等待时间和用量。两种模式均保留感情程度和句内演出密度设置。',
-                      'Plan voice emotions and pauses separately for smoother continuity. Adds one model request per turn and may increase latency and usage. Both modes retain emotion intensity and inline cue density settings.',
-                      '音声の感情と間を個別に計画し、台詞のつながりを改善します。有効時は毎ターンモデルへのリクエストが1回増え、待ち時間と使用量が増える場合があります。両モードで感情の強さと文中演出密度の設定を利用できます。',
+                      '单独规划情绪与停顿。每轮多一次模型请求，等待时间和用量会增加。',
+                      'Plan emotions and pauses separately. Adds one model request per turn, with more latency and usage.',
+                      '感情と間を個別に計画します。毎ターンのリクエストが1回増え、待ち時間と使用量も増えます。',
                     ),
                   ),
                   value: controller.independentSpeechPerformance,
@@ -1157,7 +1187,29 @@ class SettingsScreenState extends State<SettingsScreen> {
                       },
                     ),
                   ),
-                for (final provider in TtsProvider.values)
+                if (!AppPlatformCapabilities.supportsLocalTts &&
+                    controller.ttsProvider == TtsProvider.local)
+                  ListTile(
+                    title: Text(
+                      language.text(
+                        '请重新选择语音服务',
+                        'Choose a supported speech service',
+                        '対応する音声サービスを選択してください',
+                      ),
+                    ),
+                    subtitle: Text(
+                      language.text(
+                        '当前配置的本地 CosyVoice 仅支持 Android。请选择下方的云端语音服务。',
+                        'The configured local CosyVoice engine requires Android. Select a cloud speech service below.',
+                        '現在設定されているローカルCosyVoiceはAndroid専用です。以下のクラウド音声サービスを選択してください。',
+                      ),
+                    ),
+                  ),
+                for (final provider in TtsProvider.values.where(
+                  (provider) =>
+                      provider != TtsProvider.local ||
+                      AppPlatformCapabilities.supportsLocalTts,
+                ))
                   ListTile(
                     key: ValueKey('tts-settings-${provider.name}'),
                     leading: Icon(
@@ -1268,8 +1320,53 @@ class SettingsScreenState extends State<SettingsScreen> {
               if (_category == SettingsSection.about) ...[
                 _SectionLabel(language.text('关于', 'About', 'このアプリについて')),
                 ListTile(
+                  key: const ValueKey('about-update-center-tile'),
+                  leading: const Icon(Icons.system_update_alt_rounded),
+                  title: Text(
+                    AppPlatformCapabilities.isWindows
+                        ? language.text(
+                            'PC 版下载与更新',
+                            'PC downloads & updates',
+                            'PC版のダウンロードと更新',
+                          )
+                        : language.text(
+                            '版本与更新',
+                            'Version & updates',
+                            'バージョンと更新',
+                          ),
+                  ),
+                  subtitle: Text(
+                    AppPlatformCapabilities.isWindows
+                        ? language.text(
+                            '下载 Windows 完整包并解压运行',
+                            'Download and extract the complete Windows package',
+                            'Windows完全パッケージを取得して展開',
+                          )
+                        : widget.updateRuntime == null
+                        ? language.text(
+                            '更新服务尚未初始化，当前不可用',
+                            'The update service is not initialized',
+                            '更新サービスが初期化されていません',
+                          )
+                        : language.text(
+                            '检查更新、选择来源并管理下载',
+                            'Check for updates, choose a source and manage downloads',
+                            '更新確認、取得元、ダウンロードを管理します',
+                          ),
+                  ),
+                  trailing: Icon(
+                    AppPlatformCapabilities.isWindows
+                        ? Icons.open_in_new_rounded
+                        : widget.updateRuntime == null
+                        ? Icons.cloud_off_outlined
+                        : Icons.chevron_right_rounded,
+                  ),
+                  onTap: () => _openUpdateCenter(context),
+                ),
+                const Divider(indent: 16, endIndent: 16),
+                ListTile(
                   leading: const Icon(Icons.info_outline),
-                  title: const Text('AgentAtelier'),
+                  title: const Text(appDisplayName),
                   subtitle: Text(
                     language.text('版本 1.0.0', 'Version 1.0.0', 'バージョン 1.0.0'),
                   ),
@@ -1293,6 +1390,51 @@ class SettingsScreenState extends State<SettingsScreen> {
             ]),
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _openUpdateCenter(BuildContext context) async {
+    if (AppPlatformCapabilities.isWindows) {
+      await _openDetailPage<void>(
+        context: context,
+        builder: (_) => DesktopUpdatesPage(
+          language: controller.interfaceLanguage,
+          liquidGlass: controller.liquidGlassChatUi,
+        ),
+      );
+      return;
+    }
+    final runtime = widget.updateRuntime;
+    final language = controller.interfaceLanguage;
+    if (runtime == null) {
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(language.text('版本与更新', 'Version & updates', 'バージョンと更新')),
+          content: Text(
+            language.text(
+              '更新服务尚未初始化，当前无法检查或下载更新。请稍后重新打开此页面。',
+              'The update service is not initialized, so updates cannot be checked or downloaded yet. Open this page again later.',
+              '更新サービスが初期化されていないため、現在は更新の確認やダウンロードができません。後でもう一度開いてください。',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(language.text('知道了', 'OK', '閉じる')),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    await _openDetailPage<void>(
+      context: context,
+      builder: (_) => UpdateCenterPage(
+        runtime: runtime,
+        language: language,
+        liquidGlass: controller.liquidGlassChatUi,
       ),
     );
   }
@@ -1664,6 +1806,24 @@ class SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _showImageGenerationSettings(BuildContext context) async {
+    final apiKey = await const SecretStore().readImageGenerationKey();
+    if (!context.mounted) return;
+    await _openDetailPage<void>(
+      context: context,
+      builder: (_) => ImageGenerationSettingsPage(
+        initialConfig: controller.imageGeneration,
+        initialApiKey: apiKey,
+        language: controller.interfaceLanguage,
+        liquidGlass: controller.liquidGlassChatUi,
+        onSave: (config, key) async {
+          controller.configureImageGeneration(config);
+          await const SecretStore().writeImageGenerationKey(key);
+        },
+      ),
+    );
+  }
+
   // Retained for compatibility with older imported settings; the control is
   // intentionally no longer exposed in the current UI.
   // ignore: unused_element
@@ -1866,22 +2026,18 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    TextField(
+                    HiddenVoiceIdField(
+                      fieldKey: const ValueKey('fish-normal-voice'),
                       controller: referenceId,
-                      decoration: const InputDecoration(
-                        labelText: 'Voice model ID / reference_id',
-                        helperText: 'Fish Audio 声音库或自建声音模型的 ID',
-                        border: OutlineInputBorder(),
-                      ),
+                      labelText: '普通音色 ID',
+                      helperText: '留空保留当前配置；尚未设置时请填写当前人物的音色 ID。',
                     ),
                     const SizedBox(height: 12),
-                    TextField(
+                    HiddenVoiceIdField(
+                      fieldKey: const ValueKey('fish-asmr-voice'),
                       controller: asmrReferenceId,
-                      decoration: const InputDecoration(
-                        labelText: 'ASMR 模式 Voice model ID',
-                        helperText: '留空使用默认 ASMR 音色；仅在开启 ASMR 模式时使用',
-                        border: OutlineInputBorder(),
-                      ),
+                      labelText: 'ASMR 模式音色 ID',
+                      helperText: '留空保留当前配置；仅在 ASMR 模式使用当前人物的音色。',
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -2129,6 +2285,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     };
     final voice = TextEditingController(text: controller.fishMcpVoice);
     final asmrVoice = TextEditingController(text: controller.fishMcpAsmrVoice);
+    var speed = controller.fishAudioSpeed;
     var autoFallback = controller.fishMcpAutoFallback;
     var busy = false;
     String? localError;
@@ -2237,276 +2394,318 @@ class SettingsScreenState extends State<SettingsScreen> {
               title: const Text('Fish Audio MCP'),
               content: SizedBox(
                 width: contentWidth,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SettingsOptionCard(
-                        child: ListTile(
-                          leading: Icon(
-                            service.isReady
-                                ? Icons.check_circle_outline
-                                : Icons.cloud_outlined,
-                          ),
-                          title: Text('状态：${service.statusLabel}'),
-                          subtitle: Text(
-                            service.errorMessage ??
-                                '官方端点：${FishMcpService.endpoint}\n'
-                                    '需要 Fish Audio 账号 OAuth 授权。',
-                          ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SettingsOptionCard(
+                      child: ListTile(
+                        leading: Icon(
+                          service.isReady
+                              ? Icons.check_circle_outline
+                              : Icons.cloud_outlined,
+                        ),
+                        title: Text('状态：${service.statusLabel}'),
+                        subtitle: Text(
+                          service.errorMessage ??
+                              '官方端点：${FishMcpService.endpoint}\n'
+                                  '首次需要 OAuth 授权，之后启动或返回应用时自动连接。',
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        key: const ValueKey('fish-mcp-normal-voice'),
-                        controller: voice,
-                        decoration: const InputDecoration(
-                          labelText: '普通音色 ID',
-                          hintText: '留空时交由官方工具处理',
-                          border: OutlineInputBorder(),
-                        ),
+                    ),
+                    FilledButton.icon(
+                      onPressed: connecting
+                          ? null
+                          : () async {
+                              setDialogState(() {
+                                busy = true;
+                                localError = null;
+                              });
+                              try {
+                                await service.connect();
+                              } on Object {
+                                if (context.mounted) {
+                                  setDialogState(() {
+                                    localError = '连接未完成，请复制诊断查看具体原因。';
+                                  });
+                                }
+                              } finally {
+                                if (context.mounted) {
+                                  setDialogState(() => busy = false);
+                                }
+                              }
+                            },
+                      icon: busy
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.login),
+                      label: Text(
+                        service.state == FishMcpConnectionState.authenticating
+                            ? '等待浏览器授权…'
+                            : '连接账号（不生成语音）',
                       ),
+                    ),
+                    const SettingsSectionHeading(
+                      '音色与模型',
+                      description: '聊天和通话共用；ASMR 可单独指定音色。',
+                    ),
+                    const SizedBox(height: 8),
+                    HiddenVoiceIdField(
+                      fieldKey: const ValueKey('fish-mcp-normal-voice'),
+                      controller: voice,
+                      labelText: '普通音色 ID',
+                      helperText: '留空保留当前配置；尚未设置时请填写当前人物的音色 ID。',
+                    ),
+                    const SizedBox(height: 8),
+                    HiddenVoiceIdField(
+                      fieldKey: const ValueKey('fish-mcp-asmr-voice'),
+                      controller: asmrVoice,
+                      labelText: 'ASMR 音色 ID',
+                      helperText: '留空保留已保存的配置；尚未设置时请填写当前人物的 ASMR 音色。',
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const SizedBox(width: 58, child: Text('语速')),
+                        Expanded(
+                          child: Slider(
+                            key: const ValueKey('fish-mcp-speed'),
+                            value: speed.clamp(0.5, 2.0),
+                            min: 0.5,
+                            max: 2.0,
+                            divisions: 30,
+                            label: '${speed.toStringAsFixed(2)}×',
+                            onChanged: (value) =>
+                                setDialogState(() => speed = value),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 48,
+                          child: Text('${speed.toStringAsFixed(2)}×'),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      defaultTargetPlatform == TargetPlatform.windows
+                          ? '普通对话、ASMR 和通话共用。Windows 本地变速需要 WAV 音频。'
+                          : '普通对话、ASMR 和通话共用，推荐 0.90×。',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      key: ValueKey('fish-mcp-model-$model'),
+                      initialValue: model,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: '模型',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        for (final option in modelOptions)
+                          DropdownMenuItem(
+                            value: option,
+                            child: Text(
+                              option.isEmpty ? '服务默认（不指定模型）' : option,
+                            ),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setDialogState(() => model = value);
+                        }
+                      },
+                    ),
+                    Text(
+                      '生成路径：$generationRouteLabel',
+                      key: const ValueKey('fish-mcp-generation-route'),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (generationRoute == 'studio')
                       Text(
-                        describeField(voiceField, '音色'),
+                        'Studio MCP 会在 Fish Audio 云端项目保存台词、音色配置及生成音频；普通对话和 ASMR 均使用对应的已配置音色。',
+                        key: const ValueKey('fish-mcp-studio-cloud-notice'),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        key: const ValueKey('fish-mcp-asmr-voice'),
-                        controller: asmrVoice,
-                        decoration: const InputDecoration(
-                          labelText: 'ASMR 音色 ID',
-                          hintText: '留空时沿用普通音色',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      Text(
-                        'ASMR 音色留空时沿用普通音色。',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 8),
-                      const SettingsOptionCard(
-                        child: ListTile(
-                          title: Text('科洛蒂娅固定音色 ID'),
-                          subtitle: SelectableText(klaudiaFishAudioReferenceId),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        key: ValueKey('fish-mcp-model-$model'),
-                        initialValue: model,
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          labelText: '模型',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: [
-                          for (final option in modelOptions)
-                            DropdownMenuItem(
-                              value: option,
-                              child: Text(
-                                option.isEmpty ? '服务默认（不指定模型）' : option,
+                    Text(
+                      '保存后，下次语音请求生效。',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 16),
+                    ExpansionTile(
+                      key: const ValueKey('fish-mcp-advanced'),
+                      title: const Text('高级选项与连接诊断'),
+                      subtitle: const Text('回退策略、工具定义、调用记录与账号管理'),
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              describeField(voiceField, '音色'),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              modelDescription,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(height: 8),
+                            SelectableText(
+                              '最近请求模型：${!hasRecentRequest
+                                  ? '暂无调用记录'
+                                  : lastRequestedModel?.trim().isNotEmpty == true
+                                  ? lastRequestedModel!.trim()
+                                  : '服务默认（不指定模型）'}',
+                              key: const ValueKey(
+                                'fish-mcp-last-requested-model',
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            SelectableText(
+                              '云端返回模型：${reportedModel?.isNotEmpty == true ? reportedModel : '未返回模型标识，无法确认已切换'}',
+                              key: const ValueKey(
+                                'fish-mcp-last-reported-model',
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            if (service.lastConfiguredBackend != null)
+                              SelectableText(
+                                'Studio 已确认后端配置：${service.lastConfiguredBackend}（项目配置证据）',
+                                key: const ValueKey(
+                                  'fish-mcp-last-configured-backend',
+                                ),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            Text(
+                              '最近调用状态：$modelSelectionStatus',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            if (recentRequestUsesOldModel)
+                              Text(
+                                '最近调用使用的是旧设置，不能作为当前选择的结果；保存后下一次请求才生效。',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            SwitchListTile(
+                              value: autoFallback,
+                              onChanged: (value) =>
+                                  setDialogState(() => autoFallback = value),
+                              title: const Text('MCP 失败时允许回退现有 Fish API'),
+                              subtitle: const Text(
+                                '默认关闭。仅在 MCP 未提交生成且本地准备失败时回退；缺少 Studio 工具或 Studio 流程失败不回退。使用现有 Fish API Key 和音色；已选模型保持不变，服务默认时使用 API 模型配置。可能消耗独立的开发者 API 余额。OAuth 凭据不导出到普通备份。',
                               ),
                             ),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            setDialogState(() => model = value);
-                          }
-                        },
-                      ),
-                      Text(
-                        '生成路径：$generationRouteLabel',
-                        key: const ValueKey('fish-mcp-generation-route'),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      Text(
-                        modelDescription,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (generationRoute == 'studio')
-                        Text(
-                          'Studio MCP 会在 Fish Audio 云端项目保存台词、音色配置及生成音频；普通对话和 ASMR 均使用对应的已配置音色。',
-                          key: const ValueKey('fish-mcp-studio-cloud-notice'),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      Text(
-                        '当前选择仅为草稿，点击“保存并使用 MCP”后下次请求才生效；返回或取消不会保存。',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 8),
-                      SelectableText(
-                        '最近请求模型：${!hasRecentRequest
-                            ? '暂无调用记录'
-                            : lastRequestedModel?.trim().isNotEmpty == true
-                            ? lastRequestedModel!.trim()
-                            : '服务默认（不指定模型）'}',
-                        key: const ValueKey('fish-mcp-last-requested-model'),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      SelectableText(
-                        '云端返回模型：${reportedModel?.isNotEmpty == true ? reportedModel : '未返回模型标识，无法确认已切换'}',
-                        key: const ValueKey('fish-mcp-last-reported-model'),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (service.lastConfiguredBackend != null)
-                        SelectableText(
-                          'Studio 已确认后端配置：${service.lastConfiguredBackend}（项目配置证据）',
-                          key: const ValueKey(
-                            'fish-mcp-last-configured-backend',
-                          ),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      Text(
-                        '最近调用状态：$modelSelectionStatus',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      if (recentRequestUsesOldModel)
-                        Text(
-                          '最近调用使用的是旧设置，不能作为当前选择的结果；保存后下一次请求才生效。',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      SwitchListTile(
-                        value: autoFallback,
-                        onChanged: (value) =>
-                            setDialogState(() => autoFallback = value),
-                        title: const Text('MCP 失败时允许回退现有 Fish API'),
-                        subtitle: const Text(
-                          '默认关闭。仅在 MCP 未提交生成且本地准备失败时回退；缺少 Studio 工具或 Studio 流程失败不回退。使用现有 Fish API Key 和音色；已选模型保持不变，服务默认时使用 API 模型配置。可能消耗独立的开发者 API 余额。OAuth 凭据不导出到普通备份。',
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FilledButton.icon(
-                        onPressed: connecting
-                            ? null
-                            : () async {
-                                setDialogState(() {
-                                  busy = true;
-                                  localError = null;
-                                });
-                                try {
-                                  await service.connect();
-                                } on Object {
-                                  if (context.mounted) {
-                                    setDialogState(() {
-                                      localError = '连接未完成，请复制诊断查看具体原因。';
-                                    });
-                                  }
-                                } finally {
-                                  if (context.mounted) {
-                                    setDialogState(() => busy = false);
-                                  }
-                                }
-                              },
-                        icon: busy
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.login),
-                        label: Text(
-                          service.state == FishMcpConnectionState.authenticating
-                              ? '等待浏览器授权（完成后自动刷新）'
-                              : '登录并探测 tools/list（不生成语音）',
-                        ),
-                      ),
-                      if (service.tools.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Text('已发现工具（${service.tools.length}）'),
-                        const SizedBox(height: 4),
-                        for (final tool in service.tools)
-                          ExpansionTile(
-                            key: ValueKey('fish-mcp-tool-${tool.name}'),
-                            leading: Icon(
-                              tool.name == service.ttsToolName
-                                  ? Icons.record_voice_over
-                                  : Icons.extension_outlined,
-                            ),
-                            title: Text(tool.name),
-                            subtitle: Text(tool.description ?? '无描述'),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  0,
-                                  16,
-                                  12,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
+                            const SizedBox(height: 8),
+                            if (service.tools.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Text('已发现工具（${service.tools.length}）'),
+                              const SizedBox(height: 4),
+                              for (final tool in service.tools)
+                                ExpansionTile(
+                                  key: ValueKey('fish-mcp-tool-${tool.name}'),
+                                  leading: Icon(
+                                    tool.name == service.ttsToolName
+                                        ? Icons.record_voice_over
+                                        : Icons.extension_outlined,
+                                  ),
+                                  title: Text(tool.name),
+                                  subtitle: Text(tool.description ?? '无描述'),
                                   children: [
-                                    OutlinedButton.icon(
-                                      onPressed: () => copyText(
-                                        const JsonEncoder.withIndent('  ')
-                                            .convert(tool.toJson()),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        16,
+                                        0,
+                                        16,
+                                        12,
                                       ),
-                                      icon: const Icon(Icons.copy, size: 18),
-                                      label: const Text('复制工具与完整 inputSchema'),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    SelectableText(
-                                      const JsonEncoder.withIndent('  ')
-                                          .convert(tool.inputSchema),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          OutlinedButton.icon(
+                                            onPressed: () => copyText(
+                                              const JsonEncoder.withIndent('  ')
+                                                  .convert(tool.toJson()),
+                                            ),
+                                            icon: const Icon(
+                                              Icons.copy,
+                                              size: 18,
+                                            ),
+                                            label: const Text(
+                                              '复制工具与完整 inputSchema',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          SelectableText(
+                                            const JsonEncoder.withIndent('  ')
+                                                .convert(tool.inputSchema),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
                             ],
-                          ),
-                      ],
-                      if (service.lastDiscoveryAt != null)
-                        Text(
-                          service.studioAvailable
-                              ? 'Studio MCP：所需工具齐全，可使用项目 default_backend 配置明确模型。'
-                              : 'Studio MCP：$studioUnavailableDetails。',
-                          style: Theme.of(context).textTheme.bodySmall,
+                            if (service.lastDiscoveryAt != null)
+                              Text(
+                                service.studioAvailable
+                                    ? 'Studio MCP：所需工具齐全，可使用项目 default_backend 配置明确模型。'
+                                    : 'Studio MCP：$studioUnavailableDetails。',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: () =>
+                                  copyText(service.diagnosticReport),
+                              icon: const Icon(Icons.copy, size: 18),
+                              label: const Text('复制连接 / 错误诊断（已脱敏）'),
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                TextButton(
+                                  onPressed: () async {
+                                    await service.disconnect();
+                                    if (context.mounted) {
+                                      setDialogState(() {
+                                        busy = false;
+                                        localError = null;
+                                      });
+                                    }
+                                  },
+                                  child: const Text('断开连接'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await service.logout();
+                                    if (context.mounted) {
+                                      setDialogState(() {});
+                                    }
+                                  },
+                                  child: const Text('退出授权'),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                      ],
+                    ),
+                    if (localError != null) ...[
                       const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: () => copyText(service.diagnosticReport),
-                        icon: const Icon(Icons.copy, size: 18),
-                        label: const Text('复制连接 / 错误诊断（已脱敏）'),
-                      ),
-                      if (localError != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          localError!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
+                      Text(
+                        localError!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
                         ),
-                      ],
+                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () async {
-                    await service.disconnect();
-                    if (context.mounted) {
-                      setDialogState(() {
-                        busy = false;
-                        localError = null;
-                      });
-                    }
-                  },
-                  child: const Text('断开连接'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    await service.logout();
-                    if (context.mounted) setDialogState(() {});
-                  },
-                  child: const Text('退出授权'),
-                ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
                   child: const Text('取消'),
@@ -2526,6 +2725,7 @@ class SettingsScreenState extends State<SettingsScreen> {
       model: model,
       voice: voice.text,
       asmrVoice: asmrVoice.text,
+      speed: speed,
       autoFallback: autoFallback,
     );
   }
@@ -2534,10 +2734,26 @@ class SettingsScreenState extends State<SettingsScreen> {
     final baseUrl = TextEditingController(text: controller.dashScopeTtsBaseUrl);
     final model = TextEditingController(text: controller.dashScopeTtsModel);
     final cloneTargetModel = TextEditingController(
-      text: controller.dashScopeTtsModel.contains('-vc-')
+      text: QwenTtsConfig.isModernModel(controller.dashScopeTtsModel)
           ? controller.dashScopeTtsModel
-          : 'qwen3-tts-vc-realtime-2026-01-15',
+          : 'qwen-audio-3.1-tts-flash',
     );
+    final configuredUri = Uri.tryParse(baseUrl.text);
+    final configuredHost = configuredUri?.host ?? '';
+    final workspaceMatch = RegExp(
+      r'^([A-Za-z0-9-]+)\.(cn-beijing|ap-southeast-1)\.maas\.aliyuncs\.com$',
+    ).firstMatch(configuredHost);
+    final workspace = TextEditingController(
+      text: workspaceMatch?.group(1) ?? '',
+    );
+    var region =
+        workspaceMatch?.group(2) ??
+        switch (configuredHost) {
+          'dashscope.aliyuncs.com' => 'cn-beijing',
+          'dashscope-intl.aliyuncs.com' => 'ap-southeast-1',
+          _ => 'custom',
+        };
+    final referenceUrl = TextEditingController();
     final voice = TextEditingController(text: controller.dashScopeTtsVoice);
     final asmrVoice = TextEditingController(
       text: controller.dashScopeTtsAsmrVoice,
@@ -2547,7 +2763,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     );
     final preview = TextEditingController(text: controller.ttsPreviewText);
     final key = TextEditingController();
-    final preferredName = TextEditingController(text: 'character_voice');
+    final preferredName = TextEditingController(text: 'charvoice');
     final audioText = TextEditingController();
     PlatformFile? referenceAudio;
     Uint8List? referenceAudioBytes;
@@ -2555,13 +2771,42 @@ class SettingsScreenState extends State<SettingsScreen> {
     final player = AppAudioPlayer();
     final previewFiles = <String>{};
     var enabled = controller.fishTtsEnabled;
-    var language = controller.dashScopeTtsLanguage;
+    var language = QwenTtsConfig.normalizeLanguage(
+      controller.dashScopeTtsLanguage,
+    );
+    var referenceLanguage = language;
+    var options = controller.dashScopeTtsOptions;
     var emotionIntensity = controller.ttsEmotionIntensity;
     var cueDensity = controller.ttsCueDensity;
     var testing = false;
     var creatingVoice = false;
     String? createdVoiceId;
     String? error;
+
+    void applyRegionEndpoint({bool? modern}) {
+      if (region == 'custom') return;
+      if (modern ?? QwenTtsConfig.isModernModel(model.text)) {
+        if (workspace.text.trim().isEmpty) {
+          baseUrl.clear();
+          return;
+        }
+        try {
+          baseUrl.text =
+              '${QwenTtsConfig.workspaceBaseUrl(workspaceId: workspace.text, region: region)}${QwenTtsConfig.modernPath}';
+          error = null;
+        } on FormatException catch (value) {
+          baseUrl.clear();
+          error = value.message;
+        }
+      } else {
+        final host = region == 'cn-beijing'
+            ? 'dashscope.aliyuncs.com'
+            : 'dashscope-intl.aliyuncs.com';
+        baseUrl.text =
+            'https://$host/api/v1/services/aigc/multimodal-generation/generation';
+      }
+    }
+
     final saved = await _openDetailPage<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -2614,32 +2859,174 @@ class SettingsScreenState extends State<SettingsScreen> {
                     onChanged: (value) =>
                         setDialogState(() => cueDensity = value),
                   ),
+                  const Text(
+                    '新版推荐 Qwen-Audio-TTS 3.1。需要对应地域的业务空间 ID 和 API Key；已有 Qwen3 配置会保留。',
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    key: const ValueKey('qwen-region'),
+                    initialValue: region,
+                    decoration: const InputDecoration(
+                      labelText: '接入地域',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'cn-beijing', child: Text('北京')),
+                      DropdownMenuItem(
+                        value: 'ap-southeast-1',
+                        child: Text('新加坡'),
+                      ),
+                      DropdownMenuItem(value: 'custom', child: Text('自定义端点')),
+                    ],
+                    onChanged: testing || creatingVoice
+                        ? null
+                        : (value) {
+                            if (value == null) return;
+                            setDialogState(() {
+                              region = value;
+                              applyRegionEndpoint();
+                            });
+                          },
+                  ),
+                  const SizedBox(height: 12),
                   TextField(
+                    key: const ValueKey('qwen-workspace'),
+                    enabled: !creatingVoice,
+                    controller: workspace,
+                    decoration: const InputDecoration(
+                      labelText: '业务空间 ID（新版模型）',
+                      helperText: '从百炼控制台获取；切换地域时请同时更换对应的 API Key',
+                      helperMaxLines: 2,
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (_) =>
+                        setDialogState(() => applyRegionEndpoint()),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    key: const ValueKey('qwen-endpoint'),
+                    enabled: !creatingVoice,
                     controller: baseUrl,
                     decoration: const InputDecoration(
                       labelText: '百炼 API 端点',
+                      helperText: '可填写完整端点或服务根地址；新版使用业务空间专属 HTTPS 域名',
+                      helperMaxLines: 2,
                       border: OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    key: ValueKey('qwen-model-${model.text}'),
+                    initialValue: QwenTtsConfig.models.contains(model.text)
+                        ? model.text
+                        : 'custom',
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: '官方模型预设',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      for (final entry in QwenTtsConfig.models)
+                        DropdownMenuItem(
+                          value: entry,
+                          child: Text(
+                            QwenTtsConfig.modelLabel(entry),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      const DropdownMenuItem(
+                        value: 'custom',
+                        child: Text('自定义 / 旧兼容模型'),
+                      ),
+                    ],
+                    onChanged: testing || creatingVoice
+                        ? null
+                        : (value) {
+                            if (value == null || value == 'custom') return;
+                            setDialogState(() {
+                              model.text = value;
+                              if (QwenTtsConfig.isModernModel(value)) {
+                                cloneTargetModel.text = value;
+                              }
+                              final presets = QwenTtsConfig.voicesForModel(
+                                value,
+                              );
+                              if (presets.isNotEmpty &&
+                                  QwenTtsConfig.voiceCompatibilityError(
+                                        value,
+                                        voice.text,
+                                      ) !=
+                                      null) {
+                                voice.text = presets.first;
+                              }
+                              applyRegionEndpoint();
+                            });
+                          },
+                  ),
+                  const SizedBox(height: 12),
                   TextField(
+                    key: const ValueKey('qwen-model'),
+                    enabled: !creatingVoice,
                     controller: model,
                     decoration: const InputDecoration(
                       labelText: '模型',
                       hintText: 'qwen3-tts-flash',
-                      helperText: '创建音色时的目标模型必须与之后合成使用的模型同系列',
+                      helperText: '复刻音色的目标模型必须与合成模型完全相同；实时模型需要独立 WSS 接口',
+                      helperMaxLines: 2,
                       border: OutlineInputBorder(),
                     ),
+                    onChanged: (_) => setDialogState(() {}),
                   ),
+                  if (QwenTtsConfig.voicesForModel(model.text).isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      key: ValueKey(
+                        'qwen-system-voice-${model.text}-${voice.text}',
+                      ),
+                      initialValue:
+                          QwenTtsConfig.voicesForModel(model.text)
+                              .contains(voice.text)
+                          ? voice.text
+                          : 'custom',
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: '系统音色预设',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        for (final entry in QwenTtsConfig.voicesForModel(
+                          model.text,
+                        ))
+                          DropdownMenuItem(
+                            value: entry,
+                            child: Text(entry, overflow: TextOverflow.ellipsis),
+                          ),
+                        const DropdownMenuItem(
+                          value: 'custom',
+                          child: Text('自定义 Voice ID'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null && value != 'custom') {
+                          setDialogState(() => voice.text = value);
+                        }
+                      },
+                    ),
+                  ],
                   const SizedBox(height: 12),
-                  TextField(
+                  HiddenVoiceIdField(
+                    fieldKey: const ValueKey('qwen-voice'),
+                    enabled: !creatingVoice,
                     controller: voice,
-                    decoration: const InputDecoration(
-                      labelText: '系统音色 / Voice ID',
-                      hintText: 'Cherry',
-                      border: OutlineInputBorder(),
-                    ),
+                    labelText: '系统音色 / Voice ID',
+                    emptyValueDescription: '请先选择系统音色或输入自定义 ID',
+                    resetValue:
+                        QwenTtsConfig.voicesForModel(model.text).firstOrNull ??
+                        '',
+                    onChanged: (_) => setDialogState(() {}),
                   ),
+                  if (model.text.startsWith('qwen-audio-3.0-'))
+                    const Text('3.0 预设音色主要支持中英文；日语建议使用 3.1 多语种音色或适配的复刻音色。'),
                   const SizedBox(height: 16),
                   const Divider(),
                   const Align(
@@ -2656,7 +3043,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      '1. 选择复刻目标模型  2. 选择参考音频  3. 填写音色信息  4. 创建并自动回填',
+                      '新版创建音色免费，后续语音合成按服务计费。需要可访问的参考音频 URL，音色仅适用于创建时指定的模型。',
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -2665,77 +3052,131 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextField(
+                    key: const ValueKey('qwen-clone-model'),
+                    enabled: !creatingVoice,
                     controller: cloneTargetModel,
                     decoration: const InputDecoration(
                       labelText: '第 1 步：复刻目标模型',
-                      hintText: 'qwen3-tts-vc-realtime-2026-01-15',
-                      helperText: '按百炼控制台可用模型填写；创建成功后会同步到上方合成模型',
+                      hintText: 'qwen-audio-3.1-tts-flash',
+                      helperText: '创建成功后同步到合成模型；建议北京地域，3.1 在新加坡的复刻可用性以控制台为准',
+                      helperMaxLines: 3,
                       border: OutlineInputBorder(),
                     ),
+                    onChanged: (_) => setDialogState(() {}),
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: preferredName,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: '自定义音色名称',
-                      helperText: '仅数字、英文字母和下划线，最多 16 个字符',
-                      border: OutlineInputBorder(),
+                      helperText:
+                          QwenTtsConfig.isModernModel(cloneTargetModel.text)
+                          ? '音色前缀：仅英文字母和数字，最多 10 个字符'
+                          : '旧兼容接口：数字、英文字母和下划线，最多 16 个字符',
+                      helperMaxLines: 2,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: audioText,
+                  DropdownButtonFormField<String>(
+                    key: const ValueKey('qwen-reference-language'),
+                    initialValue: referenceLanguage,
                     decoration: const InputDecoration(
-                      labelText: '参考音频文本（可选）',
-                      helperText: '填写音频中实际说的内容，可提升复刻稳定性',
+                      labelText: '参考音频语言',
+                      helperText: '选择音频实际说话的语言，与下方合成目标语言独立',
+                      helperMaxLines: 2,
                       border: OutlineInputBorder(),
                     ),
+                    items: [
+                      for (final entry in QwenTtsConfig.languages.entries)
+                        DropdownMenuItem(
+                          value: entry.key,
+                          child: Text(entry.value),
+                        ),
+                      if (!QwenTtsConfig.languages.containsKey(
+                        referenceLanguage,
+                      ))
+                        DropdownMenuItem(
+                          value: referenceLanguage,
+                          child: Text(referenceLanguage),
+                        ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() => referenceLanguage = value);
+                      }
+                    },
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          referenceAudio == null
-                              ? '第 2 步：尚未选择参考音频'
-                              : '已选择：${referenceAudio!.name}\n${(referenceAudioSize / 1024 / 1024).toStringAsFixed(2)} MB · 格式和大小符合要求',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                  if (QwenTtsConfig.isModernModel(cloneTargetModel.text)) ...[
+                    TextField(
+                      key: const ValueKey('qwen-reference-url'),
+                      enabled: !creatingVoice,
+                      controller: referenceUrl,
+                      decoration: const InputDecoration(
+                        labelText: '参考音频 URL',
+                        hintText: 'https://…/reference.wav',
+                        helperText: '服务端须能读取；WAV/MP3/M4A，推荐 10–20 秒、最长 60 秒、≤10MB、≥16kHz。不会自动上传本地文件。',
+                        helperMaxLines: 4,
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ] else ...[
+                    const Text('旧版音色复刻兼容入口；请确认账号仍支持此模型及请求格式。'),
+                    TextField(
+                      controller: audioText,
+                      decoration: const InputDecoration(
+                        labelText: '参考音频文本（可选）',
+                        helperText: '填写音频中实际说的内容，可提升复刻稳定性',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            referenceAudio == null
+                                ? '第 2 步：尚未选择参考音频'
+                                : '已选择：${referenceAudio!.name}\n${(referenceAudioSize / 1024 / 1024).toStringAsFixed(2)} MB · 格式和大小符合要求',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
                         ),
-                      ),
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.audio_file_outlined),
-                        label: const Text('选择音频'),
-                        onPressed: () async {
-                          try {
-                            final result = await FilePicker.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['wav', 'mp3', 'm4a'],
-                            );
-                            if (!context.mounted || result.isEmpty) return;
-                            final selected = result.first;
-                            final bytes = await selected.readAsBytes();
-                            if (!context.mounted) return;
-                            if (bytes.length < 10 * 1024 * 1024) {
-                              setDialogState(() {
-                                referenceAudio = selected;
-                                referenceAudioBytes = bytes;
-                                referenceAudioSize = bytes.length;
-                                createdVoiceId = null;
-                                error = null;
-                              });
-                            } else {
-                              setDialogState(() => error = '参考音频必须小于 10MB');
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.audio_file_outlined),
+                          label: const Text('选择音频'),
+                          onPressed: () async {
+                            try {
+                              final result = await FilePicker.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['wav', 'mp3', 'm4a'],
+                              );
+                              if (!context.mounted || result.isEmpty) return;
+                              final selected = result.first;
+                              final bytes = await selected.readAsBytes();
+                              if (!context.mounted) return;
+                              if (bytes.length < 10 * 1024 * 1024) {
+                                setDialogState(() {
+                                  referenceAudio = selected;
+                                  referenceAudioBytes = bytes;
+                                  referenceAudioSize = bytes.length;
+                                  createdVoiceId = null;
+                                  error = null;
+                                });
+                              } else {
+                                setDialogState(() => error = '参考音频必须小于 10MB');
+                              }
+                            } on Object catch (value) {
+                              if (context.mounted) {
+                                setDialogState(() => error = value.toString());
+                              }
                             }
-                          } on Object catch (value) {
-                            if (context.mounted) {
-                              setDialogState(() => error = value.toString());
-                            }
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -2759,24 +3200,36 @@ class SettingsScreenState extends State<SettingsScreen> {
                               if (!context.mounted) return;
                               final bytes = referenceAudioBytes;
                               final name = preferredName.text.trim();
-                              if (cloneTargetModel.text.trim().isEmpty) {
+                              final target = cloneTargetModel.text.trim();
+                              final modernClone = QwenTtsConfig.isModernModel(
+                                target,
+                              );
+                              if (target.isEmpty) {
                                 setDialogState(
                                   () => error = '请先填写用于声音复刻和合成的目标模型',
                                 );
                                 return;
                               }
                               if (apiKey.isEmpty ||
-                                  bytes == null ||
-                                  name.isEmpty) {
+                                  name.isEmpty ||
+                                  (modernClone
+                                      ? referenceUrl.text.trim().isEmpty
+                                      : bytes == null)) {
                                 setDialogState(
-                                  () => error = '请填写 API Key、音色名称并选择参考音频',
+                                  () => error = modernClone
+                                      ? '请填写 API Key、音色前缀和参考音频 URL'
+                                      : '请填写 API Key、音色名称并选择参考音频',
                                 );
                                 return;
                               }
-                              if (!RegExp(r'^[A-Za-z0-9_]{1,16}$')
+                              if (!(modernClone
+                                      ? RegExp(r'^[A-Za-z0-9]{1,10}$')
+                                      : RegExp(r'^[A-Za-z0-9_]{1,16}$'))
                                   .hasMatch(name)) {
                                 setDialogState(
-                                  () => error = '音色名称只能包含数字、英文字母和下划线，最多 16 个字符',
+                                  () => error = modernClone
+                                      ? '音色前缀只能包含英文字母和数字，最多 10 个字符'
+                                      : '音色名称只能包含数字、英文字母和下划线，最多 16 个字符',
                                 );
                                 return;
                               }
@@ -2786,26 +3239,62 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 error = null;
                               });
                               try {
-                                final created = await DashScopeTtsClient()
-                                    .createQwenVoice(
-                                      apiKey: apiKey,
-                                      audioBytes: bytes,
-                                      mimeType: switch (referenceAudio!
-                                          .extension
-                                          ?.toLowerCase()) {
-                                        'mp3' => 'audio/mpeg',
-                                        'm4a' => 'audio/mp4',
-                                        _ => 'audio/wav',
-                                      },
-                                      preferredName: name,
-                                      targetModel: cloneTargetModel.text.trim(),
-                                      language: language,
-                                      audioText: audioText.text,
-                                      baseUrl: baseUrl.text,
+                                var cloneBaseUrl = baseUrl.text.trim();
+                                final host = Uri.tryParse(cloneBaseUrl)?.host;
+                                // A directly entered workspace/proxy URL takes
+                                // priority over the optional region helpers.
+                                if (modernClone &&
+                                    region != 'custom' &&
+                                    workspace.text.trim().isNotEmpty &&
+                                    (cloneBaseUrl.isEmpty ||
+                                        const {
+                                          'dashscope.aliyuncs.com',
+                                          'dashscope-intl.aliyuncs.com',
+                                        }.contains(host))) {
+                                  cloneBaseUrl = QwenTtsConfig.workspaceBaseUrl(
+                                    workspaceId: workspace.text,
+                                    region: region,
+                                  );
+                                }
+                                final synthesisUrl =
+                                    QwenTtsConfig.synthesisEndpoint(
+                                      cloneBaseUrl,
+                                      target,
                                     );
+                                final created = modernClone
+                                    ? await DashScopeTtsClient()
+                                          .createQwenVoiceFromUrl(
+                                            apiKey: apiKey,
+                                            audioUrl: referenceUrl.text.trim(),
+                                            prefix: name,
+                                            targetModel: target,
+                                            language: referenceLanguage,
+                                            baseUrl: cloneBaseUrl,
+                                          )
+                                    : await DashScopeTtsClient()
+                                          .createQwenVoice(
+                                            apiKey: apiKey,
+                                            audioBytes: bytes!,
+                                            mimeType: switch (referenceAudio!
+                                                .extension
+                                                ?.toLowerCase()) {
+                                              'mp3' => 'audio/mpeg',
+                                              'm4a' => 'audio/mp4',
+                                              _ => 'audio/wav',
+                                            },
+                                            preferredName: name,
+                                            targetModel: target,
+                                            language:
+                                                QwenTtsConfig.legacyLanguage(
+                                                  referenceLanguage,
+                                                ),
+                                            audioText: audioText.text,
+                                            baseUrl: cloneBaseUrl,
+                                          );
                                 if (!context.mounted) return;
                                 voice.text = created;
-                                model.text = cloneTargetModel.text.trim();
+                                model.text = target;
+                                baseUrl.text = synthesisUrl;
                                 setDialogState(() => createdVoiceId = created);
                               } on Object catch (value) {
                                 if (context.mounted) {
@@ -2833,7 +3322,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.green.withValues(alpha: 0.10),
-                        border: Border.all(color: Colors.green),
+                        border: Border.all(color: Colors.green, width: 0),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -2842,7 +3331,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              '创建成功，已自动填入 Voice ID\n$createdVoiceId',
+                              '创建成功，已配置新音色；保存设置后生效。',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -2852,26 +3341,37 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   const SizedBox(height: 12),
-                  TextField(
+                  HiddenVoiceIdField(
+                    fieldKey: const ValueKey('qwen-asmr-voice'),
+                    enabled: !creatingVoice,
                     controller: asmrVoice,
-                    decoration: const InputDecoration(
-                      labelText: 'ASMR 模式 Voice ID',
-                      helperText: '可选；仅在主页开启 ASMR 模式时使用并校验',
-                      border: OutlineInputBorder(),
-                    ),
+                    labelText: 'ASMR 模式 Voice ID',
+                    emptyValueDescription: '尚未配置 ASMR 音色',
+                    helperText: '留空保留当前配置；须与普通音色使用相同合成模型。',
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
+                    key: const ValueKey('qwen-language'),
                     initialValue: language,
                     decoration: const InputDecoration(
-                      labelText: '语言',
+                      labelText: '合成目标语言',
+                      helperText: '普通聊天使用此语言，日语请选择日语。持续 ASMR 跟随其朗读语言；自动识别会省略新版 language_hints。',
+                      helperMaxLines: 4,
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
-                      DropdownMenuItem(value: 'Chinese', child: Text('中文')),
-                      DropdownMenuItem(value: 'English', child: Text('英文')),
-                      DropdownMenuItem(value: 'Japanese', child: Text('日语')),
-                      DropdownMenuItem(value: 'Korean', child: Text('韩语')),
+                    items: [
+                      for (final entry in QwenTtsConfig.languages.entries)
+                        DropdownMenuItem(
+                          value: entry.key,
+                          enabled: QwenTtsConfig.languagesForModel(model.text)
+                              .containsKey(entry.key),
+                          child: Text(entry.value),
+                        ),
+                      if (!QwenTtsConfig.languages.containsKey(language))
+                        DropdownMenuItem(
+                          value: language,
+                          child: Text(language),
+                        ),
                     ],
                     onChanged: (value) {
                       if (value != null) setDialogState(() => language = value);
@@ -2882,10 +3382,18 @@ class SettingsScreenState extends State<SettingsScreen> {
                     controller: instructions,
                     minLines: 2,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: '声音指令（Instruct 模型）',
+                    decoration: InputDecoration(
+                      labelText: '声音指令',
                       hintText: '活泼、明亮、语速稍快，带自然的少女感',
-                      border: OutlineInputBorder(),
+                      helperText:
+                          QwenTtsConfig.supportsInstructions(
+                            model.text,
+                            voice: voice.text,
+                          )
+                          ? '新版通过 instruction 控制语气；普通聊天与持续 ASMR 均使用此设置'
+                          : '当前模型或音色未启用指令控制，保留内容但不会发送',
+                      helperMaxLines: 3,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -2913,6 +3421,78 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+                  if (QwenTtsConfig.isModernModel(model.text)) ...[
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int>(
+                      key: const ValueKey('qwen-sample-rate'),
+                      initialValue: options.sampleRate,
+                      decoration: const InputDecoration(
+                        labelText: '采样率（WAV）',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        for (final rate in QwenTtsOptions.sampleRates)
+                          DropdownMenuItem(
+                            value: rate,
+                            child: Text('$rate Hz'),
+                          ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setDialogState(
+                            () => options = options.copyWith(sampleRate: value),
+                          );
+                        }
+                      },
+                    ),
+                    Text('语速 ${options.rate.toStringAsFixed(2)}×'),
+                    Slider(
+                      key: const ValueKey('qwen-rate'),
+                      value: options.rate,
+                      min: 0.5,
+                      max: 2,
+                      divisions: 30,
+                      label: options.rate.toStringAsFixed(2),
+                      onChanged: (value) => setDialogState(
+                        () => options = options.copyWith(rate: value),
+                      ),
+                    ),
+                    Text('音调 ${options.pitch.toStringAsFixed(2)}×'),
+                    Slider(
+                      key: const ValueKey('qwen-pitch'),
+                      value: options.pitch,
+                      min: 0.5,
+                      max: 2,
+                      divisions: 30,
+                      label: options.pitch.toStringAsFixed(2),
+                      onChanged: (value) => setDialogState(
+                        () => options = options.copyWith(pitch: value),
+                      ),
+                    ),
+                    Text('云端音量 ${options.volume}'),
+                    Slider(
+                      key: const ValueKey('qwen-volume'),
+                      value: options.volume.toDouble(),
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      label: '${options.volume}',
+                      onChanged: (value) => setDialogState(
+                        () => options = options.copyWith(volume: value.round()),
+                      ),
+                    ),
+                    const Text('音频统一保存为 WAV；播放响度仍会按应用的语音平衡设置处理。'),
+                  ] else if (QwenTtsConfig.supportsInstructions(model.text))
+                    SwitchListTile(
+                      key: const ValueKey('qwen-optimize-instructions'),
+                      value: options.optimizeInstructions,
+                      title: const Text('优化声音指令（旧兼容模型）'),
+                      onChanged: (value) => setDialogState(
+                        () => options = options.copyWith(
+                          optimizeInstructions: value,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 12),
                   _TtsPreviewEditor(
                     controller: preview,
@@ -2934,22 +3514,32 @@ class SettingsScreenState extends State<SettingsScreen> {
                         error = null;
                       });
                       try {
+                        final previewVoice = asmr
+                            ? asmrVoice.text.trim()
+                            : voice.text.trim();
+                        if (previewVoice.isEmpty) {
+                          throw AiServiceException(
+                            asmr ? '请填写 ASMR 模式 Voice ID' : '请填写普通模式 Voice ID',
+                          );
+                        }
                         final path = await DashScopeTtsClient().synthesize(
                           apiKey: apiKey,
                           baseUrl: baseUrl.text,
                           text: preview.text.trim(),
                           model: model.text.trim(),
-                          voice: voice.text.trim(),
+                          voice: previewVoice,
                           language: language,
+                          options: options,
                           instructions:
-                              model.text.trim().toLowerCase().contains(
-                                'instruct',
+                              QwenTtsConfig.supportsInstructions(
+                                model.text,
+                                voice: previewVoice,
                               )
                               ? mergeTtsInstructions(
                                   instructions.text,
                                   emotionIntensity,
                                 )
-                              : instructions.text,
+                              : '',
                         );
                         previewFiles.add(path);
                         if (!context.mounted) {
@@ -3004,7 +3594,58 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: const Text('取消'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(context, true),
+              key: const ValueKey('qwen-save'),
+              onPressed: testing || creatingVoice
+                  ? null
+                  : () {
+                      try {
+                        if (model.text.trim().isEmpty) {
+                          throw const FormatException('请填写合成模型');
+                        }
+                        if (voice.text.trim().isEmpty) {
+                          throw const FormatException(
+                            '请填写普通模式 Voice ID 或选择系统音色',
+                          );
+                        }
+                        if (QwenTtsConfig.isRealtimeModel(model.text)) {
+                          throw const FormatException(
+                            '当前入口使用 HTTP，请选择非实时模型；旧实时音色不能直接迁移到新模型',
+                          );
+                        }
+                        QwenTtsConfig.synthesisEndpoint(
+                          baseUrl.text,
+                          model.text,
+                        );
+                        final incompatible =
+                            QwenTtsConfig.voiceCompatibilityError(
+                              model.text,
+                              voice.text,
+                            );
+                        if (incompatible != null) {
+                          throw FormatException(incompatible);
+                        }
+                        if (asmrVoice.text.trim().isNotEmpty) {
+                          final incompatibleAsmr =
+                              QwenTtsConfig.voiceCompatibilityError(
+                                model.text,
+                                asmrVoice.text,
+                              );
+                          if (incompatibleAsmr != null) {
+                            throw FormatException(incompatibleAsmr);
+                          }
+                        }
+                        if (!QwenTtsConfig.languagesForModel(model.text)
+                            .containsKey(language)) {
+                          throw const FormatException('当前模型不支持所选合成语言，请重新选择');
+                        }
+                        Navigator.pop(context, true);
+                      } on Object catch (value) {
+                        setDialogState(() => error = value.toString());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(value.toString())),
+                        );
+                      }
+                    },
               child: const Text('保存设置'),
             ),
           ],
@@ -3027,8 +3668,9 @@ class SettingsScreenState extends State<SettingsScreen> {
       dashScopeModel: model.text,
       dashScopeVoice: voice.text,
       dashScopeAsmrVoice: asmrVoice.text,
-      dashScopeLanguage: language,
+      dashScopeLanguage: QwenTtsConfig.legacyLanguage(language),
       dashInstructions: instructions.text,
+      dashScopeOptions: options,
       genericBaseUrl: controller.genericTtsBaseUrl,
       genericModel: controller.genericTtsModel,
       genericVoice: controller.genericTtsVoice,
@@ -3107,21 +3749,19 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  TextField(
+                  HiddenVoiceIdField(
+                    fieldKey: const ValueKey('generic-normal-voice'),
                     controller: voice,
-                    decoration: const InputDecoration(
-                      labelText: 'Voice ID / 音色',
-                      border: OutlineInputBorder(),
-                    ),
+                    labelText: 'Voice ID / 音色',
+                    resetValue: 'alloy',
                   ),
                   const SizedBox(height: 12),
-                  TextField(
+                  HiddenVoiceIdField(
+                    fieldKey: const ValueKey('generic-asmr-voice'),
                     controller: asmrVoice,
-                    decoration: const InputDecoration(
-                      labelText: 'ASMR 模式 Voice ID',
-                      helperText: '可选；仅在主页开启 ASMR 模式时使用并校验',
-                      border: OutlineInputBorder(),
-                    ),
+                    labelText: 'ASMR 模式 Voice ID',
+                    emptyValueDescription: '尚未配置 ASMR 音色',
+                    helperText: '留空保留当前配置；仅在 ASMR 模式使用并校验。',
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -4008,6 +4648,22 @@ class _LongTermMemoryDialogState extends State<_LongTermMemoryDialog> {
       final client = OpenAiCompatibleClient();
       final proposal = await ManualMemoryConsolidation().prepare(
         controller: controller,
+        onLegacyNumberingRecovery: () {
+          if (!mounted) throw StateError('记忆页面已关闭，已保留原记忆');
+          checkDraft();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 8),
+              content: Text(
+                language.text(
+                  '检测到旧版记忆编号不兼容，正在使用 LLM 兼容整理。原记忆会保留，完成后请确认。',
+                  'Legacy memory numbering was detected. The LLM is reorganizing it for compatibility. Your original memories are kept until you confirm.',
+                  '旧形式の記憶番号を検出しました。LLMで互換整理中です。確認するまで元の記憶は保持されます。',
+                ),
+              ),
+            ),
+          );
+        },
         complete: (messages) => client.complete(
           lightweight: true,
           provider: provider,
@@ -4178,6 +4834,7 @@ class _LongTermMemoryDialogState extends State<_LongTermMemoryDialog> {
                         border: Border.all(
                           color: Theme.of(context).colorScheme.outline
                               .withValues(alpha: .2),
+                          width: 0,
                         ),
                       ),
                       child: Column(
@@ -4475,6 +5132,17 @@ class _ManualMemoryReviewDialogState extends State<_ManualMemoryReviewDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (proposal.usedLegacyNumberingRecovery) ...[
+                Text(
+                  language.text(
+                    '已使用 LLM 完成旧编号兼容整理，编号由程序映射。请核对内容后保存；取消会保留原记忆。',
+                    'The LLM reorganized legacy memories and the app mapped their IDs. Review before saving; canceling keeps the originals.',
+                    'LLMによる旧番号の互換整理が完了し、アプリで番号を対応付けました。保存前に確認してください。キャンセルすると元の記憶を保持します。',
+                  ),
+                  key: const ValueKey('memory-legacy-recovery-notice'),
+                ),
+                const SizedBox(height: 16),
+              ],
               if (proposal.recent.isNotEmpty) ...[
                 Text(
                   language.text('最近记忆', 'Recent memories', '最近の記憶'),
@@ -4972,7 +5640,7 @@ class _TtsPreviewEditor extends StatelessWidget {
       color: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4),
-        side: BorderSide(color: colors.outline),
+        side: BorderSide(color: colors.outline, width: 0),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(

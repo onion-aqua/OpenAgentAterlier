@@ -16,6 +16,7 @@ class ShopItem {
     required this.effectJa,
     required this.statChanges,
     this.resetNegativeStats = false,
+    this.isKeepsake = false,
   });
 
   final String id;
@@ -32,26 +33,46 @@ class ShopItem {
   final String effectJa;
   final Map<String, int> statChanges;
   final bool resetNegativeStats;
+  final bool isKeepsake;
 
-  String name(AppLanguage language) => language.text(nameZh, nameEn, nameJa);
-  String description(AppLanguage language) =>
-      language.text(descriptionZh, descriptionEn, descriptionJa);
+  String name(AppLanguage language, {String? characterName}) => _forCharacter(
+    language.text(nameZh, nameEn, nameJa),
+    language,
+    characterName,
+  );
+  String description(AppLanguage language, {String? characterName}) =>
+      _forCharacter(
+        language.text(descriptionZh, descriptionEn, descriptionJa),
+        language,
+        characterName,
+      );
+
+  String _forCharacter(String text, AppLanguage language, String? name) =>
+      text.replaceAll(
+        '{character}',
+        name?.trim().isNotEmpty == true
+            ? name!.trim()
+            : language.text('当前角色', 'the current character', '現在のキャラクター'),
+      );
   String effect(AppLanguage language) =>
       language.text(effectZh, effectEn, effectJa);
 }
 
 class ShopCatalog {
+  static const oathRingId = 'oath_ring';
+  static const reconciliationVoucherId = 'reconciliation_voucher';
   static const items = <ShopItem>[
     ShopItem(
       id: 'ryza_gift',
       price: 50,
       imageAsset: 'assets/images/shop/gift-box.png',
-      nameZh: '给莱莎的礼物',
-      nameEn: 'A Gift for Ryza',
-      nameJa: 'ライザへの贈り物',
-      descriptionZh: '你精心为莱莎挑选的礼物。\n从挑选到包装都花了不少心思，只希望她打开礼物的那一刻，能露出惊喜又开心的笑容。\n光是想象莱莎一边好奇地拆开包装，一边期待里面是什么的样子，就已经让人忍不住开始期待了。',
-      descriptionEn: 'A gift you chose for Ryza with care. You spent time selecting and wrapping it, hoping she smiles when she opens it. Just imagining her curious anticipation makes you excited too.',
-      descriptionJa: 'ライザのために心を込めて選んだ贈り物。選ぶところから包むところまで手間をかけたのは、開けた瞬間の驚いた笑顔が見たいから。中身を気にしながら包みをほどく姿を想像するだけで、こちらまで楽しみになる。',
+      nameZh: '给{character}的礼物',
+      nameEn: 'A Gift for {character}',
+      nameJa: '{character}への贈り物',
+      descriptionZh: '你精心为{character}挑选的礼物。\n从挑选到包装都花了不少心思，期待打开时那份惊喜与快乐。',
+      descriptionEn: 'A gift you chose for {character} with care, thoughtfully selected and wrapped for a happy surprise.',
+      descriptionJa:
+          '{character}のために心を込めて選んだ贈り物。選ぶところから包むところまで、喜んでもらえるように工夫しました。',
       effectZh: '心情 +10 · 精力 +5 · 亲近感 +10 · 好奇心 +5',
       effectEn: 'Mood +10 · Energy +5 · Closeness +10 · Curiosity +5',
       effectJa: '気分 +10 · 元気 +5 · 親しみ +10 · 好奇心 +5',
@@ -64,9 +85,9 @@ class ShopCatalog {
       nameZh: '高级精力剂',
       nameEn: 'Advanced Energy Tonic',
       nameJa: '高級活力剤',
-      descriptionZh: '根据在遗迹深处发现的古老配方制作而成的高级精力剂。\n所需素材不仅稀有，收集起来也十分困难，就连炼制过程本身都有很高的失败概率。由于成功制作出的数量一直很少，莱莎对每一瓶都格外珍惜，平时绝不会轻易使用。',
-      descriptionEn: 'An advanced energy tonic made from an ancient recipe found deep in the ruins. Its rare ingredients are difficult to collect, and even the synthesis has a high failure rate. Ryza treasures every scarce bottle and would never use one casually.',
-      descriptionJa: '遺跡の奥で見つかった古いレシピから作られた高級活力剤。素材は希少で集めるのも難しく、調合そのものも失敗しやすい。完成品は少ないため、ライザは一本一本を大切にし、普段は決して気軽に使わない。',
+      descriptionZh: '以稀有素材制作的高级精力剂。\n收集与制作都不容易，因此每一瓶都十分珍贵。',
+      descriptionEn: 'An advanced energy tonic made from rare ingredients. Its demanding preparation makes every bottle precious.',
+      descriptionJa: '希少な素材から作られた高級活力剤。収集も製作も難しく、一本一本が貴重です。',
       effectZh: '精力 +50 · 心情 -30 · 亲近感 -30（最低为 0）',
       effectEn: 'Energy +50 · Mood -30 · Closeness -30 (minimum 0)',
       effectJa: '元気 +50 · 気分 -30 · 親しみ -30（最低 0）',
@@ -102,6 +123,23 @@ class ShopCatalog {
       effectEn: 'Mood +100',
       effectJa: '気分 +100',
       statChanges: {'mood': 100},
+    ),
+    ShopItem(
+      id: oathRingId,
+      price: 4999,
+      imageAsset: 'assets/images/shop/oath-ring.png',
+      nameZh: '誓约之戒',
+      nameEn: 'Ring of Vows',
+      nameJa: '誓いの指輪',
+      descriptionZh:
+          '将彼此的约定珍藏在一枚戒指中。购买后放入「珍贵的东西」，不会作为消耗品使用。请好好保管，这是{character}十分珍视的约定。',
+      descriptionEn: 'A ring holding a promise between you and {character}. Stored in Precious things after purchase, it is a keepsake rather than a consumable. Please keep this cherished promise safe.',
+      descriptionJa: '二人の約束を込めた指輪。購入後は「大切なもの」に保管され、消費はされません。{character}が大切にしている約束を、どうかなくさないでください。',
+      effectZh: '确认丢失后心情 −500；心情恢复到 −250（含）以上前，无法购买和好券。',
+      effectEn: 'Confirmed loss: Mood −500. Make-Up Vouchers cannot be purchased until mood reaches −250 or higher.',
+      effectJa: '紛失を確定すると気分 −500。気分が −250 以上に回復するまで仲直り券は購入できません。',
+      statChanges: {},
+      isKeepsake: true,
     ),
   ];
 
